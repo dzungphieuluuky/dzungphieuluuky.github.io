@@ -10,10 +10,12 @@
 ############################
 
 # Name of website
-title: My website
+title: Dzung Blog
 
 # Your name to show in the footer
-author: Some Person
+author: Dung Pham
+email: dungngocpham171@gmail.com
+description: A tiny minimal personal blog
 
 ###############################################
 # --- List of links in the navigation bar --- #

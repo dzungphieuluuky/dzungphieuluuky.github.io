@@ -4,10 +4,42 @@ title: About me
 subtitle: To do or not to do, there is no try - Master Yoda
 ---
 
-My name is Phạm Ngọc Dũng. I'm currently a second-year university undergrad majoring in information technology fascinated by the intersection of mathematics, computer science and physics.
+# Personal Info
+My full name is Phạm Ngọc Dũng. I'm currently a second-year university undergraduate student majoring in information technology.  
 
-I gained my interest in physics through participating in the Vietnamese Physics Olympiad (VPhO) in my high school. I'm also interested in reinforcement learning, quantum computing and the interdisciplinary field in between.
+I'm a science enthusiast and a student fascinated by the intersection of mathematics, computer science, and physics. 
 
-In my free time, I love watching science-explained videos on YouTube on a wide range of topics such as calculus, linear algebra, machine learning, deep learning, quantum physics and so much more. Apart from this nerdy habit, I also enjoy reading my favourite anime character's Wikipedia (because I'm not patient enough to watch the series ep-by-ep 🥲).
+# Interest
+Currently, my main interests are:
+- Reinforcement Learning: a subfield of machine learning focused on creating agents that can interact and learn from the environment.
+- Quantum Computing: an interdisciplinary field that tries to harness the power of quantum mechanics to bring about a new approach to computing.
 
-In my blog, you will find me sharing my learning journey and ideas on some topics I find interesting.
+# Favourite channels
+Watching YouTube is one of my way of burning time when I'm free, some of my favourite channels are:
+- 3Blue1Brown: a must-watch channel for those who love maths.
+- Richard Behiel: a nice guy with a PhD aiming to explain advanced physics concepts.
+- Physics Explained: another guy with a deep understanding of physics trying to explain formulas from their birth.
+- Veritasium: a channel for anyone burned continuously with curiosity and desire to expand knowledge.
+- Fireship: coding channel with lightspeed way of explaining things.
+
+# My idols
+- Richard Feynman: for his sense of humour, deep understanding of physics, and great way of teaching.
+- John von Neumann: for his absolute power in many different fields of mathematics.
+
+# Maths I like and don't like
+- Like: linear algebra, calculus, complex numbers, differential/integral maths.
+- Don't like: combinatorics, graph theory, number theory.
+- Not sure on which side: discrete maths.
+
+# Generalist / Specialist
+I would say that I look like a generalist more than a specialist (just think so).
+
+# Non nerdy hobbies
+Reading my favourite anime character's Wikipedia (because I'm not patient enough to watch the series ep-by-ep 🥲).
+
+Also, I prefer to do anything at night. The daylight, especially in the afternoon, somehow drains all of my power.
+
+# Feel free to
+- Explore my [GitHub](https://github.com/dzungphieuluuky): some projects I have made.
+- Read my [Blog](https://dzungphieuluuky.github.io/): some interesting ideas of mine.
+- Reach me via [Email](mailto:dungngocpham171@gmail.com): just to fill this block so it will contains 3 things. 

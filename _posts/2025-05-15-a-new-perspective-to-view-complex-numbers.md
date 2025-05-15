@@ -2,9 +2,9 @@
 layout: post
 title: A new perspective to view complex numbers
 subtitle: Something you might find useful
-cover-img: /assets/img/path.jpg
-thumbnail-img: /assets/img/thumb.png
-share-img: /assets/img/path.jpg
+cover-img: /assets/img/maths-cover.jpg
+thumbnail-img: /assets/img/maths-thumbnail.png
+share-img: /assets/img/maths-cover.jpg
 tags: [maths]
 author: Dung Pham
 ---

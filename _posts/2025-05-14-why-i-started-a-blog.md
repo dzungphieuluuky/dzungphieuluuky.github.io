@@ -3,7 +3,7 @@ layout: post
 title: Why I started a blog
 subtitle: A change in my journey
 cover-img: /assets/img/blog-cover.jpg
-thumbnail-img: /assets/img/blog-thumbnail.png
+thumbnail-img: /assets/img/blog-thumbnail.jpg
 share-img: /assets/img/blog-cover.jpg
 tags: [misc]
 author: Dung Pham

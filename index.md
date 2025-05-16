@@ -1,7 +1,7 @@
 ---
 layout: page
-title: About me
-subtitle: To do or not to do, there is no try - Master Yoda
+title: Welcome to my website
+subtitle: "You don't have to be great to start, but you have to start to be great"
 ---
 
 # Personal Info

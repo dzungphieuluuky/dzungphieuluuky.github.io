@@ -9,13 +9,13 @@ My full name is Phạm Ngọc Dũng. I'm currently a second-year university unde
 
 I'm a science enthusiast and a student fascinated by the intersection of mathematics, computer science, and physics. 
 
-# Interest
+# Interests
 Currently, my main interests are:
 - Reinforcement Learning: a subfield of machine learning focused on creating agents that can interact and learn from the environment.
 - Quantum Computing: an interdisciplinary field that tries to harness the power of quantum mechanics to bring about a new approach to computing.
 
-# Favourite channels
-Watching YouTube is one of my way of burning time when I'm free, some of my favourite channels are:
+# Favourite Channels
+Watching YouTube is one of my ways of burning time when I'm free, some of my favourite channels are:
 - 3Blue1Brown: a must-watch channel for those who love maths.
 - Richard Behiel: a nice guy with a PhD aiming to explain advanced physics concepts.
 - Physics Explained: another guy with a deep understanding of physics trying to explain formulas from their birth.

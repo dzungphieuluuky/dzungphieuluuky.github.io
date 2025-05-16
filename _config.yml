@@ -22,7 +22,8 @@ description: A lazy potato''s personal blog
 ###############################################
 
 navbar-links:
-  About Me: "aboutme"
+  # About Me: "aboutme"
+  Blogs: "blog"
   Resources:
     - Beautiful Jekyll: "https://beautifuljekyll.com"
     - Learn markdown: "https://www.markdowntutorial.com/"

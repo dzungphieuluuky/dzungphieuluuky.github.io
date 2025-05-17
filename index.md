@@ -43,5 +43,5 @@ Also, I prefer to do anything at night. The daylight, especially in the afternoo
 
 # Feel free to
 - Explore my [**GitHub**](https://github.com/dzungphieuluuky): some projects I have made.
-- Read my [**Blog**](https://dzungphieuluuky.github.io/): some interesting ideas of mine.
+- Read my [**Blog**](https://dzungphieuluuky.github.io/blog/): some interesting ideas of mine.
 - Reach me via [**Email**](mailto:dungngocpham171@gmail.com): just to fill this block so it will contains 3 things. 

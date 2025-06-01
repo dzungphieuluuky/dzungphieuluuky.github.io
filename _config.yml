@@ -94,6 +94,10 @@ rss-description: This website is a virtual proof that I'm awesome
 # --- General options --- #
 ###########################
 
+navbar-col: "#1a1a1a"  # Darker navbar for a modern look
+navbar-text-col: "#ffffff"  # White text for contrast
+footer-col: "#2c3e50"  # Sleek footer color
+
 # Select which social network share links to show in posts
 share-links-active:
   twitter: true

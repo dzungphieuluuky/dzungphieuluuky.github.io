@@ -94,10 +94,6 @@ rss-description: This website is a virtual proof that I'm awesome
 # --- General options --- #
 ###########################
 
-navbar-col: "#1a1a1a"  # Darker navbar for a modern look
-navbar-text-col: "#ffffff"  # White text for contrast
-footer-col: "#2c3e50"  # Sleek footer color
-
 # Select which social network share links to show in posts
 share-links-active:
   twitter: true
@@ -143,17 +139,30 @@ use-math: true # Whether or not to use MathJax to render mathematical equations 
 
 # Personalize the colours in your website. Colour values can be any valid CSS colour
 
-page-col: "#FFFFFF"
-text-col: "#404040"
-link-col: "#008AFF"
-hover-col: "#0085A1"
-navbar-col: "#EAEAEA"
-navbar-text-col: "#404040"
-navbar-border-col: "#DDDDDD"
-footer-col: "#EAEAEA"
-footer-text-col: "#777777"
-footer-link-col: "#404040"
-footer-hover-col: "#0085A1"
+# page-col: "#FFFFFF"
+# text-col: "#404040"
+# link-col: "#008AFF"
+# hover-col: "#0085A1"
+# navbar-col: "#EAEAEA"
+# navbar-text-col: "#404040"
+# navbar-border-col: "#DDDDDD"
+# footer-col: "#EAEAEA"
+# footer-text-col: "#777777"
+# footer-link-col: "#404040"
+# footer-hover-col: "#0085A1"
+
+# Modern dark theme with vibrant accents
+page-col: "#ffffff"
+text-col: "#2c3e50"
+link-col: "#3498db"
+hover-col: "#e74c3c"
+navbar-col: "#2c3e50"
+navbar-text-col: "#ecf0f1"
+navbar-border-col: "#34495e"
+footer-col: "#34495e"
+footer-text-col: "#bdc3c7"
+footer-link-col: "#3498db"
+footer-hover-col: "#e74c3c"
 
 # Alternatively, the navbar, footer, and page background can be set to an image
 # instead of colour
@@ -163,7 +172,7 @@ footer-hover-col: "#0085A1"
 #page-img: "/assets/img/bgimage.png"
 
 # Suggest a colour for mobile browsers to use as the browser's theme. This is only supported by a few mobile browsers.
-#mobile-theme-col: "#0085A1"
+mobile-theme-col: "#3498db"
 
 # For any extra visual customization, you can include additional CSS files in every page on your site. List any custom CSS files here
 #site-css:

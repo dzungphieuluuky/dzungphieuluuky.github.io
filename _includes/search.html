@@ -1,591 +1,505 @@
 {% if site.post_search %}
 
-<!-- Search Container -->
-<div class="nlohmann-search-container" id="search-container">
-  <div class="search-trigger" id="search-trigger">
-    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="8"></circle>
-      <path d="M21 21l-4.35-4.35"></path>
-    </svg>
-    <span class="search-placeholder">Search documentation...</span>
-    <div class="search-shortcut">
-      <kbd>⌘</kbd><kbd>K</kbd>
-    </div>
-  </div>
-</div>
-
-<!-- Search Modal -->
-<div class="search-modal" id="search-modal" style="display: none;">
-  <div class="search-backdrop" id="search-backdrop"></div>
-  <div class="search-dialog">
-    <div class="search-header">
-      <div class="search-input-wrapper">
-        <svg class="search-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="M21 21l-4.35-4.35"></path>
+<!-- Search Button -->
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"></path>
         </svg>
-        <input 
-          type="text" 
-          class="search-input" 
-          id="search-input"
-          placeholder="Search..."
-          autocomplete="off"
-          spellcheck="false"
-        >
-        <button class="search-close" id="search-close" aria-label="Close search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path>
           </svg>
         </button>
-      </div>
-    </div>
-    
-    <div class="search-body">
-      <!-- Search Results -->
-      <div class="search-results" id="search-results" style="display: none;">
-        <div class="search-section">
-          <div class="search-section-title">Posts</div>
-          <div class="search-section-results" id="posts-results"></div>
-        </div>
-        <div class="search-section">
-          <div class="search-section-title">Pages</div>
-          <div class="search-section-results" id="pages-results"></div>
-        </div>
-      </div>
-      
-      <!-- No Results -->
-      <div class="search-no-results" id="no-results" style="display: none;">
-        <div class="no-results-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="M21 21l-4.35-4.35"></path>
-          </svg>
-        </div>
-        <div class="no-results-title">No results found</div>
-        <div class="no-results-subtitle">Try searching for something else</div>
-      </div>
-      
-      <!-- Loading -->
-      <div class="search-loading" id="search-loading" style="display: none;">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Searching...</div>
-      </div>
-      
-      <!-- Default State -->
-      <div class="search-default" id="search-default">
-        <div class="search-suggestions">
-          <div class="suggestion-title">Popular searches</div>
-          <div class="suggestion-items">
-            <button class="suggestion-item" data-query="getting started">Getting started</button>
-            <button class="suggestion-item" data-query="installation">Installation</button>
-            <button class="suggestion-item" data-query="examples">Examples</button>
-            <button class="suggestion-item" data-query="configuration">Configuration</button>
+      </nav>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
           </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
-      </div>
-    </div>
-    
-    <div class="search-footer">
-      <div class="search-navigation-hint">
-        <kbd>↑</kbd><kbd>↓</kbd> to navigate
-        <kbd>↵</kbd> to select
-        <kbd>esc</kbd> to close
       </div>
     </div>
   </div>
 </div>
 
+<!-- Search Trigger Button -->
+<button class="md-header__button md-icon" type="button" id="search-trigger" aria-label="Search">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"></path>
+  </svg>
+</button>
+
 <style>
-/* Search Trigger */
-.nlohmann-search-container {
-  position: relative;
-  display: inline-block;
-}
-
-.search-trigger {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--bg-color, #f8f9fa);
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  color: var(--text-muted, #6c757d);
-  min-width: 240px;
-}
-
-.search-trigger:hover {
-  border-color: var(--border-hover, #ced4da);
-  background: var(--bg-hover, #ffffff);
-}
-
-.search-icon {
-  color: var(--text-muted, #6c757d);
-}
-
-.search-placeholder {
-  flex: 1;
-  text-align: left;
-}
-
-.search-shortcut {
-  display: flex;
-  gap: 2px;
-}
-
-.search-shortcut kbd {
-  background: var(--kbd-bg, #e9ecef);
-  border: 1px solid var(--kbd-border, #ced4da);
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-size: 12px;
-  line-height: 1;
-  color: var(--kbd-color, #495057);
-  font-family: ui-monospace, monospace;
-}
-
-/* Search Modal */
-.search-modal {
+/* Material Design Search Styles */
+.md-search {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 15vh;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms cubic-bezier(0.1, 0.7, 0.1, 1), visibility 0ms 250ms;
 }
 
-.search-backdrop {
+.md-search[data-md-state="active"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 250ms cubic-bezier(0.1, 0.7, 0.1, 1);
+}
+
+.md-search__overlay {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.search-dialog {
-  position: relative;
   width: 100%;
-  max-width: 600px;
-  margin: 0 16px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border-color, #e9ecef);
-  overflow: hidden;
-  animation: searchModalIn 0.2s ease-out;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.54);
+  cursor: pointer;
 }
 
-@keyframes searchModalIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.md-search__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 680px;
+  max-height: 100%;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 0.1rem;
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.26), 0 0 0.05rem rgba(0, 0, 0, 0.07);
+  transform: translateY(-0.8rem);
+  transition: transform 400ms cubic-bezier(0.1, 0.7, 0.1, 1);
 }
 
-/* Search Header */
-.search-header {
-  padding: 16px;
-  border-bottom: 1px solid var(--border-color, #e9ecef);
+.md-search[data-md-state="active"] .md-search__inner {
+  transform: translateY(0);
 }
 
-.search-input-wrapper {
+.md-search__form {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  position: relative;
+  padding: 0 1rem;
+  background: #fff;
+  box-shadow: 0 0 0.6rem rgba(0, 0, 0, 0.07);
+  border-radius: 0.1rem 0.1rem 0 0;
 }
 
-.search-input-icon {
-  color: var(--text-muted, #6c757d);
-}
-
-.search-input {
+.md-search__input {
   flex: 1;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  background: transparent;
   border: none;
   outline: none;
-  font-size: 16px;
-  color: var(--text-primary, #212529);
-  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
 }
 
-.search-input::placeholder {
-  color: var(--text-muted, #6c757d);
+.md-search__input::placeholder {
+  color: rgba(0, 0, 0, 0.54);
 }
 
-.search-close {
-  background: none;
-  border: none;
-  padding: 4px;
+.md-search__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: rgba(0, 0, 0, 0.54);
   cursor: pointer;
-  color: var(--text-muted, #6c757d);
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  transition: color 250ms;
 }
 
-.search-close:hover {
-  background: var(--bg-hover, #f8f9fa);
-  color: var(--text-primary, #212529);
+.md-search__icon:hover {
+  color: rgba(0, 0, 0, 0.87);
 }
 
-/* Search Body */
-.search-body {
-  max-height: 60vh;
+.md-search__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.md-search__options {
+  display: flex;
+  margin-left: auto;
+}
+
+.md-search__options .md-search__icon {
+  margin-left: 0.5rem;
+}
+
+.md-search__output {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 0 0 0.1rem 0.1rem;
+}
+
+.md-search__scrollwrap {
+  height: 100%;
+  max-height: 75vh;
   overflow-y: auto;
-  padding: 8px 0;
+  background: linear-gradient(#fff 0.1rem, hsla(0, 0%, 100%, 0)), linear-gradient(hsla(0, 0%, 100%, 0), #fff calc(100% - 0.1rem)), radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.12), transparent), radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.12), transparent);
+  background-repeat: no-repeat;
+  background-size: 100% 1.5rem, 100% 1.5rem, 100% 0.5rem, 100% 0.5rem;
+  background-attachment: local, local, scroll, scroll;
 }
 
-/* Search Results */
-.search-section {
-  margin-bottom: 16px;
+.md-search-result {
+  color: rgba(0, 0, 0, 0.87);
 }
 
-.search-section:last-child {
-  margin-bottom: 0;
-}
-
-.search-section-title {
-  padding: 8px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted, #6c757d);
+.md-search-result__meta {
+  padding: 0.75rem 1rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.54);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
+  background: rgba(0, 0, 0, 0.035);
+  scroll-snap-align: start;
 }
 
-.search-result-item {
+.md-search-result__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.md-search-result__item {
+  border-bottom: 0.05rem solid rgba(0, 0, 0, 0.12);
+}
+
+.md-search-result__item:last-child {
+  border-bottom: none;
+}
+
+.md-search-result__link {
   display: block;
-  padding: 12px 16px;
+  padding: 0.5rem 1rem;
   text-decoration: none;
   color: inherit;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
+  scroll-snap-align: start;
+  transition: background-color 250ms;
+}
+
+.md-search-result__link:hover,
+.md-search-result__link:focus,
+.md-search-result__link[data-md-state="active"] {
+  background: rgba(82, 108, 254, 0.1);
+}
+
+.md-search-result__more summary {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 0.64rem;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: color 250ms, background-color 250ms;
+  scroll-snap-align: start;
 }
 
-.search-result-item:hover,
-.search-result-item.selected {
-  background: var(--bg-hover, #f8f9fa);
+.md-search-result__more summary:hover,
+.md-search-result__more summary:focus {
+  color: rgba(0, 0, 0, 0.87);
+  background: rgba(0, 0, 0, 0.035);
 }
 
-.search-result-title {
-  font-weight: 500;
-  color: var(--text-primary, #212529);
-  margin-bottom: 4px;
-  font-size: 14px;
-}
-
-.search-result-path {
-  font-size: 12px;
-  color: var(--text-muted, #6c757d);
-  margin-bottom: 4px;
-}
-
-.search-result-excerpt {
-  font-size: 13px;
-  color: var(--text-secondary, #495057);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+.md-search-result__article {
+  position: relative;
+  padding-left: 2.2rem;
   overflow: hidden;
 }
 
-.search-highlight {
-  background: yellow;
-  padding: 0 2px;
-  border-radius: 2px;
+.md-search-result__icon {
+  position: absolute;
+  left: 1rem;
+  top: 0.5rem;
+  color: rgba(0, 0, 0, 0.54);
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
-/* No Results */
-.search-no-results {
-  text-align: center;
-  padding: 48px 24px;
+.md-search-result__title {
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.4;
 }
 
-.no-results-icon {
-  margin-bottom: 16px;
-  opacity: 0.5;
+.md-search-result__teaser {
+  margin: 0.5rem 0;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 0.64rem;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-.no-results-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary, #212529);
-  margin-bottom: 8px;
+.md-search-result mark {
+  background: rgba(255, 235, 59, 0.5);
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 400;
+  text-decoration: none;
 }
 
-.no-results-subtitle {
-  font-size: 14px;
-  color: var(--text-muted, #6c757d);
-}
-
-/* Loading */
-.search-loading {
-  text-align: center;
-  padding: 48px 24px;
-}
-
-.loading-spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--border-color, #e9ecef);
-  border-top: 2px solid var(--primary, #007bff);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-text {
-  font-size: 14px;
-  color: var(--text-muted, #6c757d);
-}
-
-/* Default State */
-.search-default {
-  padding: 24px;
-}
-
-.suggestion-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary, #212529);
-  margin-bottom: 12px;
-}
-
-.suggestion-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.suggestion-item {
-  background: var(--bg-color, #f8f9fa);
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 16px;
-  padding: 6px 12px;
-  font-size: 12px;
-  color: var(--text-secondary, #495057);
+/* Header Search Button */
+.md-header__button {
+  position: relative;
+  z-index: 1;
+  margin: 0.2rem;
+  padding: 0.4rem;
+  color: currentColor;
+  background: transparent;
+  border: none;
+  border-radius: 1.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 250ms, color 250ms;
 }
 
-.suggestion-item:hover {
-  background: var(--bg-hover, #e9ecef);
-  border-color: var(--border-hover, #ced4da);
+.md-header__button:hover,
+.md-header__button:focus {
+  background: rgba(0, 0, 0, 0.1);
 }
 
-/* Search Footer */
-.search-footer {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border-color, #e9ecef);
-  background: var(--bg-color, #f8f9fa);
+.md-header__button .md-icon,
+.md-header__button svg {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
 }
 
-.search-navigation-hint {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  color: var(--text-muted, #6c757d);
+/* Loading Animation */
+.md-search__scrollwrap[data-md-state="loading"] .md-search-result__meta::after {
+  display: block;
+  content: "";
+  width: 0.1rem;
+  height: 0.1rem;
+  margin-left: 0.25rem;
+  background: currentColor;
+  border-radius: 0.1rem;
+  animation: md-search-result__meta 2s infinite linear alternate;
 }
 
-.search-navigation-hint kbd {
-  background: white;
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-size: 11px;
-  line-height: 1;
-  color: var(--text-secondary, #495057);
-  font-family: ui-monospace, monospace;
+@keyframes md-search-result__meta {
+  0%, 33% {
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1);
+  }
+  66%, 100% {
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0);
+  }
 }
 
-/* Dark mode */
+/* Dark Theme */
 @media (prefers-color-scheme: dark) {
-  .search-dialog {
-    background: #1a1a1a;
-    border-color: #333;
-  }
-  
-  .search-trigger {
+  .md-search__inner {
     background: #2d2d2d;
-    border-color: #444;
-    color: #ccc;
+    color: rgba(255, 255, 255, 0.87);
   }
   
-  .search-trigger:hover {
-    background: #333;
-    border-color: #555;
-  }
-  
-  .search-input {
-    color: #fff;
-  }
-  
-  .search-result-item:hover,
-  .search-result-item.selected {
+  .md-search__form {
     background: #2d2d2d;
   }
   
-  .search-footer {
-    background: #2d2d2d;
-    border-color: #333;
+  .md-search__input {
+    color: rgba(255, 255, 255, 0.87);
+  }
+  
+  .md-search__input::placeholder {
+    color: rgba(255, 255, 255, 0.54);
+  }
+  
+  .md-search__icon {
+    color: rgba(255, 255, 255, 0.54);
+  }
+  
+  .md-search-result {
+    color: rgba(255, 255, 255, 0.87);
+  }
+  
+  .md-search-result__meta {
+    color: rgba(255, 255, 255, 0.54);
+    background: rgba(255, 255, 255, 0.035);
+  }
+  
+  .md-search-result__item {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  
+  .md-search-result__teaser {
+    color: rgba(255, 255, 255, 0.54);
   }
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .search-modal {
-    padding-top: 10vh;
+/* Mobile Responsive */
+@media screen and (max-width: 768px) {
+  .md-search__inner {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
   }
   
-  .search-trigger {
-    min-width: 200px;
+  .md-search__form {
+    border-radius: 0;
   }
   
-  .search-shortcut {
-    display: none;
+  .md-search__scrollwrap {
+    max-height: calc(100vh - 3.5rem);
   }
-  
-  .search-body {
-    max-height: 50vh;
-  }
+}
+
+/* Smooth transitions */
+* {
+  box-sizing: border-box;
+}
+
+.md-search__input:focus {
+  outline: none;
+}
+
+/* Hidden state */
+.md-search__output[hidden] {
+  display: none !important;
+}
+
+/* Loading state */
+.md-search-result[data-md-state="loading"] .md-search-result__meta {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.md-search-result[data-md-state="loading"] .md-search-result__list {
+  opacity: 0.5;
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const searchTrigger = document.getElementById('search-trigger');
-  const searchModal = document.getElementById('search-modal');
-  const searchBackdrop = document.getElementById('search-backdrop');
-  const searchClose = document.getElementById('search-close');
-  const searchInput = document.getElementById('search-input');
-  const searchResults = document.getElementById('search-results');
-  const searchDefault = document.getElementById('search-default');
-  const searchLoading = document.getElementById('search-loading');
-  const noResults = document.getElementById('no-results');
-  const postsResults = document.getElementById('posts-results');
-  const pagesResults = document.getElementById('pages-results');
-  const suggestionItems = document.querySelectorAll('.suggestion-item');
+  const searchContainer = document.querySelector('.md-search');
+  const searchInput = document.querySelector('.md-search__input');
+  const searchOverlay = document.querySelector('.md-search__overlay');
+  const searchReset = document.querySelector('.md-search__options button[type="reset"]');
+  const searchResult = document.querySelector('.md-search-result');
+  const searchMeta = document.querySelector('.md-search-result__meta');
+  const searchList = document.querySelector('.md-search-result__list');
+  const searchScrollwrap = document.querySelector('.md-search__scrollwrap');
 
   let searchTimeout;
   let selectedIndex = -1;
-  let currentResults = [];
+  let searchData = [];
 
-  // Mock data - replace with your actual content
-  const mockData = {
-    posts: [
-      {
-        title: "Why I started a blog",
-        path: "/posts/",
-        excerpt: "Know why I started this blog and what I hope to achieve",
-        url: "/_posts/2025-05-14-why-i-started-a-blog/"
-      },
-      {
-        title: "Flake it till you make it",
-        path: "/posts/",
-        excerpt: "Learn how to use Nix flakes effectively in your projects",
-        url: "/_posts/2020-02-26-flake-it-till-you-make-it/"
-      }
-    ],
-    pages: [
-      {
-        title: "About",
-        path: "/",
-        excerpt: "Learn more about this site and its purpose",
-        url: "/about/"
-      },
-      {
-        title: "Contact",
-        path: "/",
-        excerpt: "Get in touch with us for questions and support",
-        url: "/contact/"
-      }
-    ]
-  };
+  // Mock search data - replace with your actual data
+  const mockSearchData = [
+    {
+      title: "Getting Started",
+      url: "/getting-started/",
+      text: "Learn how to get started with this documentation. Installation, configuration, and first steps.",
+      type: "page"
+    },
+    {
+      title: "Configuration Guide",
+      url: "/configuration/",
+      text: "Complete guide to configuration options and advanced settings for your project.",
+      type: "page"
+    },
+    {
+      title: "API Reference",
+      url: "/api/",
+      text: "Complete API reference documentation with examples and detailed explanations.",
+      type: "page"
+    },
+    {
+      title: "Why I Started a Blog",
+      url: "/_posts/2025-05-14-why-i-started-a-blog/",
+      text: "Know why I started this blog and what I hope to achieve with it.",
+      type: "post"
+    },
+    {
+      title: "Advanced Examples",
+      url: "/examples/advanced/",
+      text: "Advanced usage examples and real-world scenarios for experienced users.",
+      type: "page"
+    }
+  ];
 
-  // Open search modal
+  // Initialize search data
+  searchData = mockSearchData;
+
+  // Open search
   function openSearch() {
-    searchModal.style.display = 'flex';
+    searchContainer.setAttribute('data-md-state', 'active');
     document.body.style.overflow = 'hidden';
-    setTimeout(() => searchInput.focus(), 100);
+    setTimeout(() => {
+      searchInput.focus();
+      updateSearchMeta('Type to start searching');
+    }, 250);
   }
 
-  // Close search modal
+  // Close search
   function closeSearch() {
-    searchModal.style.display = 'none';
+    searchContainer.removeAttribute('data-md-state');
     document.body.style.overflow = '';
     searchInput.value = '';
-    showDefault();
+    clearResults();
     selectedIndex = -1;
   }
 
-  // Show default state
-  function showDefault() {
-    searchResults.style.display = 'none';
-    searchLoading.style.display = 'none';
-    noResults.style.display = 'none';
-    searchDefault.style.display = 'block';
+  // Update search meta
+  function updateSearchMeta(text) {
+    searchMeta.textContent = text;
   }
 
-  // Show loading state
-  function showLoading() {
-    searchResults.style.display = 'none';
-    searchDefault.style.display = 'none';
-    noResults.style.display = 'none';
-    searchLoading.style.display = 'block';
+  // Clear results
+  function clearResults() {
+    searchList.innerHTML = '';
+    updateSearchMeta('Initializing search');
+    searchResult.removeAttribute('data-md-state');
   }
 
   // Highlight search terms
   function highlightText(text, query) {
     if (!query) return text;
     const regex = new RegExp(`(${query})`, 'gi');
-    return text.replace(regex, '<span class="search-highlight">$1</span>');
+    return text.replace(regex, '<mark>$1</mark>');
   }
 
-  // Search function
+  // Perform search
   function performSearch(query) {
     if (!query || query.length < 2) {
-      showDefault();
+      clearResults();
       return;
     }
 
-    showLoading();
+    // Show loading state
+    searchResult.setAttribute('data-md-state', 'loading');
+    searchScrollwrap.setAttribute('data-md-state', 'loading');
+    updateSearchMeta('Searching...');
 
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      const results = {
-        posts: mockData.posts.filter(item =>
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.excerpt.toLowerCase().includes(query.toLowerCase())
-        ),
-        pages: mockData.pages.filter(item =>
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.excerpt.toLowerCase().includes(query.toLowerCase())
-        )
-      };
+      const results = searchData.filter(item =>
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        item.text.toLowerCase().includes(query.toLowerCase())
+      );
 
       displayResults(results, query);
     }, 300);
@@ -593,57 +507,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Display search results
   function displayResults(results, query) {
-    searchLoading.style.display = 'none';
-    searchDefault.style.display = 'none';
+    searchResult.removeAttribute('data-md-state');
+    searchScrollwrap.removeAttribute('data-md-state');
 
-    const totalResults = results.posts.length + results.pages.length;
-
-    if (totalResults === 0) {
-      searchResults.style.display = 'none';
-      noResults.style.display = 'block';
-      currentResults = [];
+    if (results.length === 0) {
+      updateSearchMeta('No matching documents');
+      searchList.innerHTML = '';
       return;
     }
 
-    // Build current results array for navigation
-    currentResults = [
-      ...results.posts.map(item => ({...item, type: 'post'})),
-      ...results.pages.map(item => ({...item, type: 'page'}))
-    ];
+    updateSearchMeta(`${results.length} matching document${results.length !== 1 ? 's' : ''}`);
 
-    // Render posts
-    postsResults.innerHTML = results.posts.map(item => `
-      <a href="${item.url}" class="search-result-item" data-url="${item.url}">
-        <div class="search-result-title">${highlightText(item.title, query)}</div>
-        <div class="search-result-path">${item.path}</div>
-        <div class="search-result-excerpt">${highlightText(item.excerpt, query)}</div>
-      </a>
-    `).join('');
+    searchList.innerHTML = results.map((item, index) => {
+      const iconPath = item.type === 'post' ? 
+        'M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z' :
+        'M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z';
 
-    // Render pages
-    pagesResults.innerHTML = results.pages.map(item => `
-      <a href="${item.url}" class="search-result-item" data-url="${item.url}">
-        <div class="search-result-title">${highlightText(item.title, query)}</div>
-        <div class="search-result-path">${item.path}</div>
-        <div class="search-result-excerpt">${highlightText(item.excerpt, query)}</div>
-      </a>
-    `).join('');
+      return `
+        <li class="md-search-result__item" data-index="${index}">
+          <a href="${item.url}" class="md-search-result__link" data-index="${index}">
+            <article class="md-search-result__article md-search-result__article--document">
+              <svg class="md-search-result__icon md-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="${iconPath}"></path>
+              </svg>
+              <h1 class="md-search-result__title">${highlightText(item.title, query)}</h1>
+              <p class="md-search-result__teaser">${highlightText(item.text, query)}</p>
+            </article>
+          </a>
+        </li>
+      `;
+    }).join('');
 
-    searchResults.style.display = 'block';
-    noResults.style.display = 'none';
     selectedIndex = -1;
   }
 
-  // Keyboard navigation
+  // Update selection
   function updateSelection() {
-    const items = searchResults.querySelectorAll('.search-result-item');
+    const items = searchList.querySelectorAll('.md-search-result__link');
     items.forEach((item, index) => {
-      item.classList.toggle('selected', index === selectedIndex);
+      if (index === selectedIndex) {
+        item.setAttribute('data-md-state', 'active');
+        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        item.removeAttribute('data-md-state');
+      }
     });
   }
 
+  // Navigate results
   function navigateResults(direction) {
-    const items = searchResults.querySelectorAll('.search-result-item');
+    const items = searchList.querySelectorAll('.md-search-result__link');
     if (items.length === 0) return;
 
     if (direction === 'down') {
@@ -653,20 +566,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateSelection();
-
-    // Scroll selected item into view
-    if (selectedIndex >= 0) {
-      items[selectedIndex].scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest'
-      });
-    }
   }
 
+  // Select result
   function selectResult() {
-    const items = searchResults.querySelectorAll('.search-result-item');
+    const items = searchList.querySelectorAll('.md-search-result__link');
     if (selectedIndex >= 0 && items[selectedIndex]) {
-      const url = items[selectedIndex].getAttribute('data-url');
+      const url = items[selectedIndex].href;
       if (url) {
         window.location.href = url;
         closeSearch();
@@ -676,38 +582,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Event listeners
   searchTrigger.addEventListener('click', openSearch);
-  searchBackdrop.addEventListener('click', closeSearch);
-  searchClose.addEventListener('click', closeSearch);
+  searchOverlay.addEventListener('click', closeSearch);
+  
+  searchReset.addEventListener('click', (e) => {
+    e.preventDefault();
+    searchInput.value = '';
+    clearResults();
+    searchInput.focus();
+  });
 
   searchInput.addEventListener('input', (e) => {
     performSearch(e.target.value.trim());
   });
 
-  // Suggestion items
-  suggestionItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const query = item.getAttribute('data-query');
-      searchInput.value = query;
-      performSearch(query);
-    });
-  });
-
-  // Keyboard shortcuts
+  // Keyboard navigation
   document.addEventListener('keydown', (e) => {
-    // Open search with Cmd+K or Ctrl+K
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    // Open search with Ctrl+K or /
+    if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && e.target === document.body)) {
       e.preventDefault();
       openSearch();
     }
 
     // Close with Escape
-    if (e.key === 'Escape' && searchModal.style.display === 'flex') {
+    if (e.key === 'Escape' && searchContainer.hasAttribute('data-md-state')) {
       e.preventDefault();
       closeSearch();
     }
 
     // Navigation in search results
-    if (searchModal.style.display === 'flex') {
+    if (searchContainer.hasAttribute('data-md-state')) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         navigateResults('down');
@@ -722,15 +625,15 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Handle result clicks
-  searchResults.addEventListener('click', (e) => {
-    const resultItem = e.target.closest('.search-result-item');
-    if (resultItem) {
+  searchList.addEventListener('click', (e) => {
+    const link = e.target.closest('.md-search-result__link');
+    if (link) {
       closeSearch();
     }
   });
 
   // Initialize
-  showDefault();
+  updateSearchMeta('Initializing search');
 });
 </script>
 

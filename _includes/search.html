@@ -1,19 +1,157 @@
 {% if site.post_search %}
 
-<div id="beautifuljekyll-search-overlay">
+<!-- Modern Search Overlay -->
+<div class="modern-search-overlay" id="beautifuljekyll-search-overlay"></div>
 
-  <div id="nav-search-exit" title="Exit search">✕</div>
-  <input type="text" id="nav-search-input" placeholder="Search">
-  <ul id="search-results-container"></ul>
+<!-- Modern Search Wrapper -->
+<div class="modern-search-wrapper">
+  <div class="modern-search-container">
+    <div class="modern-search-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="21 21l-4.35-4.35"></path>
+      </svg>
+    </div>
+    <input 
+      type="text" 
+      id="nav-search-input" 
+      class="modern-search-input"
+      placeholder="Search posts, pages, and content..."
+      autocomplete="off"
+    >
+    <button class="modern-search-close" id="nav-search-exit" title="Clear search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
   
-  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
-  <script>
-    SimpleJekyllSearch({
-      searchInput: document.getElementById('nav-search-input'),
-      resultsContainer: document.getElementById('search-results-container'),
-      json: '{{ site.baseurl }}/assets/data/searchcorpus.json' 
-    });
-  </script>
+  <!-- Modern Search Results -->
+  <div class="modern-search-results" id="search-results-container-wrapper">
+    <div class="search-results-count" id="search-count" style="display: none;"></div>
+    <ul id="search-results-container"></ul>
+    <div class="no-results" id="no-results" style="display: none;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="21 21l-4.35-4.35"></path>
+      </svg>
+      <p><strong>No results found</strong></p>
+      <p>Try different keywords or check your spelling</p>
+    </div>
+  </div>
 </div>
+
+<!-- Search Shortcut Hint -->
+<div class="search-shortcut-hint">
+  Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to search
+</div>
+
+<script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchWrapper = document.querySelector('.modern-search-wrapper');
+  const searchInput = document.getElementById('nav-search-input');
+  const searchResults = document.querySelector('.modern-search-results');
+  const searchOverlay = document.querySelector('.modern-search-overlay');
+  const searchClose = document.getElementById('nav-search-exit');
+  const searchCount = document.getElementById('search-count');
+  const noResults = document.getElementById('no-results');
+  const resultsContainer = document.getElementById('search-results-container');
+
+  // Initialize Simple Jekyll Search
+  const sjs = SimpleJekyllSearch({
+    searchInput: searchInput,
+    resultsContainer: resultsContainer,
+    json: '{{ site.baseurl }}/assets/data/searchcorpus.json',
+    searchResultTemplate: '<li class="search-result-item"><a href="{url}"><div class="search-result-title">{title}</div><div class="search-result-excerpt">{excerpt}</div></a></li>',
+    noResultsText: '',
+    limit: 10,
+    fuzzy: false,
+    exclude: ['Welcome']
+  });
+
+  // Focus management
+  searchInput.addEventListener('focus', function() {
+    searchWrapper.classList.add('focused');
+    document.body.classList.add('search-active');
+  });
+
+  searchInput.addEventListener('blur', function() {
+    setTimeout(() => {
+      searchWrapper.classList.remove('focused');
+    }, 200);
+  });
+
+  // Search input handling
+  searchInput.addEventListener('input', function(e) {
+    const query = e.target.value.trim();
+    
+    if (query.length > 0) {
+      searchResults.style.display = 'block';
+      searchOverlay.style.display = 'block';
+      searchOverlay.classList.add('visible');
+      
+      // Wait for SimpleJekyllSearch to process
+      setTimeout(() => {
+        const resultItems = resultsContainer.querySelectorAll('li');
+        const resultCount = resultItems.length;
+        
+        if (resultCount > 0) {
+          searchCount.textContent = `${resultCount} result${resultCount !== 1 ? 's' : ''} found`;
+          searchCount.style.display = 'block';
+          noResults.style.display = 'none';
+        } else {
+          searchCount.style.display = 'none';
+          noResults.style.display = 'block';
+        }
+      }, 100);
+    } else {
+      hideSearch();
+    }
+  });
+
+  // Close search
+  function hideSearch() {
+    searchResults.style.display = 'none';
+    searchOverlay.style.display = 'none';
+    searchOverlay.classList.remove('visible');
+    document.body.classList.remove('search-active');
+    searchCount.style.display = 'none';
+    noResults.style.display = 'none';
+  }
+
+  searchClose.addEventListener('click', function() {
+    searchInput.value = '';
+    hideSearch();
+    searchInput.focus();
+  });
+
+  searchOverlay.addEventListener('click', function() {
+    hideSearch();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // Ctrl+K or Cmd+K to focus search
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+    }
+    
+    // Escape to close search
+    if (e.key === 'Escape') {
+      hideSearch();
+    }
+  });
+
+  // Highlight search terms
+  function highlightSearchTerms(text, term) {
+    if (!term) return text;
+    const regex = new RegExp(`(${term})`, 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
+  }
+});
+</script>
 
 {% endif %}

@@ -1,4 +1,4 @@
-{% if site.post_search %}
+<!-- {% if site.post_search %}
 
 <div id="beautifuljekyll-search-overlay">
 
@@ -15,5 +15,790 @@
     });
   </script>
 </div>
+
+{% endif %} -->
+
+{% if site.post_search %}
+
+<!-- Modern Search Trigger -->
+<div class="modern-search-trigger" id="search-trigger">
+  <div class="search-trigger-content">
+    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="M21 21l-4.35-4.35"></path>
+    </svg>
+    <span class="search-placeholder">Search posts and pages...</span>
+    <div class="search-shortcut">
+      <kbd>⌘K</kbd>
+    </div>
+  </div>
+</div>
+
+<!-- Modern Search Modal -->
+<div class="modern-search-modal" id="search-modal" style="display: none;">
+  <div class="search-backdrop"></div>
+  <div class="search-dialog">
+    
+    <!-- Search Header -->
+    <div class="search-header">
+      <div class="search-input-container">
+        <svg class="search-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="M21 21l-4.35-4.35"></path>
+        </svg>
+        <input 
+          type="text" 
+          class="modern-search-input" 
+          id="nav-search-input"
+          placeholder="Search for anything..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button class="search-clear" id="search-clear" style="display: none;" aria-label="Clear search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <button class="search-close" id="nav-search-exit" aria-label="Close search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Body -->
+    <div class="search-body">
+      
+      <!-- Quick Actions -->
+      <div class="search-quick-actions" id="quick-actions">
+        <div class="quick-action-title">Quick Actions</div>
+        <div class="quick-actions-grid">
+          <button class="quick-action" data-action="recent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12,6 12,12 16,14"></polyline>
+            </svg>
+            Recent Posts
+          </button>
+          <button class="quick-action" data-action="popular">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+            </svg>
+            Popular
+          </button>
+          <button class="quick-action" data-action="categories">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Categories
+          </button>
+          <button class="quick-action" data-action="tags">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            Tags
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Results -->
+      <div class="search-results-section" id="search-results-section" style="display: none;">
+        <div class="search-results-header">
+          <div class="results-count" id="results-count"></div>
+          <div class="search-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="posts">Posts</button>
+            <button class="filter-btn" data-filter="pages">Pages</button>
+          </div>
+        </div>
+        <div class="search-results-container">
+          <ul id="search-results-container"></ul>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="search-loading" id="search-loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Searching...</p>
+      </div>
+
+      <!-- No Results -->
+      <div class="search-no-results" id="search-no-results" style="display: none;">
+        <div class="no-results-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.35-4.35"></path>
+          </svg>
+        </div>
+        <h3>No results found</h3>
+        <p>Try different keywords or check your spelling</p>
+      </div>
+
+    </div>
+
+    <!-- Search Footer -->
+    <div class="search-footer">
+      <div class="search-tips">
+        <span class="tip"><kbd>↑↓</kbd> to navigate</span>
+        <span class="tip"><kbd>↵</kbd> to select</span>
+        <span class="tip"><kbd>esc</kbd> to close</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* Modern Search Styling */
+.modern-search-trigger {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.search-trigger-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 280px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-trigger-content:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.search-icon {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.search-placeholder {
+  flex: 1;
+  text-align: left;
+}
+
+.search-shortcut kbd {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, monospace;
+}
+
+/* Modern Search Modal */
+.modern-search-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.search-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.search-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 80vh;
+  margin: 0 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Search Header */
+.search-header {
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.search-input-icon {
+  color: #64748b;
+}
+
+.modern-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  color: #1e293b;
+  background: transparent;
+  padding: 4px 0;
+}
+
+.modern-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.search-clear,
+.search-close {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #64748b;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.search-clear:hover,
+.search-close:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+/* Search Body */
+.search-body {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+/* Quick Actions */
+.search-quick-actions {
+  padding: 20px;
+}
+
+.quick-action-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.quick-action:hover {
+  background: #e0e7ff;
+  border-color: #c7d2fe;
+  color: #3730a3;
+  transform: translateY(-1px);
+}
+
+/* Search Results */
+.search-results-section {
+  padding: 0 20px 20px;
+}
+
+.search-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.results-count {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.search-filters {
+  display: flex;
+  gap: 4px;
+}
+
+.filter-btn {
+  padding: 6px 12px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.search-results-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#search-results-container {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-result-item {
+  display: block;
+  padding: 16px;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  border-color: #e0e7ff;
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.search-result-excerpt {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-result-meta {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+
+.search-highlight {
+  background: linear-gradient(120deg, #fbbf24 0%, #f59e0b 100%);
+  color: #92400e;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Loading State */
+.search-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  color: #64748b;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f1f5f9;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* No Results */
+.search-no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748b;
+}
+
+.no-results-icon {
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.search-no-results h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #334155;
+}
+
+.search-no-results p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Search Footer */
+.search-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #f8fafc;
+}
+
+.search-tips {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.tip kbd {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: -apple-system, BlinkMacSystemFont, monospace;
+  font-size: 11px;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .search-dialog {
+    background: #1e293b;
+    color: #e2e8f0;
+  }
+  
+  .search-header {
+    border-color: #334155;
+  }
+  
+  .modern-search-input {
+    color: #e2e8f0;
+  }
+  
+  .modern-search-input::placeholder {
+    color: #64748b;
+  }
+  
+  .quick-action {
+    background: #334155;
+    border-color: #475569;
+    color: #cbd5e1;
+  }
+  
+  .quick-action:hover {
+    background: #4338ca;
+    border-color: #6366f1;
+    color: #e0e7ff;
+  }
+  
+  .search-result-item {
+    border-color: #334155;
+  }
+  
+  .search-result-item:hover {
+    background: #334155;
+    border-color: #6366f1;
+  }
+  
+  .search-footer {
+    background: #334155;
+    border-color: #475569;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .modern-search-modal {
+    padding-top: 10vh;
+  }
+  
+  .search-dialog {
+    margin: 0 10px;
+    max-height: 90vh;
+  }
+  
+  .search-trigger-content {
+    min-width: 200px;
+  }
+  
+  .search-shortcut {
+    display: none;
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .search-tips {
+    font-size: 11px;
+    gap: 12px;
+  }
+}
+</style>
+
+<script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchTrigger = document.getElementById('search-trigger');
+  const searchModal = document.getElementById('search-modal');
+  const searchInput = document.getElementById('nav-search-input');
+  const searchClear = document.getElementById('search-clear');
+  const searchClose = document.getElementById('nav-search-exit');
+  const searchBackdrop = document.querySelector('.search-backdrop');
+  const quickActions = document.getElementById('quick-actions');
+  const searchResultsSection = document.getElementById('search-results-section');
+  const searchLoading = document.getElementById('search-loading');
+  const searchNoResults = document.getElementById('search-no-results');
+  const resultsCount = document.getElementById('results-count');
+  const searchResults = document.getElementById('search-results-container');
+
+  let searchInstance;
+  let searchTimeout;
+  let selectedIndex = -1;
+
+  // Initialize SimpleJekyllSearch
+  searchInstance = SimpleJekyllSearch({
+    searchInput: searchInput,
+    resultsContainer: searchResults,
+    json: '{{ site.baseurl }}/assets/data/searchcorpus.json',
+    searchResultTemplate: '<li class="search-result-item" data-url="{url}"><div class="search-result-title">{title}</div><div class="search-result-excerpt">{excerpt}</div><div class="search-result-meta"><span>{category}</span><span>{date}</span></div></li>',
+    noResultsText: '',
+    limit: 20,
+    fuzzy: false,
+    exclude: ['excerpt']
+  });
+
+  // Open search modal
+  function openSearch() {
+    searchModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => {
+      searchInput.focus();
+    }, 100);
+  }
+
+  // Close search modal
+  function closeSearch() {
+    searchModal.style.display = 'none';
+    document.body.style.overflow = '';
+    searchInput.value = '';
+    showQuickActions();
+    selectedIndex = -1;
+  }
+
+  // Show quick actions
+  function showQuickActions() {
+    quickActions.style.display = 'block';
+    searchResultsSection.style.display = 'none';
+    searchLoading.style.display = 'none';
+    searchNoResults.style.display = 'none';
+    searchClear.style.display = 'none';
+  }
+
+  // Show search results
+  function showResults(query) {
+    quickActions.style.display = 'none';
+    searchResultsSection.style.display = 'block';
+    searchLoading.style.display = 'none';
+    searchNoResults.style.display = 'none';
+    searchClear.style.display = searchInput.value ? 'block' : 'none';
+    
+    // Update results count
+    const resultItems = searchResults.querySelectorAll('.search-result-item');
+    if (resultItems.length > 0) {
+      resultsCount.textContent = `${resultItems.length} result${resultItems.length !== 1 ? 's' : ''} found`;
+    } else {
+      showNoResults();
+    }
+  }
+
+  // Show no results
+  function showNoResults() {
+    quickActions.style.display = 'none';
+    searchResultsSection.style.display = 'none';
+    searchLoading.style.display = 'none';
+    searchNoResults.style.display = 'block';
+  }
+
+  // Show loading
+  function showLoading() {
+    quickActions.style.display = 'none';
+    searchResultsSection.style.display = 'none';
+    searchLoading.style.display = 'block';
+    searchNoResults.style.display = 'none';
+  }
+
+  // Perform search with debouncing
+  function performSearch(query) {
+    if (!query || query.length < 2) {
+      showQuickActions();
+      return;
+    }
+
+    showLoading();
+    
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      // SimpleJekyllSearch will handle the actual searching
+      // We just need to show results after a brief delay
+      setTimeout(() => {
+        showResults(query);
+        // Highlight search terms
+        highlightSearchTerms(query);
+      }, 200);
+    }, 300);
+  }
+
+  // Highlight search terms in results
+  function highlightSearchTerms(query) {
+    const resultItems = searchResults.querySelectorAll('.search-result-item');
+    resultItems.forEach(item => {
+      const title = item.querySelector('.search-result-title');
+      const excerpt = item.querySelector('.search-result-excerpt');
+      
+      if (title) {
+        title.innerHTML = highlightText(title.textContent, query);
+      }
+      if (excerpt) {
+        excerpt.innerHTML = highlightText(excerpt.textContent, query);
+      }
+    });
+  }
+
+  // Highlight text helper
+  function highlightText(text, query) {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<span class="search-highlight">$1</span>');
+  }
+
+  // Event listeners
+  searchTrigger.addEventListener('click', openSearch);
+  searchClose.addEventListener('click', closeSearch);
+  searchBackdrop.addEventListener('click', closeSearch);
+  
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    showQuickActions();
+    searchInput.focus();
+  });
+
+  searchInput.addEventListener('input', (e) => {
+    performSearch(e.target.value.trim());
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      openSearch();
+    }
+    
+    if (e.key === 'Escape' && searchModal.style.display === 'flex') {
+      e.preventDefault();
+      closeSearch();
+    }
+  });
+
+  // Quick action handlers
+  document.querySelectorAll('.quick-action').forEach(button => {
+    button.addEventListener('click', () => {
+      const action = button.dataset.action;
+      // You can implement specific quick actions here
+      console.log(`Quick action: ${action}`);
+    });
+  });
+
+  // Filter handlers
+  document.querySelectorAll('.filter-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      // Implement filtering logic here
+    });
+  });
+
+  // Result click handler
+  searchResults.addEventListener('click', (e) => {
+    const resultItem = e.target.closest('.search-result-item');
+    if (resultItem) {
+      const url = resultItem.dataset.url;
+      if (url) {
+        window.location.href = url;
+      }
+    }
+  });
+
+  // Initialize
+  showQuickActions();
+});
+</script>
 
 {% endif %}

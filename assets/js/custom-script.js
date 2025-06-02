@@ -36,17 +36,25 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add loading animation
   document.body.classList.add('page-loading');
   
-  // Smooth scroll for anchor links
+    // Smooth scroll for anchor links
   const links = document.querySelectorAll('a[href^="#"]');
   links.forEach(link => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+      const href = this.getAttribute('href');
+      // Add validation for the href value
+      if (href && href.length > 1) {
+        try {
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        } catch (error) {
+          console.warn('Invalid selector for smooth scroll:', href, error);
+        }
       }
     });
   });
@@ -122,27 +130,6 @@ window.addEventListener('load', function() {
     console.log('Typing effect applied to title');
   }
 });
-
-// Error handling and feature detection
-(function() {
-  'use strict';
-  
-  // Error handling for smooth scroll
-  if (!('scrollBehavior' in document.documentElement.style)) {
-    console.warn('Smooth scrolling not supported');
-  }
-  
-  // Global error handler for debugging
-  window.addEventListener('error', function(e) {
-    console.error('JavaScript error:', e.error);
-  });
-  
-  // Unhandled promise rejection handler
-  window.addEventListener('unhandledrejection', function(e) {
-    console.error('Unhandled promise rejection:', e.reason);
-  });
-  
-})();
 
 // Add this temporarily to debug
 setTimeout(() => {

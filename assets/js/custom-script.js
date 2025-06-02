@@ -29,6 +29,63 @@ function typeWriter(element, text, speed = 100) {
   type();
 }
 
+// Search functionality
+function initializeSearch() {
+  const searchTrigger = document.getElementById('search-trigger');
+  const searchModal = document.getElementById('search-modal');
+  const searchBackdrop = document.getElementById('search-backdrop');
+  const searchInput = document.getElementById('nav-search-input');
+  
+  if (!searchTrigger || !searchModal) {
+    console.log('Search elements not found, skipping search initialization');
+    return;
+  }
+  
+  // Open search modal
+  function openSearch() {
+    searchModal.style.display = 'flex';
+    setTimeout(() => {
+      searchModal.classList.add('active');
+      if (searchInput) {
+        searchInput.focus();
+      }
+    }, 10);
+    document.body.style.overflow = 'hidden';
+  }
+  
+  // Close search modal
+  function closeSearch() {
+    searchModal.classList.remove('active');
+    setTimeout(() => {
+      searchModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 300);
+  }
+  
+  // Event listeners
+  searchTrigger.addEventListener('click', openSearch);
+  
+  if (searchBackdrop) {
+    searchBackdrop.addEventListener('click', closeSearch);
+  }
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // Open search with Ctrl+K or Cmd+K
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      openSearch();
+    }
+    
+    // Close search with Escape
+    if (e.key === 'Escape' && searchModal.classList.contains('active')) {
+      closeSearch();
+    }
+  });
+  
+  console.log('Search functionality initialized');
+}
+
 // Main initialization
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Custom script initializing...');
@@ -36,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add loading animation
   document.body.classList.add('page-loading');
   
-    // Smooth scroll for anchor links
+  // Smooth scroll for anchor links
   const links = document.querySelectorAll('a[href^="#"]');
   links.forEach(link => {
     link.addEventListener('click', function(e) {
@@ -59,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  // Throttled navbar scroll effect (SINGLE IMPLEMENTATION)
+  // Throttled navbar scroll effect
   const navbar = document.querySelector('.navbar');
   if (navbar) {
     const handleScroll = throttle(function() {
@@ -112,29 +169,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Remove loading class after page is fully loaded
-  window.addEventListener('load', function() {
-    document.body.classList.remove('page-loading');
-    console.log('Page loading complete');
-  });
+  // Initialize search functionality
+  initializeSearch();
   
   console.log('Custom script initialization complete');
 });
 
-// Apply typing effect to main title after page loads
+// Apply typing effect and remove loading after page loads - SINGLE HANDLER
 window.addEventListener('load', function() {
+  // Remove loading class
+  document.body.classList.remove('page-loading');
+  
+  // Apply typing effect to main title
   const mainTitle = document.querySelector('.intro-header h1');
   if (mainTitle && mainTitle.textContent) {
     const originalText = mainTitle.textContent;
     typeWriter(mainTitle, originalText, 80);
     console.log('Typing effect applied to title');
   }
+  
+  // Debug search elements
+  setTimeout(() => {
+    console.log('Debug check:');
+    console.log('Search trigger:', document.getElementById('search-trigger'));
+    console.log('Search modal:', document.getElementById('search-modal'));
+    console.log('Search input:', document.getElementById('nav-search-input'));
+  }, 1000);
+  
+  console.log('Page loading complete');
 });
 
-// Add this temporarily to debug
-setTimeout(() => {
-  console.log('Debug check:');
-  console.log('Search trigger:', document.getElementById('search-trigger'));
-  console.log('Search modal:', document.getElementById('search-modal'));
-  console.log('Search input:', document.getElementById('nav-search-input'));
-}, 2000);
+// Add error handling for uncaught errors
+window.addEventListener('error', function(e) {
+  console.error('JavaScript error:', e.error);
+});

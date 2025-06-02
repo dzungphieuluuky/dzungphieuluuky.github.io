@@ -36,7 +36,7 @@
 
 <!-- Modern Search Modal -->
 <div class="modern-search-modal" id="search-modal" style="display: none;">
-  <div class="search-backdrop"></div>
+  <div class="search-backdrop" id="search-backdrop"></div>
   <div class="search-dialog">
     
     <!-- Search Header -->
@@ -215,18 +215,14 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: 15vh;
-  animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.modern-search-modal.active {
+  opacity: 1;
+  visibility: visible;
 }
 
 .search-backdrop {
@@ -251,6 +247,12 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transform: scale(0.9) translateY(-20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-search-modal.active .search-dialog {
+  transform: scale(1) translateY(0);
 }
 
 /* Search Header */
@@ -605,13 +607,24 @@
 
 <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// Improved search initialization
+function initializeSearch() {
+  console.log('Initializing search...');
+  
+  // Wait for SimpleJekyllSearch to be available
+  if (typeof SimpleJekyllSearch === 'undefined') {
+    console.log('SimpleJekyllSearch not ready, retrying...');
+    setTimeout(initializeSearch, 200);
+    return;
+  }
+  
+  // Get elements
   const searchTrigger = document.getElementById('search-trigger');
   const searchModal = document.getElementById('search-modal');
   const searchInput = document.getElementById('nav-search-input');
   const searchClear = document.getElementById('search-clear');
   const searchClose = document.getElementById('nav-search-exit');
-  const searchBackdrop = document.querySelector('.search-backdrop');
+  const searchBackdrop = document.getElementById('search-backdrop');
   const quickActions = document.getElementById('quick-actions');
   const searchResultsSection = document.getElementById('search-results-section');
   const searchLoading = document.getElementById('search-loading');
@@ -619,80 +632,116 @@ document.addEventListener('DOMContentLoaded', function() {
   const resultsCount = document.getElementById('results-count');
   const searchResults = document.getElementById('search-results-container');
 
+  // Debug: Log which elements were found
+  console.log('Elements found:', {
+    searchTrigger: !!searchTrigger,
+    searchModal: !!searchModal,
+    searchInput: !!searchInput,
+    searchResults: !!searchResults
+  });
+
+  if (!searchTrigger || !searchModal || !searchInput || !searchResults) {
+    console.error('Required search elements not found!');
+    return;
+  }
+
   let searchInstance;
   let searchTimeout;
-  let selectedIndex = -1;
+  let isSearchReady = false;
 
   // Initialize SimpleJekyllSearch
-  searchInstance = SimpleJekyllSearch({
-    searchInput: searchInput,
-    resultsContainer: searchResults,
-    json: '{{ site.baseurl }}/assets/data/searchcorpus.json',
-    searchResultTemplate: '<li class="search-result-item" data-url="{url}"><div class="search-result-title">{title}</div><div class="search-result-excerpt">{excerpt}</div><div class="search-result-meta"><span>{category}</span><span>{date}</span></div></li>',
-    noResultsText: '',
-    limit: 20,
-    fuzzy: false,
-    exclude: ['excerpt']
-  });
+  try {
+    searchInstance = SimpleJekyllSearch({
+      searchInput: searchInput,
+      resultsContainer: searchResults,
+      json: '{{ site.baseurl }}/assets/data/searchcorpus.json',
+      searchResultTemplate: '<li class="search-result-item" data-url="{url}"><div class="search-result-title">{title}</div><div class="search-result-excerpt">{excerpt}</div><div class="search-result-meta"><span>{category}</span><span>{date}</span></div></li>',
+      noResultsText: '',
+      limit: 20,
+      fuzzy: false,
+      exclude: ['excerpt'],
+      success: function() {
+        console.log('Search data loaded successfully');
+        isSearchReady = true;
+      },
+      error: function(error) {
+        console.error('Search initialization error:', error);
+      }
+    });
+    console.log('SimpleJekyllSearch initialized');
+  } catch (error) {
+    console.error('Error initializing search:', error);
+  }
 
   // Open search modal
   function openSearch() {
-    searchModal.style.display = 'flex';
+    console.log('Opening search modal');
+    searchModal.classList.add('active');
     document.body.style.overflow = 'hidden';
     setTimeout(() => {
-      searchInput.focus();
-    }, 100);
+      if (searchInput) searchInput.focus();
+    }, 150);
   }
 
   // Close search modal
   function closeSearch() {
-    searchModal.style.display = 'none';
+    console.log('Closing search modal');
+    searchModal.classList.remove('active');
     document.body.style.overflow = '';
-    searchInput.value = '';
+    if (searchInput) searchInput.value = '';
     showQuickActions();
-    selectedIndex = -1;
   }
 
   // Show quick actions
   function showQuickActions() {
-    quickActions.style.display = 'block';
-    searchResultsSection.style.display = 'none';
-    searchLoading.style.display = 'none';
-    searchNoResults.style.display = 'none';
-    searchClear.style.display = 'none';
+    if (quickActions) quickActions.style.display = 'block';
+    if (searchResultsSection) searchResultsSection.style.display = 'none';
+    if (searchLoading) searchLoading.style.display = 'none';
+    if (searchNoResults) searchNoResults.style.display = 'none';
+    if (searchClear) searchClear.style.display = 'none';
   }
 
   // Show search results
   function showResults(query) {
-    quickActions.style.display = 'none';
-    searchResultsSection.style.display = 'block';
-    searchLoading.style.display = 'none';
-    searchNoResults.style.display = 'none';
-    searchClear.style.display = searchInput.value ? 'block' : 'none';
+    if (quickActions) quickActions.style.display = 'none';
+    if (searchResultsSection) searchResultsSection.style.display = 'block';
+    if (searchLoading) searchLoading.style.display = 'none';
+    if (searchNoResults) searchNoResults.style.display = 'none';
+    if (searchClear) searchClear.style.display = searchInput.value ? 'block' : 'none';
     
-    // Update results count
-    const resultItems = searchResults.querySelectorAll('.search-result-item');
-    if (resultItems.length > 0) {
-      resultsCount.textContent = `${resultItems.length} result${resultItems.length !== 1 ? 's' : ''} found`;
-    } else {
-      showNoResults();
+    // Update results count after a brief delay
+    setTimeout(() => {
+      updateResultsCount();
+    }, 100);
+  }
+
+  // Update results count
+  function updateResultsCount() {
+    if (resultsCount && searchResults) {
+      const resultItems = searchResults.querySelectorAll('.search-result-item');
+      if (resultItems.length > 0) {
+        resultsCount.textContent = `${resultItems.length} result${resultItems.length !== 1 ? 's' : ''} found`;
+        highlightSearchTerms(searchInput.value);
+      } else if (searchInput.value.length >= 2) {
+        showNoResults();
+      }
     }
   }
 
   // Show no results
   function showNoResults() {
-    quickActions.style.display = 'none';
-    searchResultsSection.style.display = 'none';
-    searchLoading.style.display = 'none';
-    searchNoResults.style.display = 'block';
+    if (quickActions) quickActions.style.display = 'none';
+    if (searchResultsSection) searchResultsSection.style.display = 'none';
+    if (searchLoading) searchLoading.style.display = 'none';
+    if (searchNoResults) searchNoResults.style.display = 'block';
   }
 
   // Show loading
   function showLoading() {
-    quickActions.style.display = 'none';
-    searchResultsSection.style.display = 'none';
-    searchLoading.style.display = 'block';
-    searchNoResults.style.display = 'none';
+    if (quickActions) quickActions.style.display = 'none';
+    if (searchResultsSection) searchResultsSection.style.display = 'none';
+    if (searchLoading) searchLoading.style.display = 'block';
+    if (searchNoResults) searchNoResults.style.display = 'none';
   }
 
   // Perform search with debouncing
@@ -702,31 +751,36 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    if (!isSearchReady) {
+      showLoading();
+      setTimeout(() => performSearch(query), 500);
+      return;
+    }
+
     showLoading();
     
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      // SimpleJekyllSearch will handle the actual searching
-      // We just need to show results after a brief delay
+      // Allow SimpleJekyllSearch to process the search
       setTimeout(() => {
         showResults(query);
-        // Highlight search terms
-        highlightSearchTerms(query);
-      }, 200);
+      }, 100);
     }, 300);
   }
 
   // Highlight search terms in results
   function highlightSearchTerms(query) {
+    if (!searchResults || !query) return;
+    
     const resultItems = searchResults.querySelectorAll('.search-result-item');
     resultItems.forEach(item => {
       const title = item.querySelector('.search-result-title');
       const excerpt = item.querySelector('.search-result-excerpt');
       
-      if (title) {
+      if (title && title.textContent) {
         title.innerHTML = highlightText(title.textContent, query);
       }
-      if (excerpt) {
+      if (excerpt && excerpt.textContent) {
         excerpt.innerHTML = highlightText(excerpt.textContent, query);
       }
     });
@@ -734,34 +788,76 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Highlight text helper
   function highlightText(text, query) {
-    if (!query) return text;
-    const regex = new RegExp(`(${query})`, 'gi');
+    if (!query || !text) return text;
+    const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
     return text.replace(regex, '<span class="search-highlight">$1</span>');
   }
 
-  // Event listeners
-  searchTrigger.addEventListener('click', openSearch);
-  searchClose.addEventListener('click', closeSearch);
-  searchBackdrop.addEventListener('click', closeSearch);
-  
-  searchClear.addEventListener('click', () => {
-    searchInput.value = '';
-    showQuickActions();
-    searchInput.focus();
-  });
+  // Escape special regex characters
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
 
-  searchInput.addEventListener('input', (e) => {
-    performSearch(e.target.value.trim());
-  });
+  // Add event listeners with error handling
+  console.log('Adding event listeners...');
+  
+  // Search trigger click
+  if (searchTrigger) {
+    searchTrigger.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Search trigger clicked');
+      openSearch();
+    });
+  }
+
+  // Search close click
+  if (searchClose) {
+    searchClose.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeSearch();
+    });
+  }
+
+  // Backdrop click
+  if (searchBackdrop) {
+    searchBackdrop.addEventListener('click', function(e) {
+      if (e.target === searchBackdrop) {
+        closeSearch();
+      }
+    });
+  }
+  
+  // Clear button click
+  if (searchClear) {
+    searchClear.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      searchInput.value = '';
+      showQuickActions();
+      searchInput.focus();
+    });
+  }
+
+  // Search input
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      const query = e.target.value.trim();
+      performSearch(query);
+    });
+  }
 
   // Keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', function(e) {
+    // CMD/CTRL + K to open search
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
       openSearch();
     }
     
-    if (e.key === 'Escape' && searchModal.style.display === 'flex') {
+    // Escape to close search
+    if (e.key === 'Escape' && searchModal.classList.contains('active')) {
       e.preventDefault();
       closeSearch();
     }
@@ -769,36 +865,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Quick action handlers
   document.querySelectorAll('.quick-action').forEach(button => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
       const action = button.dataset.action;
-      // You can implement specific quick actions here
       console.log(`Quick action: ${action}`);
+      // Add specific logic for each quick action here
+      switch(action) {
+        case 'recent':
+          searchInput.value = '';
+          // Implement recent posts logic
+          break;
+        case 'popular':
+          searchInput.value = '';
+          // Implement popular posts logic
+          break;
+        case 'categories':
+          searchInput.value = 'category:';
+          searchInput.focus();
+          break;
+        case 'tags':
+          searchInput.value = 'tag:';
+          searchInput.focus();
+          break;
+      }
     });
   });
 
   // Filter handlers
   document.querySelectorAll('.filter-btn').forEach(button => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       button.classList.add('active');
-      // Implement filtering logic here
+      
+      // Re-perform search with current filter
+      if (searchInput.value) {
+        performSearch(searchInput.value);
+      }
     });
   });
 
   // Result click handler
-  searchResults.addEventListener('click', (e) => {
-    const resultItem = e.target.closest('.search-result-item');
-    if (resultItem) {
-      const url = resultItem.dataset.url;
-      if (url) {
-        window.location.href = url;
+  if (searchResults) {
+    searchResults.addEventListener('click', function(e) {
+      const resultItem = e.target.closest('.search-result-item');
+      if (resultItem) {
+        const url = resultItem.dataset.url;
+        if (url) {
+          window.location.href = url;
+        }
       }
-    }
-  });
+    });
+  }
 
-  // Initialize
+  // Initialize default state
   showQuickActions();
-});
+  console.log('Search initialization complete');
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeSearch);
+} else {
+  initializeSearch();
+}
 </script>
 
 {% endif %}

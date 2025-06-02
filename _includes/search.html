@@ -19,7 +19,7 @@
       placeholder="Search posts, pages, and content..."
       autocomplete="off"
     >
-    <button class="modern-search-close" id="nav-search-exit" title="Clear search">
+    <button type="button" class="modern-search-close" id="nav-search-exit" title="Clear search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -59,6 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const noResults = document.getElementById('no-results');
   const resultsContainer = document.getElementById('search-results-container');
 
+  // Check if elements exist
+  if (!searchInput || !searchResults || !searchOverlay) {
+    console.warn('Search elements not found');
+    return;
+  }
+
   // Initialize Simple Jekyll Search
   const sjs = SimpleJekyllSearch({
     searchInput: searchInput,
@@ -72,19 +78,24 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Focus management
-  searchInput.addEventListener('focus', function() {
+  searchInput.addEventListener('focus', function(e) {
+    e.stopPropagation();
     searchWrapper.classList.add('focused');
     document.body.classList.add('search-active');
   });
 
-  searchInput.addEventListener('blur', function() {
+  searchInput.addEventListener('blur', function(e) {
+    e.stopPropagation();
     setTimeout(() => {
-      searchWrapper.classList.remove('focused');
+      if (!searchWrapper.contains(document.activeElement)) {
+        searchWrapper.classList.remove('focused');
+      }
     }, 200);
   });
 
   // Search input handling
   searchInput.addEventListener('input', function(e) {
+    e.stopPropagation();
     const query = e.target.value.trim();
     
     if (query.length > 0) {
@@ -111,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Close search
+  // Close search function
   function hideSearch() {
     searchResults.style.display = 'none';
     searchOverlay.style.display = 'none';
@@ -119,38 +130,66 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.classList.remove('search-active');
     searchCount.style.display = 'none';
     noResults.style.display = 'none';
+    searchWrapper.classList.remove('focused');
   }
 
-  searchClose.addEventListener('click', function() {
-    searchInput.value = '';
+  // Clear search button
+  if (searchClose) {
+    searchClose.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      searchInput.value = '';
+      hideSearch();
+      searchInput.focus();
+    });
+  }
+
+  // Overlay click to close
+  searchOverlay.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
     hideSearch();
-    searchInput.focus();
   });
 
-  searchOverlay.addEventListener('click', function() {
-    hideSearch();
-  });
+  // Prevent form submission if search is in a form
+  const searchForm = searchInput.closest('form');
+  if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      return false;
+    });
+  }
 
   // Keyboard shortcuts
   document.addEventListener('keydown', function(e) {
     // Ctrl+K or Cmd+K to focus search
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
+      e.stopPropagation();
       searchInput.focus();
     }
     
     // Escape to close search
     if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
       hideSearch();
     }
   });
 
-  // Highlight search terms
-  function highlightSearchTerms(text, term) {
-    if (!term) return text;
-    const regex = new RegExp(`(${term})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
-  }
+  // Prevent clicks inside search results from closing
+  searchResults.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+
+  // Handle result clicks
+  resultsContainer.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    if (link) {
+      hideSearch();
+      // Let the link navigate normally
+    }
+  });
 });
 </script>
 

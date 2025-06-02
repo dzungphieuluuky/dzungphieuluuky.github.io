@@ -153,14 +153,3 @@ function typeWriter(element, text, speed = 100) {
   }
   type();
 }
-
-// Apply typing effect to main title if exists
-window.addEventListener('load', function() {
-  const mainTitle = document.querySelector('.intro-header h1');
-  if (mainTitle && mainTitle.textContent) {
-    const originalText = mainTitle.textContent;
-    typeWriter(mainTitle, originalText, 80);
-  }
-});
-
-// Remove all the search-related code from here since it's handled in search.html

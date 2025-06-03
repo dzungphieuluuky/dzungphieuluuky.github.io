@@ -144,8 +144,8 @@ keywords: "blog,programming,tutorials,tech,personal"
 
 # Enhanced search settings
 post_search: true
-search_placeholder: "Search posts, tags, or content..."
-search_results_limit: 10
+search_placeholder: "Accio! Search for anything..."
+search_results_limit: 15
 
 # Modern dark theme with vibrant accents
 page-col: "#ffffff"
@@ -313,7 +313,6 @@ plugins:
   - jekyll-sitemap
   - jekyll-feed
 
-post_search: true # Enable search functionality for posts
 # Beautiful Jekyll / Dean Attali
 # 2fc73a3a967e97599c9763d05e564189
 

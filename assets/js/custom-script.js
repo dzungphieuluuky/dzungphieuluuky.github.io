@@ -51,7 +51,8 @@ const ModernSearch = {
   loadSearchData: async function() {
     try {
       // Try to fetch search data from Jekyll's search corpus (Beautiful Jekyll format)
-      const response = await fetch('{{ site.baseurl }}/assets/data/searchcorpus.json');
+      const baseurl = document.querySelector('meta[name="baseurl"]')?.content || '';
+      const response = await fetch(`${baseurl}/assets/data/searchcorpus.json`);
       if (response.ok) {
         this.searchData = await response.json();
         console.log('Search data loaded:', this.searchData.length, 'items');

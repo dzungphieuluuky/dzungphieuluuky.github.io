@@ -71,23 +71,24 @@ body {
   border-color: #64b5f6;
 }
 
-/* Blog post titles - Harmonized colors */
+/* Blog post titles - Fixed for dark background */
 .post-preview .post-title a,
 .post-preview h2 a,
 .post-preview h3 a {
-  color: #2c3e50;
+  color: #e3f2fd !important; /* Light text for dark background */
   position: relative;
   text-decoration: none;
   transition: color 0.3s ease;
+  font-weight: 600;
 }
 
 .post-preview .post-title a:hover,
 .post-preview h2 a:hover,
 .post-preview h3 a:hover {
-  color: #667eea;
+  color: #64b5f6 !important; /* Blue hover for dark theme */
 }
 
-/* Animated underlines for post titles - Matching navbar style */
+/* Animated underlines for post titles - Fixed colors */
 .post-preview .post-title a::after,
 .post-preview h2 a::after,
 .post-preview h3 a::after {
@@ -97,7 +98,7 @@ body {
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
   transition: width 0.3s ease;
 }
 
@@ -107,83 +108,83 @@ body {
   width: 100%;
 }
 
-/* Blog post content - Subtle color adjustments */
+/* Blog post content - Fixed for dark background */
 .post-preview .post-content,
 .post-preview .post-excerpt,
 .post-preview p {
-  color: #5a6c7d;
+  color: #90caf9 !important; /* Light blue text for readability */
   line-height: 1.6;
 }
 
-/* Blog post meta - Harmonized with theme */
+/* Blog post meta - Fixed for dark background */
 .post-preview .post-meta,
 .post-preview .blog-post-meta {
-  color: #667eea;
+  color: #64b5f6 !important; /* Blue for meta information */
   font-size: 0.9em;
   opacity: 0.8;
 }
 
 .post-preview .post-meta a {
-  color: #764ba2;
+  color: #42a5f5 !important; /* Lighter blue for links */
   text-decoration: none;
 }
 
 .post-preview .post-meta a:hover {
-  color: #667eea;
+  color: #64b5f6 !important;
   text-decoration: underline;
 }
 
-/* Tags - Matching theme colors */
+/* Tags - Fixed for dark background */
 .post-preview .blog-tags a,
 .post-preview .post-tags a {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  color: #667eea;
+  background: rgba(100, 181, 246, 0.2) !important;
+  color: #64b5f6 !important;
   padding: 4px 12px;
   border-radius: 15px;
   font-size: 0.8em;
   margin-right: 8px;
   margin-bottom: 5px;
   text-decoration: none;
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(100, 181, 246, 0.3);
   transition: all 0.3s ease;
   display: inline-block;
 }
 
 .post-preview .blog-tags a:hover,
 .post-preview .post-tags a:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #64b5f6 !important;
+  color: #0f1419 !important; /* Dark text on bright background */
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
 }
 
-/* Read more links - Harmonized styling */
+/* Read more links - Fixed for dark background */
 .post-preview .read-more,
 .post-preview a[href*="read-more"] {
-  color: #667eea;
+  color: #64b5f6 !important;
   font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
   display: inline-block;
   padding: 8px 16px;
-  border: 1px solid #667eea;
+  border: 1px solid #64b5f6;
   border-radius: 20px;
   margin-top: 15px;
   background: transparent;
 }
 
 .post-preview .read-more:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #64b5f6 !important;
+  color: #0f1419 !important; /* Dark text on bright background */
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(100, 181, 246, 0.4);
 }
 
-/* Pagination - Harmonized with theme */
+/* Pagination - Fixed for dark theme */
 .pagination .page-item .page-link {
-  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  color: #667eea;
+  background: rgba(26, 35, 126, 0.2) !important;
+  border: 1px solid rgba(100, 181, 246, 0.3) !important;
+  color: #64b5f6 !important;
   border-radius: 8px;
   margin: 0 5px;
   padding: 10px 15px;
@@ -192,11 +193,11 @@ body {
 
 .pagination .page-item .page-link:hover,
 .pagination .page-item.active .page-link {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-color: #667eea;
+  background: #64b5f6 !important;
+  color: #0f1419 !important;
+  border-color: #64b5f6 !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(100, 181, 246, 0.4);
 }
 
 /* Enhanced footer */

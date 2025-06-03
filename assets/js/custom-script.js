@@ -136,12 +136,19 @@ const ModernSearch = {
   },
   
   buildSearchIndex: function() {
-    // Create a simple search index for better performance
+    // Create a more comprehensive search index
     this.searchIndex = this.searchData.map((item, index) => ({
       ...item,
-      searchText: (item.title + ' ' + item.content + ' ' + item.date).toLowerCase(),
+      searchText: [
+        item.title || '',
+        item.content || '',
+        item.excerpt || '',
+        item.category || '',
+        item.date || ''
+      ].join(' ').toLowerCase(),
       index: index
     }));
+    console.log('Search index built with', this.searchIndex.length, 'items');
   },
   
   enhanceSearchUI: function() {
@@ -437,6 +444,9 @@ const ModernSearch = {
       } else if (e.key === 'Enter') {
         e.preventDefault();
         this.selectResult();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        this.closeSearch();
       }
     });
     

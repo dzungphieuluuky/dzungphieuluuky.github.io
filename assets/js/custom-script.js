@@ -50,11 +50,13 @@ const ModernSearch = {
   
   loadSearchData: async function() {
     try {
-      // Try to fetch search data from Jekyll's search.json
-      const response = await fetch('/search.json');
+      // Try to fetch search data from Jekyll's search corpus (Beautiful Jekyll format)
+      const response = await fetch('{{ site.baseurl }}/assets/data/searchcorpus.json');
       if (response.ok) {
         this.searchData = await response.json();
+        console.log('Search data loaded:', this.searchData.length, 'items');
       } else {
+        console.warn('Search corpus not found, using fallback extraction');
         // Fallback: extract data from current page
         this.extractPageData();
       }

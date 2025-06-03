@@ -72,7 +72,7 @@ Watching YouTube is one of my ways of burning time when I'm free, some of my fav
 - Like: linear algebra, calculus, complex numbers, differential equations (I'm quite interested in continuous things).
 - Don't like: combinatorics, graph theory, number theory.
 
-# 🚀 Current Projects
+# 🚀 What have I been up to
 - **RL Dummy Agents:** Tweaking with some RL algorithms and watch them playing around in Gymnasium environments.
 - **This website:** A beautiful template from [**Beautiful Jekyll**](https://github.com/daattali/beautiful-jekyll).
 
@@ -85,10 +85,6 @@ Watching YouTube is one of my ways of burning time when I'm free, some of my fav
 - 🧬 I'm apparently a generalist rather than a specialist (maybe)
 
 # 🎮 How To Reach Me
-
-<!-- - Explore my [**GitHub**](https://github.com/dzungphieuluuky): some projects I have made.
-- Read my [**Blog**](https://dzungphieuluuky.github.io/blog/): some interesting ideas of mine.
-- Reach me via [**Email**](mailto:dungngocpham171@gmail.com): just to fill this block so it will contains 3 things.  -->
 
 <div class="contact-cards">
   <a href="https://github.com/dzungphieuluuky" class="contact-card">

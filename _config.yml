@@ -15,7 +15,7 @@ title: Lazy Potato Blog
 # Your name to show in the footer
 author: Dung Pham
 email: dungngocpham171@gmail.com
-description: A lazy potato''s personal blog
+description: A journey through AI, physics and quantum computation
 
 ###############################################
 # --- List of links in the navigation bar --- #
@@ -148,17 +148,30 @@ search_placeholder: "Accio! Search for anything..."
 search_results_limit: 15
 
 # Modern dark theme with vibrant accents
-page-col: "#ffffff"
-text-col: "#2c3e50"
-link-col: "#3498db"
-hover-col: "#e74c3c"
-navbar-col: "#2c3e50"
-navbar-text-col: "#ecf0f1"
-navbar-border-col: "#34495e"
-footer-col: "#34495e"
-footer-text-col: "#bdc3c7"
-footer-link-col: "#3498db"
-footer-hover-col: "#e74c3c"
+# page-col: "#ffffff"
+# text-col: "#2c3e50"
+# link-col: "#3498db"
+# hover-col: "#e74c3c"
+# navbar-col: "#2c3e50"
+# navbar-text-col: "#ecf0f1"
+# navbar-border-col: "#34495e"
+# footer-col: "#34495e"
+# footer-text-col: "#bdc3c7"
+# footer-link-col: "#3498db"
+# footer-hover-col: "#e74c3c"
+
+page-col: "#0f1419"                    # Dark navy background
+text-col: "#e6f1ff"                    # Light blue-white text
+link-col: "#64b5f6"                    # Bright blue links
+hover-col: "#42a5f5"                   # Lighter blue hover
+navbar-col: "#1a237e"                  # Deep blue navbar
+navbar-text-col: "#e3f2fd"             # Very light blue navbar text
+navbar-border-col: "#283593"           # Medium blue border
+footer-col: "#263238"                  # Dark blue-gray footer
+footer-text-col: "#90caf9"             # Light blue footer text
+footer-link-col: "#64b5f6"             # Bright blue footer links
+footer-hover-col: "#42a5f5"            # Footer hover color
+
 
 # Alternatively, the navbar, footer, and page background can be set to an image
 # instead of colour
@@ -168,7 +181,8 @@ footer-hover-col: "#e74c3c"
 #page-img: "/assets/img/bgimage.png"
 
 # Suggest a colour for mobile browsers to use as the browser's theme. This is only supported by a few mobile browsers.
-mobile-theme-col: "#3498db"
+# mobile-theme-col: "#3498db"
+mobile-theme-col: "#1a237e"
 
 # For any extra visual customization, you can include additional CSS files in every page on your site. List any custom CSS files here
 site-css:

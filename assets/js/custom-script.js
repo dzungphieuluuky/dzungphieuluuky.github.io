@@ -170,7 +170,7 @@ const ModernSearch = {
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input type="text" id="modern-search-input" placeholder="Search posts, content, and more..." autocomplete="off">
+            <input type="text" id="modern-search-input" placeholder="Accio! Something is coming..." autocomplete="off">
             <div class="search-loading" id="search-loading" style="display: none;">
               <div class="loading-spinner"></div>
             </div>
@@ -528,9 +528,9 @@ const ModernSearch = {
     if (resultsContainer) {
       resultsContainer.innerHTML = `
         <div class="search-suggestions">
-          <div class="suggestion-item">🔍 Start typing to search posts and content</div>
-          <div class="suggestion-item">💡 Try searching for topics, titles, or keywords</div>
-          <div class="suggestion-item">⚡ Use keyboard shortcuts to navigate quickly</div>
+          <div class="suggestion-item">🔍 Let the hand to the type...</div>
+          <div class="suggestion-item">💡 Searching topics, titles, magic, spells?</div>
+          <div class="suggestion-item">⚡ Quantum teleportation with your keyboard shortcuts</div>
         </div>
       `;
     }

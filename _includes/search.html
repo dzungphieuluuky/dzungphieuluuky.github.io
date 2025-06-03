@@ -1,23 +1,3 @@
-<!-- {% if site.post_search %}
-
-<div id="beautifuljekyll-search-overlay">
-
-  <div id="nav-search-exit" title="Exit search">✕</div>
-  <input type="text" id="nav-search-input" placeholder="Search">
-  <ul id="search-results-container"></ul>
-  
-  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
-  <script>
-    SimpleJekyllSearch({
-      searchInput: document.getElementById('nav-search-input'),
-      resultsContainer: document.getElementById('search-results-container'),
-      json: '{{ site.baseurl }}/assets/data/searchcorpus.json' 
-    });
-  </script>
-</div>
-
-{% endif %} -->
-
 {% if site.post_search %}
 
 <meta name="baseurl" content="{{ site.baseurl }}">
@@ -43,9 +23,15 @@
         searchResultTemplate: '<li><a href="{url}">{title}</a><br><small>{excerpt}</small></li>',
         noResultsText: 'No results found',
         limit: 10,
-        fuzzy: false
+        fuzzy: true
       });
     }
+    
+    // Add event handler for exit button
+    document.getElementById('nav-search-exit').addEventListener('click', function() {
+      document.getElementById('beautifuljekyll-search-overlay').style.display = 'none';
+      document.body.classList.remove('overflow-hidden');
+    });
     
     // Hide fallback when modern search loads
     document.addEventListener('DOMContentLoaded', function() {
@@ -57,7 +43,7 @@
             fallback.style.display = 'none';
           }
         }
-      }, 200);
+      }, 500); // Increased timeout for better reliability
     });
   </script>
 </div>

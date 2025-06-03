@@ -1,23 +1,28 @@
 ---
 layout: null
 ---
-[ 
-{% for post in site.posts %} 
-{ 
-"title"    : "{% if post.title != "" %}{{ post.title | strip_html | escape }}{% else %}{{ post.excerpt | strip_html | escape | strip }}{%endif%}", 
-"desc"     : "{% if post.title != "" %}{{ post.title | strip_html | escape }}{% else %}{{ post.excerpt | strip_html | escape | strip }}{%endif%}", 
-"category" : "{{ post.tags | join: ', ' }}", 
-"url"      : "{{ site.baseurl }}{{ post.url | escape }}", 
-"date"     : "{{ post.date | date: "%B %e, %Y" | default: "January 1, 1970" }}" 
-}, 
-{% endfor %} 
-{% for page in site.html_pages %}{% if page.title != "{title}" and page.title != "404 - Page not found" %} 
-{ 
-"title"    : "{% if page.title != "" %}{{ page.title | strip_html | escape }}{% else %}{{ page.excerpt | strip_html | escape | strip }}{% endif %}", 
-"desc"     : "{% if page.title != "" %}{{ page.title | strip_html | escape }}{% else %}{{ page.excerpt | strip_html | escape | strip }}{% endif %}", 
-"category" : "{% if page.tags %}{{ page.tags | join: ', ' }}{% else %}page{% endif %}", 
-"url"      : "{{ site.baseurl }}{{ page.url }}", 
-"date"     : "{{ page.date | date: '%B %e, %Y' | default: "January 1, 1970" }}" 
-}{% unless forloop.last %},{% endunless %} 
-{% endif %}{% endfor %} 
+[
+  {% for post in site.posts %}
+    {
+      "title": {{ post.title | jsonify }},
+      "content": {{ post.content | strip_html | jsonify }},
+      "excerpt": {{ post.excerpt | strip_html | jsonify }},
+      "category": {{ post.tags | join: ', ' | jsonify }},
+      "url": "{{ site.baseurl }}{{ post.url }}",
+      "date": "{{ post.date | date: '%B %e, %Y' }}"
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+  {% if site.posts.size > 0 and site.html_pages.size > 0 %},{% endif %}
+  {% for page in site.html_pages %}
+    {% if page.title != "404 - Page not found" and page.title != "Search" and page.title != null %}
+    {
+      "title": {{ page.title | jsonify }},
+      "content": {{ page.content | strip_html | jsonify }},
+      "excerpt": {{ page.excerpt | strip_html | strip | jsonify | default: page.title | jsonify }},
+      "category": "page",
+      "url": "{{ site.baseurl }}{{ page.url }}",
+      "date": ""
+    }{% unless forloop.last %},{% endunless %}
+    {% endif %}
+  {% endfor %}
 ]

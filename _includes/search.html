@@ -1,4 +1,4 @@
-{% if site.post_search %}
+<!-- {% if site.post_search %}
 
 <div id="beautifuljekyll-search-overlay">
 
@@ -12,6 +12,50 @@
       searchInput: document.getElementById('nav-search-input'),
       resultsContainer: document.getElementById('search-results-container'),
       json: '{{ site.baseurl }}/assets/data/searchcorpus.json' 
+    });
+  </script>
+</div>
+
+{% endif %} -->
+
+{% if site.post_search %}
+
+<div id="beautifuljekyll-search-overlay" style="display: none;">
+  <!-- Modern search container will be injected by custom-script.js -->
+  <!-- Fallback content for non-JS users -->
+  <div class="fallback-search" style="display: block;">
+    <div id="nav-search-exit" title="Exit search">✕</div>
+    <input type="text" id="nav-search-input" placeholder="Search">
+    <ul id="search-results-container"></ul>
+  </div>
+  
+  <!-- Keep Simple Jekyll Search as fallback -->
+  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+  <script>
+    // Initialize Simple Jekyll Search as fallback
+    if (typeof SimpleJekyllSearch !== 'undefined') {
+      SimpleJekyllSearch({
+        searchInput: document.getElementById('nav-search-input'),
+        resultsContainer: document.getElementById('search-results-container'),
+        json: '{{ site.baseurl }}/assets/data/searchcorpus.json',
+        searchResultTemplate: '<li><a href="{url}">{title}</a><br><small>{excerpt}</small></li>',
+        noResultsText: 'No results found',
+        limit: 10,
+        fuzzy: false
+      });
+    }
+    
+    // Hide fallback when modern search loads
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        // Check if modern search has loaded
+        if (document.querySelector('.modern-search-container')) {
+          const fallback = document.querySelector('.fallback-search');
+          if (fallback) {
+            fallback.style.display = 'none';
+          }
+        }
+      }, 200);
     });
   </script>
 </div>

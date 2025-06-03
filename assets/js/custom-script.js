@@ -98,6 +98,12 @@ const ModernSearch = {
     const searchOverlay = document.getElementById("beautifuljekyll-search-overlay");
     if (!searchOverlay) return;
     
+    // Hide fallback search
+    const fallback = searchOverlay.querySelector('.fallback-search');
+    if (fallback) {
+      fallback.style.display = 'none';
+    }
+    
     // Add modern search HTML
     const modernSearchHTML = `
       <div class="modern-search-container">
@@ -134,7 +140,7 @@ const ModernSearch = {
       </div>
     `;
     
-    // Replace or enhance existing search content
+    // Replace content but keep the overlay structure
     searchOverlay.innerHTML = modernSearchHTML;
     
     // Add modern search styles
@@ -357,11 +363,16 @@ const ModernSearch = {
       }
       
       // Show loading
-      document.getElementById('search-loading').style.display = 'block';
+      const loadingElement = document.getElementById('search-loading');
+      if (loadingElement) {
+        loadingElement.style.display = 'block';
+      }
       
       searchTimeout = setTimeout(() => {
         this.performSearch(query);
-        document.getElementById('search-loading').style.display = 'none';
+        if (loadingElement) {
+          loadingElement.style.display = 'none';
+        }
       }, 300);
     });
     
@@ -526,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setTimeout(() => {
     ModernSearch.init();
   }, 100);
-  
+
   // Smooth scroll for anchor links
   const links = document.querySelectorAll('a[href^="#"]');
   links.forEach(link => {

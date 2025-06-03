@@ -69,22 +69,69 @@ const ModernSearch = {
   },
   
   extractPageData: function() {
+    console.log('Extracting page data as fallback...');
+    
     // Extract searchable content from the current page
-    const posts = document.querySelectorAll('.post-preview, article');
+    const posts = document.querySelectorAll('.post-preview, article, .blog-post');
+    
     this.searchData = Array.from(posts).map((post, index) => {
-      const title = post.querySelector('h2, h1, .post-title')?.textContent?.trim() || `Post ${index + 1}`;
-      const content = post.querySelector('.post-content, .post-excerpt, p')?.textContent?.trim() || '';
-      const link = post.querySelector('a')?.getAttribute('href') || '#';
-      const date = post.querySelector('.post-meta, .post-date')?.textContent?.trim() || '';
+      // Try multiple selectors for title
+      const titleSelectors = ['h2 a', 'h1', '.post-title', 'h2', '.blog-post-title a', '.post-link'];
+      let title = '';
+      for (let selector of titleSelectors) {
+        const element = post.querySelector(selector);
+        if (element) {
+          title = element.textContent?.trim();
+          break;
+        }
+      }
       
-      return {
-        title: title,
-        content: content,
-        url: link,
+      // Try multiple selectors for content
+      const contentSelectors = ['.post-content', '.post-excerpt', '.post-entry', '.blog-post-content', 'p'];
+      let content = '';
+      for (let selector of contentSelectors) {
+        const element = post.querySelector(selector);
+        if (element) {
+          content = element.textContent?.trim();
+          break;
+        }
+      }
+      
+      // Try multiple selectors for link
+      const linkSelectors = ['h2 a', '.post-title a', '.post-link', 'a[href*="/"]'];
+      let link = '#';
+      for (let selector of linkSelectors) {
+        const element = post.querySelector(selector);
+        if (element && element.getAttribute('href')) {
+          link = element.getAttribute('href');
+          break;
+        }
+      }
+      
+      // Try multiple selectors for date
+      const dateSelectors = ['.post-meta', '.post-date', '.blog-post-meta', 'time', '.date'];
+      let date = '';
+      for (let selector of dateSelectors) {
+        const element = post.querySelector(selector);
+        if (element) {
+          date = element.textContent?.trim();
+          break;
+        }
+      }
+      
+      const item = {
+        title: title || `Post ${index + 1}`,
+        content: content || '',
+        url: link.startsWith('http') ? link : (window.location.origin + link),
         date: date,
-        excerpt: content.substring(0, 150) + '...'
+        excerpt: content.length > 150 ? content.substring(0, 150) + '...' : content
       };
-    });
+      
+      console.log('Extracted item:', item);
+      return item;
+    }).filter(item => item.title && item.title !== `Post ${item.index + 1}`); // Filter out empty posts
+    
+    console.log('Total extracted items:', this.searchData.length);
   },
   
   buildSearchIndex: function() {

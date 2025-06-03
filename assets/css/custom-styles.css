@@ -68,7 +68,7 @@ body {
   transform: translateY(-5px);
   box-shadow: 0 15px 35px rgba(100, 181, 246, 0.2);
   background: rgba(26, 35, 126, 0.15);
-  border-color: #64b5f6;
+  /* border-color: #64b5f6; */
 }
 
 /* Blog post titles - Fixed for dark background */

@@ -3,48 +3,6 @@ layout: page
 title: Welcome to my website
 subtitle: "You don't have to be great to start, but you have to start to be great"
 ---
-<style>
-/* Responsive styles */
-@media (max-width: 768px) {
-  .stats-grid, .contact-cards {
-    grid-template-columns: 1fr;
-  }
-  
-  .timeline-item {
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-}
-
-/* Contact cards styles */
-.contact-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin: 20px 0;
-}
-
-.contact-card {
-  display: block;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-}
-
-.contact-card:hover {
-  transform: translateY(-5px);
-  color: white;
-  text-decoration: none;
-}
-
-.contact-card h4 {
-  margin-bottom: 8px;
-  color: white;
-}
-</style>
 
 # 👨‍💻 About Me
 My full name is Phạm Ngọc Dũng. I'm currently a second-year university undergraduate student majoring in information technology.  
@@ -85,18 +43,6 @@ Watching YouTube is one of my ways of burning time when I'm free, some of my fav
 - 🧬 I'm apparently a generalist rather than a specialist (maybe)
 
 # 🎮 How To Reach Me
-
-<div class="contact-cards">
-  <a href="https://github.com/dzungphieuluuky" class="contact-card">
-    <h4>🔗 GitHub</h4>
-    <p>Explore my projects and code</p>
-  </a>
-  <a href="https://dzungphieuluuky.github.io/blog/" class="contact-card">
-    <h4>✍️ Blog</h4>
-    <p>Read my thoughts and ideas</p>
-  </a>
-  <a href="mailto:dungngocpham171@gmail.com" class="contact-card">
-    <h4>📧 Email</h4>
-    <p>Just put it here to look not so empty</p>
-  </a>
-</div>
+- [**GitHub**](https://github.com/dzungphieuluuky): Explore my projects and code.
+- [**Blog**](https://dzungphieuluuky.github.io/blog/): Read my thoughts and ideas.
+- [**Email**](mailto:dungngocpham171@gmail.com): Just put it here to look not so empty.

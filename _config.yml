@@ -24,10 +24,6 @@ description: A journey through AI, physics and quantum computation
 navbar-links:
   About Me: "index"
   Blogs: "blog"
-  Resources:
-    - Beautiful Jekyll: "https://beautifuljekyll.com"
-    - Learn markdown: "https://www.markdowntutorial.com/"
-    - MathJax Docs: "https://docs.mathjax.org/"
 
 ################
 # --- Logo --- #

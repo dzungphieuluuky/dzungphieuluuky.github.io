@@ -1,9 +1,25 @@
 /* Modern Typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600&display=swap');
+
+/* Ocean-Inspired Theme Variables */
+:root {
+  --ocean-primary: #1e88e5;
+  --ocean-secondary: #0277bd;
+  --ocean-accent: #00acc1;
+  --ocean-deep: #0d47a1;
+  --ocean-light: #e3f2fd;
+  --ocean-foam: #b3e5fc;
+  --ocean-gradient: linear-gradient(135deg, #1e88e5 0%, #0277bd 50%, #01579b 100%);
+  --surface-gradient: linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
+  --shadow-ocean: rgba(30, 136, 229, 0.15);
+  --glow-whale: rgba(0, 172, 193, 0.4);
+}
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
+  background: linear-gradient(to bottom, #f8fbff 0%, #e3f2fd 100%);
+  color: #1a365d;
 }
 
 /* Smooth animations */
@@ -11,29 +27,38 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Enhanced navbar */
+/* Enhanced navbar - Ocean theme */
 .navbar-custom {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+  background: var(--ocean-gradient) !important;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 30px var(--shadow-ocean);
+  border-bottom: 1px solid rgba(30, 136, 229, 0.2);
 }
 
 .navbar-custom .navbar-brand {
+  font-family: 'Playfair Display', serif;
   font-weight: 600;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  color: white !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Animated avatar */
+/* Whale avatar enhancement */
 .avatar-container .avatar-img-border {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 3px solid var(--ocean-accent);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 20px var(--glow-whale);
+  background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(0,172,193,0.1));
 }
 
 .avatar-container:hover .avatar-img-border {
-  transform: scale(1.05);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transform: scale(1.08) rotate(2deg);
+  border-color: var(--ocean-primary);
+  box-shadow: 0 0 30px rgba(30, 136, 229, 0.5);
 }
 
-/* Enhanced buttons */
+/* Enhanced buttons - Ocean theme */
 .btn {
   border-radius: 25px;
   font-weight: 500;
@@ -43,51 +68,73 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--ocean-gradient) !important;
   border: none;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px var(--shadow-ocean);
+  color: white !important;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
+  color: white !important;
 }
 
-/* Card effects for blog posts - Dark Blue Theme */
+/* Modern blog post cards - Ocean theme */
 .post-preview {
-  background: rgba(15, 20, 25, 0.8);
-  border-radius: 15px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(100, 181, 246, 0.2);
+  background: var(--surface-gradient);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  border: 1px solid rgba(30, 136, 229, 0.1);
+  box-shadow: 0 8px 32px rgba(30, 136, 229, 0.08);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.post-preview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--ocean-gradient);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.post-preview:hover::before {
+  transform: scaleX(1);
 }
 
 .post-preview:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(100, 181, 246, 0.2);
-  /* background: rgba(26, 35, 126, 0.15); */
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px rgba(30, 136, 229, 0.12);
+  border-color: rgba(30, 136, 229, 0.2);
 }
 
-/* Blog post titles - Fixed for dark background */
+/* Blog post titles - Ocean theme */
 .post-preview .post-title a,
 .post-preview h2 a,
 .post-preview h3 a {
-  color: #e3f2fd !important; /* Light text for dark background */
+  color: #1a365d !important;
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
   position: relative;
   text-decoration: none;
   transition: color 0.3s ease;
-  font-weight: 600;
 }
 
 .post-preview .post-title a:hover,
 .post-preview h2 a:hover,
 .post-preview h3 a:hover {
-  color: #64b5f6 !important; /* Blue hover for dark theme */
+  color: var(--ocean-primary) !important;
 }
 
-/* Animated underlines for post titles - Fixed colors */
+/* Elegant underlines */
 .post-preview .post-title a::after,
 .post-preview h2 a::after,
 .post-preview h3 a::after {
@@ -97,7 +144,7 @@ body {
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+  background: var(--ocean-gradient);
   transition: width 0.3s ease;
 }
 
@@ -107,134 +154,151 @@ body {
   width: 100%;
 }
 
-/* Blog post content - Fixed for dark background */
+/* Blog post content - Ocean theme */
 .post-preview .post-content,
 .post-preview .post-excerpt,
 .post-preview p {
-  color: #90caf9 !important; /* Light blue text for readability */
-  line-height: 1.6;
+  color: #4a5568 !important;
+  line-height: 1.7;
+  font-size: 1.05rem;
 }
 
-/* Blog post meta - Fixed for dark background */
+/* Blog post meta - Ocean theme */
 .post-preview .post-meta,
 .post-preview .blog-post-meta {
-  color: #64b5f6 !important; /* Blue for meta information */
+  color: var(--ocean-primary) !important;
   font-size: 0.9em;
+  font-weight: 500;
   opacity: 0.8;
 }
 
 .post-preview .post-meta a {
-  color: #42a5f5 !important; /* Lighter blue for links */
+  color: var(--ocean-secondary) !important;
   text-decoration: none;
 }
 
-.post-preview .post-meta a:hover {
-  color: #64b5f6 !important;
-  text-decoration: underline;
-}
-
-/* Tags - Fixed for dark background */
+/* Ocean-themed tags */
 .post-preview .blog-tags a,
 .post-preview .post-tags a {
-  background: rgba(100, 181, 246, 0.2) !important;
-  color: #64b5f6 !important;
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 0.8em;
+  background: linear-gradient(135deg, rgba(30, 136, 229, 0.1) 0%, rgba(0, 172, 193, 0.1) 100%);
+  color: var(--ocean-primary) !important;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85em;
   margin-right: 8px;
   margin-bottom: 5px;
   text-decoration: none;
-  border: 1px solid rgba(100, 181, 246, 0.3);
+  border: 1px solid rgba(30, 136, 229, 0.2);
   transition: all 0.3s ease;
   display: inline-block;
+  font-weight: 500;
 }
 
 .post-preview .blog-tags a:hover,
 .post-preview .post-tags a:hover {
-  background: #64b5f6 !important;
-  color: #0f1419 !important; /* Dark text on bright background */
+  background: var(--ocean-gradient);
+  color: white !important;
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
+  box-shadow: 0 4px 12px var(--shadow-ocean);
 }
 
-/* Read more links - Fixed for dark background */
+/* Read more buttons - Ocean theme */
 .post-preview .read-more,
 .post-preview a[href*="read-more"] {
-  color: #64b5f6 !important;
+  color: var(--ocean-primary) !important;
   font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
   display: inline-block;
-  padding: 8px 16px;
-  border: 1px solid #64b5f6;
-  border-radius: 20px;
-  margin-top: 15px;
+  padding: 10px 20px;
+  border: 2px solid var(--ocean-primary);
+  border-radius: 25px;
+  margin-top: 20px;
   background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.post-preview .read-more::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--ocean-gradient);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.post-preview .read-more:hover::before {
+  left: 0;
 }
 
 .post-preview .read-more:hover {
-  background: #64b5f6 !important;
-  color: #0f1419 !important; /* Dark text on bright background */
+  color: white !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(100, 181, 246, 0.4);
+  box-shadow: 0 6px 20px var(--shadow-ocean);
 }
 
-/* Pagination - Fixed for dark theme */
+/* Pagination - Ocean theme */
 .pagination .page-item .page-link {
-  background: rgba(26, 35, 126, 0.2) !important;
-  border: 1px solid rgba(100, 181, 246, 0.3) !important;
-  color: #64b5f6 !important;
-  border-radius: 8px;
-  margin: 0 5px;
-  padding: 10px 15px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(30, 136, 229, 0.2);
+  color: var(--ocean-primary) !important;
+  border-radius: 12px;
+  margin: 0 6px;
+  padding: 12px 18px;
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .pagination .page-item .page-link:hover,
 .pagination .page-item.active .page-link {
-  background: #64b5f6 !important;
-  color: #0f1419 !important;
+  background: var(--ocean-gradient) !important;
+  color: white !important;
+  border-color: var(--ocean-primary) !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(100, 181, 246, 0.4);
+  box-shadow: 0 6px 20px var(--shadow-ocean);
 }
 
-/* Enhanced footer */
+/* Enhanced footer - Ocean theme */
 .footer {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  background: var(--ocean-gradient) !important;
   padding: 3rem 0;
+  color: white;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive improvements */
 @media (max-width: 768px) {
   .post-preview {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 16px;
   }
+  
+  .avatar-container:hover .avatar-img-border {
+    transform: scale(1.05);
+  }
+}
+
+/* Whale-inspired animations */
+@keyframes whale-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.avatar-container .avatar-img-border {
+  animation: whale-float 4s ease-in-out infinite;
 }
 
 /* Loading animation */
 .page-loading {
   opacity: 0;
-  animation: fadeIn 0.6s ease forwards;
+  animation: fadeIn 0.8s ease forwards;
 }
 
 @keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
-}
-
-/* Social media icons enhancement */
-.social-links a {
-  display: inline-block;
-  margin: 0 10px;
-  padding: 10px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  transition: all 0.3s ease;
-}
-
-.social-links a:hover {
-  background: rgba(255,255,255,0.2);
-  transform: translateY(-3px);
+  to { opacity: 1; }
 }

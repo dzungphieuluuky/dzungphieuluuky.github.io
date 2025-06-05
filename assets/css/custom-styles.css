@@ -1,25 +1,33 @@
-/* Modern Typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600&display=swap');
+/* Modern Typography - Elegant Blog Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
 
-/* Ocean-Inspired Theme Variables */
+/* Elegant Ocean Theme Variables - Less Blue, More Sophisticated */
 :root {
-  --ocean-primary: #1e88e5;
-  --ocean-secondary: #0277bd;
-  --ocean-accent: #00acc1;
-  --ocean-deep: #0d47a1;
-  --ocean-light: #e3f2fd;
-  --ocean-foam: #b3e5fc;
-  --ocean-gradient: linear-gradient(135deg, #1e88e5 0%, #0277bd 50%, #01579b 100%);
-  --surface-gradient: linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
-  --shadow-ocean: rgba(30, 136, 229, 0.15);
-  --glow-whale: rgba(0, 172, 193, 0.4);
+  --ocean-primary: #2c5aa0;        /* Deeper, more muted blue */
+  --ocean-secondary: #1e3a5f;      /* Dark navy */
+  --ocean-accent: #4a90a4;         /* Muted teal */
+  --ocean-deep: #0d1b2a;           /* Very dark navy */
+  --ocean-light: #f8fafb;          /* Almost white with hint of blue */
+  --ocean-foam: #e8f0f5;           /* Very light blue-gray */
+  --ocean-gradient: linear-gradient(135deg, #2c5aa0 0%, #1e3a5f 50%, #0d1b2a 100%);
+  --surface-gradient: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+  --shadow-ocean: rgba(44, 90, 160, 0.08);
+  --glow-whale: rgba(74, 144, 164, 0.2);
+  
+  /* Elegant Text Colors */
+  --text-primary: #1a202c;         /* Rich black */
+  --text-secondary: #4a5568;       /* Medium gray */
+  --text-light: #718096;           /* Light gray */
+  --text-accent: #2c5aa0;          /* Ocean blue for accents */
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.6;
-  background: linear-gradient(to bottom, #f8fbff 0%, #e3f2fd 100%);
-  color: #1a365d;
+  font-family: 'Source Serif Pro', Georgia, serif;
+  line-height: 1.7;
+  background: linear-gradient(to bottom, #ffffff 0%, #f8fafb 100%);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 400;
 }
 
 /* Smooth animations */
@@ -27,67 +35,78 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Enhanced navbar - Ocean theme */
+/* Enhanced navbar - Subtle Ocean theme */
 .navbar-custom {
   background: var(--ocean-gradient) !important;
   backdrop-filter: blur(15px);
-  box-shadow: 0 4px 30px var(--shadow-ocean);
-  border-bottom: 1px solid rgba(30, 136, 229, 0.2);
+  box-shadow: 0 2px 20px var(--shadow-ocean);
+  border-bottom: 1px solid rgba(44, 90, 160, 0.1);
 }
 
 .navbar-custom .navbar-brand {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Crimson Text', serif;
   font-weight: 600;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: white !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-nav .nav-link {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9) !important;
+  letter-spacing: 0.3px;
+}
+
+.navbar-nav .nav-link:hover {
+  color: white !important;
 }
 
 /* Whale avatar enhancement */
 .avatar-container .avatar-img-border {
-  border: 3px solid var(--ocean-accent);
+  border: 2px solid var(--ocean-accent);
   border-radius: 50%;
   transition: all 0.4s ease;
-  box-shadow: 0 0 20px var(--glow-whale);
-  background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(0,172,193,0.1));
+  box-shadow: 0 0 15px var(--glow-whale);
+  background: linear-gradient(45deg, rgba(255,255,255,0.05), rgba(74,144,164,0.05));
 }
 
 .avatar-container:hover .avatar-img-border {
-  transform: scale(1.08) rotate(2deg);
+  transform: scale(1.05) rotate(1deg);
   border-color: var(--ocean-primary);
-  box-shadow: 0 0 30px rgba(30, 136, 229, 0.5);
+  box-shadow: 0 0 25px rgba(44, 90, 160, 0.3);
 }
 
-/* Enhanced buttons - Ocean theme */
+/* Enhanced buttons - Subtle Ocean theme */
 .btn {
   border-radius: 25px;
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
   transition: all 0.3s ease;
 }
 
 .btn-primary {
   background: var(--ocean-gradient) !important;
   border: none;
-  box-shadow: 0 4px 15px var(--shadow-ocean);
+  box-shadow: 0 3px 12px var(--shadow-ocean);
   color: white !important;
 }
 
 .btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 90, 160, 0.2);
   color: white !important;
 }
 
-/* Modern blog post cards - Ocean theme */
+/* Elegant blog post cards */
 .post-preview {
   background: var(--surface-gradient);
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 2.5rem;
   margin-bottom: 2.5rem;
-  border: 1px solid rgba(30, 136, 229, 0.1);
-  box-shadow: 0 8px 32px rgba(30, 136, 229, 0.08);
+  border: 1px solid rgba(44, 90, 160, 0.06);
+  box-shadow: 0 4px 20px rgba(44, 90, 160, 0.04);
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
@@ -99,7 +118,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
+  height: 3px;
   background: var(--ocean-gradient);
   transform: scaleX(0);
   transition: transform 0.3s ease;
@@ -111,18 +130,20 @@ body {
 }
 
 .post-preview:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 16px 48px rgba(30, 136, 229, 0.12);
-  border-color: rgba(30, 136, 229, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(44, 90, 160, 0.08);
+  border-color: rgba(44, 90, 160, 0.12);
 }
 
-/* Blog post titles - Ocean theme */
+/* Elegant blog post titles */
 .post-preview .post-title a,
 .post-preview h2 a,
 .post-preview h3 a {
-  color: var(--ocean-primary) !important;
-  font-family: 'Playfair Display', serif;
+  color: var(--text-primary) !important;
+  font-family: 'Crimson Text', serif;
   font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.3;
   position: relative;
   text-decoration: none;
   transition: color 0.3s ease;
@@ -131,10 +152,10 @@ body {
 .post-preview .post-title a:hover,
 .post-preview h2 a:hover,
 .post-preview h3 a:hover {
-  color: var(--ocean-primary) !important;
+  color: var(--text-accent) !important;
 }
 
-/* Elegant underlines */
+/* Subtle underlines */
 .post-preview .post-title a::after,
 .post-preview h2 a::after,
 .post-preview h3 a::after {
@@ -143,8 +164,8 @@ body {
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 2px;
-  background: var(--ocean-gradient);
+  height: 1px;
+  background: var(--ocean-primary);
   transition: width 0.3s ease;
 }
 
@@ -154,69 +175,85 @@ body {
   width: 100%;
 }
 
-/* Blog post content - Ocean theme */
+/* Elegant blog post content */
 .post-preview .post-content,
 .post-preview .post-excerpt,
 .post-preview p {
-  color: #4a5568 !important;
+  color: var(--text-secondary) !important;
+  font-family: 'Source Serif Pro', Georgia, serif;
   line-height: 1.7;
-  font-size: 1.05rem;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
 }
 
-/* Blog post meta - Ocean theme */
+/* Blog post meta - Refined */
 .post-preview .post-meta,
 .post-preview .blog-post-meta {
-  color: var(--ocean-primary) !important;
-  font-size: 0.9em;
+  color: var(--text-light) !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   opacity: 0.8;
 }
 
 .post-preview .post-meta a {
-  color: var(--ocean-secondary) !important;
+  color: var(--text-accent) !important;
   text-decoration: none;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
-/* Ocean-themed tags */
+.post-preview .post-meta a:hover {
+  color: var(--ocean-primary) !important;
+}
+
+/* Elegant tags */
 .post-preview .blog-tags a,
 .post-preview .post-tags a {
-  background: linear-gradient(135deg, rgba(30, 136, 229, 0.1) 0%, rgba(0, 172, 193, 0.1) 100%);
-  color: var(--ocean-primary) !important;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85em;
+  background: rgba(44, 90, 160, 0.05);
+  color: var(--text-accent) !important;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
   margin-right: 8px;
   margin-bottom: 5px;
   text-decoration: none;
-  border: 1px solid rgba(30, 136, 229, 0.2);
+  border: 1px solid rgba(44, 90, 160, 0.1);
   transition: all 0.3s ease;
   display: inline-block;
-  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 .post-preview .blog-tags a:hover,
 .post-preview .post-tags a:hover {
-  background: var(--ocean-gradient);
+  background: var(--ocean-primary);
   color: white !important;
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px var(--shadow-ocean);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--shadow-ocean);
 }
 
-/* Read more buttons - Ocean theme */
+/* Elegant read more buttons */
 .post-preview .read-more,
 .post-preview a[href*="read-more"] {
-  color: var(--ocean-primary) !important;
+  color: var(--text-accent) !important;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
   display: inline-block;
-  padding: 10px 20px;
-  border: 2px solid var(--ocean-primary);
-  border-radius: 25px;
-  margin-top: 20px;
+  padding: 8px 18px;
+  border: 1px solid var(--ocean-primary);
+  border-radius: 20px;
+  margin-top: 15px;
   background: transparent;
   position: relative;
   overflow: hidden;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
 }
 
 .post-preview .read-more::before {
@@ -226,7 +263,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: var(--ocean-gradient);
+  background: var(--ocean-primary);
   transition: left 0.3s ease;
   z-index: -1;
 }
@@ -237,32 +274,34 @@ body {
 
 .post-preview .read-more:hover {
   color: white !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--shadow-ocean);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px var(--shadow-ocean);
 }
 
-/* Pagination - Ocean theme */
+/* Refined pagination */
 .pagination .page-item .page-link {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
-  border: 1px solid rgba(30, 136, 229, 0.2);
-  color: var(--ocean-primary) !important;
-  border-radius: 12px;
-  margin: 0 6px;
-  padding: 12px 18px;
+  background: white;
+  border: 1px solid rgba(44, 90, 160, 0.1);
+  color: var(--text-primary) !important;
+  border-radius: 8px;
+  margin: 0 4px;
+  padding: 10px 15px;
   transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .pagination .page-item .page-link:hover,
 .pagination .page-item.active .page-link {
-  background: var(--ocean-gradient) !important;
+  background: var(--ocean-primary) !important;
   color: white !important;
   border-color: var(--ocean-primary) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--shadow-ocean);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px var(--shadow-ocean);
 }
 
-/* Enhanced footer - Ocean theme */
+/* Enhanced footer */
 .footer {
   background: var(--ocean-gradient) !important;
   padding: 3rem 0;
@@ -270,27 +309,76 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.footer a {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-family: 'Inter', sans-serif;
+}
+
+.footer a:hover {
+  color: white !important;
+}
+
+/* Typography improvements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Crimson Text', serif;
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.3rem; }
+
+p {
+  font-family: 'Source Serif Pro', Georgia, serif;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* Links styling */
+a {
+  color: var(--text-accent);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--ocean-primary);
+}
+
 /* Responsive improvements */
 @media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+  
   .post-preview {
     padding: 2rem;
     margin-bottom: 2rem;
-    border-radius: 16px;
+    border-radius: 12px;
   }
   
-  .avatar-container:hover .avatar-img-border {
-    transform: scale(1.05);
+  .post-preview .post-title a,
+  .post-preview h2 a,
+  .post-preview h3 a {
+    font-size: 1.3rem;
   }
+  
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.3rem; }
 }
 
-/* Whale-inspired animations */
+/* Whale-inspired animations - Subtle */
 @keyframes whale-float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
 }
 
 .avatar-container .avatar-img-border {
-  animation: whale-float 4s ease-in-out infinite;
+  animation: whale-float 6s ease-in-out infinite;
 }
 
 /* Loading animation */
@@ -301,4 +389,28 @@ body {
 
 @keyframes fadeIn {
   to { opacity: 1; }
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(44, 90, 160, 0.1);
+  color: var(--text-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ocean-primary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ocean-secondary);
 }

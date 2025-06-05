@@ -672,7 +672,7 @@ window.addEventListener('load', function() {
   const mainTitle = document.querySelector('.intro-header h1');
   if (mainTitle && mainTitle.textContent) {
     const originalText = mainTitle.textContent;
-    typeWriter(mainTitle, originalText, 80);
+    typeWriter(mainTitle, originalText, 100);
     console.log('Typing effect applied to title');
   }
   

@@ -99,7 +99,7 @@ const ModernSearch = {
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input type="text" id="modern-search-input" placeholder="May the Force be with you..." autocomplete="off">
+            <input type="text" id="modern-search-input" placeholder="Something from the quantum realm..." autocomplete="off">
             <div class="search-loading" id="search-loading" style="display: none;">
               <div class="loading-spinner"></div>
             </div>
@@ -129,19 +129,20 @@ const ModernSearch = {
         <style>
           .key-button {
             display: inline-block;
-            padding: 2px 6px;
-            font-size: 0.9em;
-            line-height: 1.4;
-            color: #333;
-            background-color: #f5f5f5;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 0 0 2px #fff;
+            padding: 3px 6px;
+            font-size: 0.85em;
+            line-height: 1.2;
+            color: var(--text-primary);
+            background: var(--surface-gradient);
+            border: 1px solid rgba(26, 35, 126, 0.2);
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(26, 35, 126, 0.1);
             margin: 0 2px;
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
           }
         </style>
-              </div>
+      </div>
     `;
     
     searchOverlay.innerHTML = modernHTML;
@@ -279,9 +280,9 @@ const ModernSearch = {
     if (container) {
       container.innerHTML = `
         <div class="search-suggestions">
-          <div class="suggestion-item">🔬 Accio! Something mysterious is coming...</div>
-          <div class="suggestion-item">🧠 Mirror mirror on the wall...</div>
-          <div class="suggestion-item">⚛️ Superposition is ready to collapse...</div>
+          <div class="suggestion-item">🌊 Accio! Something is coming to you...</div>
+          <div class="suggestion-item">🐋 Reverio! Discover ideas, magics, spells,...</div>
+          <div class="suggestion-item">⚡ Quantum teleportation with keyboard shortcuts</div>
         </div>
       `;
     }

@@ -8,7 +8,7 @@
   <!-- Fallback for non-JS users -->
   <div class="fallback-search">
     <div class="search-fallback-header">
-      <input type="text" id="nav-search-input" placeholder="Search posts and pages...">
+      <input type="text" id="nav-search-input" placeholder="Something from the quantum realm...">
       <button id="nav-search-exit" title="Close search">✕</button>
     </div>
     <ul id="search-results-container"></ul>
@@ -51,14 +51,15 @@
 </div>
 
 <style>
-/* Fallback search styles */
+/* Scientific Fallback Search Styles */
 .fallback-search {
   max-width: 600px;
   margin: 100px auto;
-  background: white;
+  background: var(--surface-gradient);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px var(--shadow-quantum);
+  border: 1px solid rgba(26, 35, 126, 0.1);
 }
 
 .search-fallback-header {
@@ -70,19 +71,37 @@
 #nav-search-input {
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid #e1e5e9;
+  border: 2px solid rgba(26, 35, 126, 0.1);
   border-radius: 8px;
   font-size: 16px;
-  font-family: 'Lora', Georgia, serif;
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+}
+
+#nav-search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+#nav-search-input:focus {
+  outline: none;
+  border-color: var(--quantum-accent);
+  box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
 }
 
 #nav-search-exit {
   padding: 12px 16px;
-  background: #f1f3f4;
-  border: none;
+  background: rgba(26, 35, 126, 0.05);
+  border: 1px solid rgba(26, 35, 126, 0.1);
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+#nav-search-exit:hover {
+  background: rgba(26, 35, 126, 0.1);
 }
 
 #search-results-container {
@@ -92,20 +111,29 @@
 }
 
 #search-results-container li {
-  padding: 10px;
-  border-bottom: 1px solid #e1e5e9;
+  padding: 12px;
+  border-bottom: 1px solid rgba(26, 35, 126, 0.1);
+  border-radius: 6px;
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+}
+
+#search-results-container li:hover {
+  background: rgba(0, 230, 118, 0.05);
 }
 
 #search-results-container li a {
-  color: #2c5aa0;
+  color: var(--quantum-primary);
   text-decoration: none;
   font-weight: 600;
 }
 
 #search-results-container li small {
-  color: #6b7280;
+  color: var(--text-secondary);
   display: block;
   margin-top: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
 }
 </style>
 

@@ -273,14 +273,15 @@ const ModernSearch = {
     return text.replace(regex, '<span class="highlight">$1</span>');
   },
   
+  // Update the search suggestions
   showSuggestions: function() {
     const container = document.getElementById('modern-search-results');
     if (container) {
       container.innerHTML = `
         <div class="search-suggestions">
-          <div class="suggestion-item">🌊 Accio! Something is coming to you...</div>
-          <div class="suggestion-item">🐋 Reverio! Discover ideas, magics, spells,...</div>
-          <div class="suggestion-item">⚡ Quantum teleportation with keyboard shortcuts</div>
+          <div class="suggestion-item">🔬 Accio! Something mysterious is coming...</div>
+          <div class="suggestion-item">🧠 Mirror mirror on the wall...</div>
+          <div class="suggestion-item">⚛️ Superposition is ready to collapse...</div>
         </div>
       `;
     }

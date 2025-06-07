@@ -1,735 +1,276 @@
-/* Modern Typography - Elegant Blog Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Lora:wght@400;600&family=Roboto:wght@400;500;700&display=swap');
-
-/* Elegant Ocean Theme Variables - Less Blue, More Sophisticated */
+/* Scientific Quantum Computing Theme Variables */
 :root {
-  --ocean-primary: #2c5aa0;        /* Deeper, more muted blue */
-  --ocean-secondary: #1e3a5f;      /* Dark navy */
-  --ocean-accent: #4a90a4;         /* Muted teal */
-  --ocean-deep: #0d1b2a;           /* Very dark navy */
-  --ocean-light: #f8fafb;          /* Almost white with hint of blue */
-  --ocean-foam: #e8f0f5;           /* Very light blue-gray */
-  --ocean-gradient: linear-gradient(135deg, #2c5aa0 0%, #1e3a5f 50%, #0d1b2a 100%);
-  --surface-gradient: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
-  --shadow-ocean: rgba(44, 90, 160, 0.08);
-  --glow-whale: rgba(74, 144, 164, 0.2);
+  /* Quantum-inspired colors */
+  --quantum-primary: #1a237e;        /* Deep quantum blue */
+  --quantum-secondary: #283593;      /* Quantum state blue */
+  --quantum-accent: #00e676;         /* Quantum green (entanglement) */
+  --quantum-particle: #ff6d00;       /* Particle orange */
+  --quantum-wave: #e1f5fe;           /* Wave function blue */
+  --quantum-dark: #0d1421;           /* Deep space */
+  --quantum-light: #f8faff;          /* Laboratory white */
+  --quantum-gradient: linear-gradient(135deg, #1a237e 0%, #283593 50%, #0d1421 100%);
+  --surface-gradient: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
+  --shadow-quantum: rgba(26, 35, 126, 0.15);
+  --glow-quantum: rgba(0, 230, 118, 0.3);
   
-  /* Elegant Text Colors */
-  --text-primary: #1a202c;         /* Rich black */
-  --text-secondary: #4a5568;       /* Medium gray */
-  --text-light: #718096;           /* Light gray */
-  --text-accent: #2c5aa0;          /* Ocean blue for accents */
+  /* Scientific text colors */
+  --text-primary: #1a1a1a;
+  --text-secondary: #424242;
+  --text-accent: #1a237e;
+  --text-quantum: #00e676;
+  
+  /* Grid and measurement units */
+  --grid-unit: 8px;
+  --golden-ratio: 1.618;
 }
+
+/* Scientific Typography */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;700&family=IBM+Plex+Serif:wght@400;600&display=swap');
 
 body {
-  font-family: 'Lora', Georgia, serif;
-  line-height: 1.7;
-  background: linear-gradient(to bottom, #ffffff 0%, #f8fafb 100%);
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: calc(var(--golden-ratio) * 1em);
+  background: linear-gradient(180deg, #ffffff 0%, var(--quantum-light) 100%);
   color: var(--text-primary);
   font-size: 16px;
-  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
-/* Smooth animations */
-* {
-  transition: all 0.3s ease;
+/* Code and technical elements */
+code, pre, .formula {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  background: rgba(26, 35, 126, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  border: 1px solid rgba(26, 35, 126, 0.1);
 }
 
-/* Enhanced navbar - Subtle Ocean theme */
-.navbar-custom {
-  background: var(--ocean-gradient) !important;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 2px 20px var(--shadow-ocean);
-  border-bottom: 1px solid rgba(44, 90, 160, 0.1);
+/* Scientific headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'IBM Plex Serif', Georgia, serif;
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.2;
+  position: relative;
 }
 
-.navbar-custom .navbar-brand {
-  font-family: 'Merriweather', serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: white !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+h1::before, h2::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--quantum-accent) 0%, var(--quantum-primary) 100%);
+  border-radius: 2px;
 }
 
-.navbar-nav .nav-link {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9) !important;
-  letter-spacing: 0.3px;
+/* Quantum-inspired animations */
+@keyframes quantum-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 0 10px rgba(0, 230, 118, 0);
+    transform: scale(1.02);
+  }
 }
 
-.navbar-nav .nav-link:hover {
-  color: white !important;
+@keyframes particle-float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  33% { 
+    transform: translateY(-8px) rotate(120deg); 
+  }
+  66% { 
+    transform: translateY(4px) rotate(240deg); 
+  }
 }
 
-/* Whale avatar enhancement */
+@keyframes wave-function {
+  0% { transform: translateX(-100%) scaleY(1); }
+  50% { transform: translateX(0%) scaleY(1.5); }
+  100% { transform: translateX(100%) scaleY(1); }
+}
+
+/* Apply quantum animations */
 .avatar-container .avatar-img-border {
-  border: 2px solid var(--ocean-accent);
-  border-radius: 50%;
-  transition: all 0.4s ease;
-  box-shadow: 0 0 15px var(--glow-whale);
-  background: linear-gradient(45deg, rgba(255,255,255,0.05), rgba(74,144,164,0.05));
+  animation: quantum-pulse 4s ease-in-out infinite;
+  border: 2px solid var(--quantum-accent);
+  box-shadow: 0 0 20px var(--glow-quantum);
 }
 
-.avatar-container:hover .avatar-img-border {
-  transform: scale(1.05) rotate(1deg);
-  border-color: var(--ocean-primary);
-  box-shadow: 0 0 25px rgba(44, 90, 160, 0.3);
-}
-
-/* Enhanced buttons - Subtle Ocean theme */
-.btn {
-  border-radius: 25px;
-  font-weight: 500;
-  font-family: 'Roboto', sans-serif;
-  letter-spacing: 0.3px;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background: var(--ocean-gradient) !important;
-  border: none;
-  box-shadow: 0 3px 12px var(--shadow-ocean);
-  color: white !important;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(44, 90, 160, 0.2);
-  color: white !important;
-}
-
-/* Elegant blog post cards */
 .post-preview {
-  background: var(--surface-gradient);
-  border-radius: 16px;
-  padding: 2.5rem;
-  margin-bottom: 2.5rem;
-  border: 1px solid rgba(44, 90, 160, 0.06);
-  box-shadow: 0 4px 20px rgba(44, 90, 160, 0.04);
-  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
 }
 
-.post-preview::before {
+.post-preview::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
-  background: var(--ocean-gradient);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-  transform-origin: left;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--quantum-accent) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: wave-function 3s ease-in-out infinite;
 }
 
-.post-preview:hover::before {
-  transform: scaleX(1);
-}
-
-.post-preview:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 35px rgba(44, 90, 160, 0.08);
-  border-color: rgba(44, 90, 160, 0.12);
-}
-
-/* Elegant blog post titles */
-.post-preview .post-title a,
-.post-preview h2 a,
-.post-preview h3 a {
-  color: var(--text-primary) !important;
-  font-family: 'Merriweather', serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1.3;
+/* Scientific UI Components */
+.scientific-card {
+  background: var(--surface-gradient);
+  border: 1px solid rgba(26, 35, 126, 0.1);
+  border-radius: 12px;
+  padding: calc(var(--grid-unit) * 3);
+  margin-bottom: calc(var(--grid-unit) * 3);
   position: relative;
-  text-decoration: none;
-  transition: color 0.3s ease;
+  box-shadow: 0 4px 20px var(--shadow-quantum);
 }
 
-.post-preview .post-title a:hover,
-.post-preview h2 a:hover,
-.post-preview h3 a:hover {
-  color: var(--text-accent) !important;
+.scientific-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--quantum-accent) 50%, transparent 100%);
 }
 
-/* Elegant blog post content */
-.post-preview .post-content,
-.post-preview .post-excerpt,
-.post-preview p {
-  color: var(--text-secondary) !important;
-  font-family: 'Lora', Georgia, serif;
-  line-height: 1.7;
-  font-size: 1rem;
-  margin-bottom: 1.2rem;
-}
-
-/* Blog post meta - Refined */
-.post-preview .post-meta,
-.post-preview .blog-post-meta {
-  color: var(--text-light) !important;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.85rem;
+/* Quantum tags */
+.quantum-tag {
+  background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-secondary));
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75em;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.8;
-}
-
-.post-preview .post-meta a {
-  color: var(--text-accent) !important;
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.post-preview .post-meta a:hover {
-  color: var(--ocean-primary) !important;
-}
-
-/* Elegant tags */
-.post-preview .blog-tags a,
-.post-preview .post-tags a {
-  background: rgba(44, 90, 160, 0.05);
-  color: var(--text-accent) !important;
-  padding: 5px 12px;
-  border-radius: 15px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-right: 8px;
-  margin-bottom: 5px;
-  text-decoration: none;
-  border: 1px solid rgba(44, 90, 160, 0.1);
-  transition: all 0.3s ease;
-  display: inline-block;
-  letter-spacing: 0.2px;
-}
-
-.post-preview .blog-tags a:hover,
-.post-preview .post-tags a:hover {
-  background: var(--ocean-primary);
-  color: white !important;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px var(--shadow-ocean);
-}
-
-/* Elegant read more buttons */
-.post-preview .read-more,
-.post-preview a[href*="read-more"] {
-  color: var(--text-accent) !important;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  display: inline-block;
-  padding: 8px 18px;
-  border: 1px solid var(--ocean-primary);
-  border-radius: 20px;
-  margin-top: 15px;
-  background: transparent;
+  letter-spacing: 0.05em;
   position: relative;
   overflow: hidden;
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
 }
 
-.post-preview .read-more::before {
+.quantum-tag::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: var(--ocean-primary);
-  transition: left 0.3s ease;
-  z-index: -1;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 2s infinite;
 }
 
-.post-preview .read-more:hover::before {
-  left: 0;
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
 
-.post-preview .read-more:hover {
-  color: white !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px var(--shadow-ocean);
-}
-
-/* Refined pagination */
-.pagination .page-item .page-link {
-  background: white;
-  border: 1px solid rgba(44, 90, 160, 0.1);
-  color: var(--text-primary) !important;
+/* Scientific buttons */
+.btn-quantum {
+  background: linear-gradient(135deg, var(--quantum-primary) 0%, var(--quantum-secondary) 100%);
+  border: none;
+  color: white;
+  padding: 12px 24px;
   border-radius: 8px;
-  margin: 0 4px;
-  padding: 10px 15px;
-  transition: all 0.3s ease;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.pagination .page-item .page-link:hover,
-.pagination .page-item.active .page-link {
-  background: var(--ocean-primary) !important;
-  color: white !important;
-  border-color: var(--ocean-primary) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px var(--shadow-ocean);
-}
-
-/* Enhanced footer */
-.footer {
-  background: var(--ocean-gradient) !important;
-  padding: 3rem 0;
-  color: white;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footer a {
-  color: rgba(255, 255, 255, 0.8) !important;
-  font-family: 'Roboto', sans-serif;
-}
-
-.footer a:hover {
-  color: white !important;
-}
-
-/* Typography improvements */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Merriweather', serif;
-  color: var(--text-primary);
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-h1 { font-size: 2.2rem; }
-h2 { font-size: 1.8rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.3rem; }
-
-p {
-  font-family: 'Lora', Georgia, serif;
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
-/* Links styling */
-a {
-  color: var(--text-accent);
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-a:hover {
-  color: var(--ocean-primary);
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  body {
-    font-size: 15px;
-  }
-  
-  .post-preview {
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 12px;
-  }
-  
-  .post-preview .post-title a,
-  .post-preview h2 a,
-  .post-preview h3 a {
-    font-size: 1.3rem;
-  }
-  
-  h1 { font-size: 1.8rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.3rem; }
-}
-
-/* Whale-inspired animations - Subtle */
-@keyframes whale-float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-.avatar-container .avatar-img-border {
-  animation: whale-float 6s ease-in-out infinite;
-}
-
-/* Loading animation */
-.page-loading {
-  opacity: 0;
-  animation: fadeIn 0.8s ease forwards;
-}
-
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
-
-/* Selection styling */
-::selection {
-  background: rgba(44, 90, 160, 0.1);
-  color: var(--text-primary);
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--ocean-primary);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ocean-secondary);
-}
-
-/* Custom Search Box - Ocean Whale Theme - Consistent with Blog Design */
-.search-container {
-  position: relative;
-  max-width: 500px;
-  margin: 30px auto;
-  padding: 0 20px;
-}
-
-.search-wrapper {
-  position: relative;
-  background: var(--surface-gradient);
-  border-radius: 25px;
-  border: 2px solid rgba(44, 90, 160, 0.1);
-  box-shadow: 0 4px 20px var(--shadow-ocean);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.search-wrapper:hover {
-  border-color: rgba(44, 90, 160, 0.2);
-  box-shadow: 0 6px 25px rgba(44, 90, 160, 0.12);
-}
-
-.search-wrapper.focused {
-  border-color: var(--ocean-primary);
-  box-shadow: 0 8px 30px rgba(44, 90, 160, 0.2);
-  transform: translateY(-2px);
-}
-
-.search-input {
-  width: 100%;
-  padding: 15px 55px 15px 20px;
-  border: none;
-  background: transparent;
-  font-family: 'Lora', Georgia, serif;
-  font-size: 16px;
-  color: var(--text-primary);
-  outline: none;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-}
-
-.search-input::placeholder {
-  color: var(--text-light);
-  font-style: italic;
-  opacity: 0.7;
-}
-
-.search-input:focus::placeholder {
-  opacity: 0.5;
-  transform: translateX(5px);
-}
-
-.search-button {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background: var(--ocean-gradient);
-  border: none;
-  border-radius: 50%;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(44, 90, 160, 0.3);
-}
-
-.search-button:hover {
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 4px 15px rgba(44, 90, 160, 0.4);
-}
-
-.search-button:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-.search-icon {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
-
-/* Modern Search Modal Styles - Consistent with Theme */
-#beautifuljekyll-search-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(13, 27, 42, 0.85);
-  backdrop-filter: blur(10px);
-  z-index: 9999;
-  display: none;
-  animation: fadeIn 0.3s ease;
-}
-
-.modern-search-container {
-  max-width: 600px;
-  margin: 5% auto;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(44, 90, 160, 0.3);
-  overflow: hidden;
-  animation: slideUp 0.3s ease;
-}
-
-.search-header {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid rgba(44, 90, 160, 0.1);
-  background: var(--surface-gradient);
-}
-
-.search-input-wrapper {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-header .search-icon {
-  position: absolute;
-  left: 15px;
-  color: var(--text-light);
-  z-index: 1;
-  width: 20px;
-  height: 20px;
-}
-
-#modern-search-input {
-  width: 100%;
-  padding: 15px 50px 15px 50px;
-  border: 2px solid rgba(44, 90, 160, 0.1);
-  border-radius: 25px;
-  font-size: 16px;
-  font-family: 'Lora', Georgia, serif;
-  background: white;
-  color: var(--text-primary);
-  transition: all 0.3s ease;
-}
-
-#modern-search-input:focus {
-  outline: none;
-  border-color: var(--ocean-primary);
-  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
-}
-
-.search-loading {
-  position: absolute;
-  right: 15px;
-}
-
-.loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(44, 90, 160, 0.2);
-  border-top: 2px solid var(--ocean-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.search-close {
-  background: none;
-  border: none;
-  padding: 10px;
-  margin-left: 15px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  color: var(--text-light);
-}
-
-.search-close:hover {
-  background: rgba(44, 90, 160, 0.1);
-  color: var(--ocean-primary);
-}
-
-.search-results {
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 10px 0;
-}
-
-.search-result-item {
-  padding: 15px 20px;
-  border-bottom: 1px solid rgba(44, 90, 160, 0.05);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.search-result-item:hover,
-.search-result-item.selected {
-  background: rgba(44, 90, 160, 0.03);
-  padding-left: 25px;
-}
-
-.result-title {
-  font-family: 'Merriweather', serif;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--text-primary);
-  margin-bottom: 5px;
-  line-height: 1.3;
-}
-
-.result-excerpt {
-  font-family: 'Lora', Georgia, serif;
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
-.result-meta {
-  font-family: 'Roboto', sans-serif;
-  font-size: 12px;
-  color: var(--text-light);
-  margin-top: 5px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.search-suggestions {
-  padding: 20px;
-  text-align: center;
-  color: var(--text-light);
+.btn-quantum:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(26, 35, 126, 0.3);
+  color: white;
 }
 
-.suggestion-item {
-  padding: 15px;
-  background: rgba(44, 90, 160, 0.03);
-  border-radius: 8px;
-  margin: 10px 0;
-  font-family: 'Lora', Georgia, serif;
-  font-style: italic;
+.btn-quantum::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
-.search-footer {
-  padding: 15px 20px;
-  background: var(--ocean-foam);
-  border-top: 1px solid rgba(44, 90, 160, 0.1);
+.btn-quantum:hover::after {
+  width: 300px;
+  height: 300px;
 }
 
-.search-shortcuts {
-  display: flex;
-  gap: 20px;
-  font-size: 12px;
-  color: var(--text-light);
-  font-family: 'Roboto', sans-serif;
-}
-
-.search-shortcuts kbd {
-  background: white;
-  border: 1px solid rgba(44, 90, 160, 0.2);
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 11px;
-  margin: 0 2px;
-  box-shadow: 0 1px 2px rgba(44, 90, 160, 0.1);
-}
-
-.highlight {
-  background: rgba(44, 90, 160, 0.15);
-  padding: 1px 3px;
-  border-radius: 3px;
-  color: var(--ocean-primary);
-  font-weight: 600;
-}
-
-/* Animations */
-@keyframes slideUp {
-  from { 
-    transform: translateY(30px); 
-    opacity: 0; 
-  }
-  to { 
-    transform: translateY(0); 
-    opacity: 1; 
-  }
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .search-container {
-    margin: 20px auto;
-    padding: 0 15px;
-  }
-  
-  .search-input {
-    padding: 12px 50px 12px 16px;
-    font-size: 15px;
-  }
-  
-  .search-button {
-    width: 36px;
-    height: 36px;
-    right: 3px;
-  }
-  
-  .search-icon {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .modern-search-container {
-    margin: 20px;
-    max-width: none;
-  }
-  
-  .search-shortcuts {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-
-/* Whale-inspired search animation */
-@keyframes whale-search-float {
+/* Quantum search animation */
+@keyframes quantum-search-pulse {
   0%, 100% { 
-    transform: translateY(-50%) scale(1); 
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4);
   }
   50% { 
-    transform: translateY(-52%) scale(1.02); 
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 0 0 8px rgba(0, 230, 118, 0);
   }
 }
 
 .search-wrapper.focused .search-button {
-  animation: whale-search-float 3s ease-in-out infinite;
+  animation: quantum-search-pulse 2s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-accent));
+}
+
+/* Scientific search placeholder */
+.search-input::placeholder {
+  content: "Something from the quantum realm...";
+}
+
+/* Scientific grid layout */
+.scientific-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: calc(var(--grid-unit) * 3);
+  margin: calc(var(--grid-unit) * 4) 0;
+}
+
+/* Update post previews */
+.post-preview {
+  background: var(--surface-gradient);
+  border: 1px solid rgba(26, 35, 126, 0.08);
+  border-radius: 12px;
+  padding: calc(var(--grid-unit) * 3);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.post-preview:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(26, 35, 126, 0.15);
+  border-color: var(--quantum-accent);
+}
+
+/* Scientific metadata */
+.post-meta-scientific {
+  display: flex;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8em;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.post-meta-scientific .meta-item {
+  padding: 4px 8px;
+  background: rgba(26, 35, 126, 0.05);
+  border-radius: 4px;
+  border: 1px solid rgba(26, 35, 126, 0.1);
 }

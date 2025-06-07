@@ -120,12 +120,28 @@ const ModernSearch = {
         </div>
         <div class="search-footer">
           <div class="search-shortcuts">
-            <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> Navigate</span>
-            <span><kbd>Enter</kbd> Select</span>
-            <span><kbd>Esc</kbd> Close</span>
+            <span><kbd class="key-button">&uarr;</kbd><kbd class="key-button">&darr;</kbd> Navigate</span>
+            <span><kbd class="key-button">Enter</kbd> Select</span>
+            <span><kbd class="key-button">Esc</kbd> Close</span>
           </div>
         </div>
-      </div>
+
+        <style>
+          .key-button {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            color: #333;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 0 0 2px #fff;
+            margin: 0 2px;
+            font-family: monospace;
+          }
+        </style>
+              </div>
     `;
     
     searchOverlay.innerHTML = modernHTML;

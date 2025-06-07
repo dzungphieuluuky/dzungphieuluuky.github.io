@@ -223,8 +223,8 @@ const ModernSearch = {
     if (results.length === 0) {
       container.innerHTML = `
         <div class="search-suggestions">
-          <div class="suggestion-item">🔍 No results found for "${query}"</div>
-          <div class="suggestion-item">💡 Try different keywords or check spelling</div>
+          <div class="suggestion-item">🔍 OOPS, no sign of existence for "${query}"</div>
+          <div class="suggestion-item">💡 Rephrase the finding spell to reveal it...</div>
         </div>
       `;
       return;
@@ -262,9 +262,9 @@ const ModernSearch = {
     if (container) {
       container.innerHTML = `
         <div class="search-suggestions">
-          <div class="suggestion-item">🌊 Start typing to explore the depths...</div>
-          <div class="suggestion-item">🐋 Discover posts, topics, and ideas</div>
-          <div class="suggestion-item">⚡ Use keyboard shortcuts for navigation</div>
+          <div class="suggestion-item">🌊 Accio! Something is coming to you...</div>
+          <div class="suggestion-item">🐋 Reverio! Discover ideas, magics, spells,...</div>
+          <div class="suggestion-item">⚡ Quantum teleportation with keyboard shortcuts</div>
         </div>
       `;
     }

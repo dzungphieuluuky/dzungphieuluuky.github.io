@@ -299,3 +299,54 @@ footer .copyright {
   color: var(--color-text-secondary);
   cursor: pointer;
 }
+
+:root {
+  --font-size-base: 18px;
+  --line-height-base: 1.7;
+  --color-text-primary: #0b0b0b;
+  --color-primary: #0a66ff;
+  --color-accent: #1a237e;
+  --color-bg: #fff;
+}
+
+body {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+/* 2. Body Paragraph Styling for Optimal Reading
+/* ========================================================================== */
+
+.blog-post p,
+.page-content p {
+  color: var(--color-text-primary);
+  max-width: 70ch;
+  margin-bottom: 1.5rem;
+}
+
+/* 3. Heading Style Adjustments
+/* ========================================================================== */
+
+.blog-post h1,
+.blog-post h2,
+.page-content h1,
+.page-content h2 {
+  position: relative;
+  padding-left: 20px;
+}
+
+.blog-post h1::before,
+.blog-post h2::before,
+.page-content h1::before,
+.page-content h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5%;
+  height: 90%;
+  width: 5px;
+  background: linear-gradient(180deg, var(--color-accent) 0%, var(--color-primary) 100%);
+  border-radius: 2px;
+}

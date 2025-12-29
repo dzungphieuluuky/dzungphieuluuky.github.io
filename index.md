@@ -11,7 +11,7 @@ I'm a science enthusiast and a student fascinated by the intersection of mathema
 
 # Interests
 Currently, my main interests are:
-- **🤖 Reinforcement Learning**: a subfield of artificial intelligence that create smart agents that can do things through trials and errors.
+- **Reinforcement Learning**: a subfield of artificial intelligence that create smart agents that can do things through trials and errors.
 - **Quantum Computing**: a field that try to use the magic of quantum physics to develop computers.
 - **Diffusion Models**: a kind of models that's inspired from diffusion process to build generative model, just curious about them recently.
 

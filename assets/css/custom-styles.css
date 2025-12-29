@@ -29,12 +29,21 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;700&family=IBM+Plex+Serif:wght@400;600&display=swap');
 
 body {
-font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-line-height: calc(var(--golden-ratio) * 1em);
-background: linear-gradient(180deg, #ffffff 0%, var(--quantum-light) 100%);
-color: var(--text-primary);
-font-size: 16px;
-letter-spacing: 0.02em;
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.7; /* Increased for readability */
+  background: linear-gradient(180deg, #ffffff 0%, var(--quantum-light) 100%);
+  color: #23272f; /* Slightly softer than pure black */
+  font-size: 18px; /* Increased font size */
+  letter-spacing: 0.01em; /* Slightly reduced for clarity */
+  font-weight: 400; /* Lighter weight for body text */
+}
+
+p {
+  margin-bottom: 1.5em;
+  font-size: 1.08em; /* Slightly larger paragraphs */
+  line-height: 1.8;  /* More vertical space */
+  color: #23272f;
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Code and technical elements */

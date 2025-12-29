@@ -1,599 +1,301 @@
-/* Scientific Quantum Computing Theme Variables */
+/*
+ * Professional Theme: "Elegant Slate"
+ * A clean, minimalist, and content-focused theme.
+ */
+
+/* 1. Root Variables & Base Setup
+/* ========================================================================== */
 :root {
-  /* Quantum-inspired colors */
-  --quantum-primary: #1a237e;        /* Deep quantum blue */
-  --quantum-secondary: #283593;      /* Quantum state blue */
-  --quantum-accent: #00e676;         /* Quantum green (entanglement) */
-  --quantum-particle: #ff6d00;       /* Particle orange */
-  --quantum-wave: #e1f5fe;           /* Wave function blue */
-  --quantum-dark: #0d1421;           /* Deep space */
-  --quantum-light: #f8faff;          /* Laboratory white */
-  --quantum-gradient: linear-gradient(135deg, #1a237e 0%, #283593 50%, #0d1421 100%);
-  --surface-gradient: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
-  --shadow-quantum: rgba(26, 35, 126, 0.15);
-  --glow-quantum: rgba(0, 230, 118, 0.3);
-  
-  /* Scientific text colors */
-  --text-primary: #1a1a1a;
-  --text-secondary: #424242;
-  --text-accent: #1a237e;
-  --text-quantum: #00e676;
-  
-  /* Grid and measurement units */
+  /* Color Palette */
+  --color-primary: #2d3748;          /* Deep Slate Blue (for headings, primary UI) */
+  --color-accent: #4fd1c5;           /* Soft Teal (for links, highlights, actions) */
+  --color-text-primary: #1a202c;     /* Darkest Slate (for strong text) */
+  --color-text-secondary: #4a5568;   /* Medium Slate (for body text, subtitles) */
+  --color-border: #e2e8f0;           /* Light Grey (for borders, dividers) */
+  --color-surface: #ffffff;          /* Pure White (for card backgrounds) */
+  --color-background: #f7fafc;       /* Off-White (for main page background) */
+
+  /* Shadows (creates depth) */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Typography */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'IBM Plex Serif', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+
+  /* Spacing & Layout */
   --grid-unit: 8px;
-  --golden-ratio: 1.618;
+  --border-radius: 8px;
 }
 
-/* Scientific Typography */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;700&family=IBM+Plex+Serif:wght@400;600&display=swap');
-
+/* Base body styles for readability */
 body {
-  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: calc(var(--golden-ratio) * 1em);
-  background: linear-gradient(180deg, #ffffff 0%, var(--quantum-light) 100%);
-  color: var(--text-primary);
-  font-size: 16px;
-  letter-spacing: 0.02em;
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Code and technical elements */
-code, pre, .formula {
-  font-family: 'JetBrains Mono', 'Consolas', monospace;
-  background: rgba(26, 35, 126, 0.05);
+/* 2. Typography
+/* ========================================================================== */
+
+/* Headings: Clean, clear, and professional */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Code blocks and inline code */
+code, pre {
+  font-family: var(--font-mono);
+  background-color: rgba(45, 55, 72, 0.05);
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.9em;
-  border: 1px solid rgba(26, 35, 126, 0.1);
+  border: 1px solid var(--color-border);
 }
 
-/* Scientific headings */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'IBM Plex Serif', Georgia, serif;
-  color: var(--text-primary);
-  font-weight: 600;
-  line-height: 1.2;
-  position: relative;
+pre {
+  padding: calc(var(--grid-unit) * 2);
+  overflow-x: auto;
 }
 
-h1::before, h2::before {
-  content: '';
-  position: absolute;
-  left: -20px;
-  top: 0;
-  width: 3px;
-  height: 100%;
-  background: linear-gradient(180deg, var(--quantum-accent) 0%, var(--quantum-primary) 100%);
-  border-radius: 2px;
+/* Links */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
 }
 
-/* Quantum-inspired animations */
-@keyframes quantum-pulse {
-  0%, 100% { 
-    box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4);
-    transform: scale(1);
-  }
-  50% { 
-    box-shadow: 0 0 0 10px rgba(0, 230, 118, 0);
-    transform: scale(1.02);
-  }
+a:hover {
+  color: var(--color-primary);
 }
 
-@keyframes particle-float {
-  0%, 100% { 
-    transform: translateY(0px) rotate(0deg); 
-  }
-  33% { 
-    transform: translateY(-8px) rotate(120deg); 
-  }
-  66% { 
-    transform: translateY(4px) rotate(240deg); 
-  }
+
+/* 3. Layout & Components
+/* ========================================================================== */
+
+/* Main Navigation */
+.navbar-custom {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.3s ease;
 }
 
-@keyframes wave-function {
-  0% { transform: translateX(-100%) scaleY(1); }
-  50% { transform: translateX(0%) scaleY(1.5); }
-  100% { transform: translateX(100%) scaleY(1); }
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+  color: var(--color-primary) !important;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
-/* Apply quantum animations */
+.navbar-custom .nav-link:hover {
+  color: var(--color-accent) !important;
+}
+
+/* Avatar in Navigation */
 .avatar-container .avatar-img-border {
-  animation: quantum-pulse 4s ease-in-out infinite;
-  border: 2px solid var(--quantum-accent);
-  box-shadow: 0 0 20px var(--glow-quantum);
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 0 15px rgba(79, 209, 197, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.avatar-container .avatar-img-border:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(79, 209, 197, 0.6);
+}
+
+/* Post Preview Cards (Homepage) */
 .post-preview {
-  position: relative;
-  overflow: hidden;
-}
-
-.post-preview::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--quantum-accent) 50%, transparent 100%);
-  transform: translateX(-100%);
-  animation: wave-function 3s ease-in-out infinite;
-}
-
-/* Scientific UI Components */
-.scientific-card {
-  background: var(--surface-gradient);
-  border: 1px solid rgba(26, 35, 126, 0.1);
-  border-radius: 12px;
-  padding: calc(var(--grid-unit) * 3);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: calc(var(--grid-unit) * 4);
   margin-bottom: calc(var(--grid-unit) * 3);
-  position: relative;
-  box-shadow: 0 4px 20px var(--shadow-quantum);
-}
-
-.scientific-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--quantum-accent) 50%, transparent 100%);
-}
-
-/* Quantum tags */
-.quantum-tag {
-  background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-secondary));
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75em;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  position: relative;
-  overflow: hidden;
-}
-
-.quantum-tag::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-/* Scientific buttons */
-.btn-quantum {
-  background: linear-gradient(135deg, var(--quantum-primary) 0%, var(--quantum-secondary) 100%);
-  border: none;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.btn-quantum:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(26, 35, 126, 0.3);
-  color: white;
-}
-
-.btn-quantum::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-.btn-quantum:hover::after {
-  width: 300px;
-  height: 300px;
-}
-
-/* Quantum search animation */
-@keyframes quantum-search-pulse {
-  0%, 100% { 
-    transform: translateY(-50%) scale(1);
-    box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4);
-  }
-  50% { 
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 0 0 8px rgba(0, 230, 118, 0);
-  }
-}
-
-.search-wrapper.focused .search-button {
-  animation: quantum-search-pulse 2s ease-in-out infinite;
-  background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-accent));
-}
-
-/* Add correct placeholder styling */
-.search-input::placeholder,
-#modern-search-input::placeholder,
-#nav-search-input::placeholder {
-  color: var(--text-secondary);
-  font-style: italic;
-}
-
-/* Scientific grid layout */
-.scientific-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: calc(var(--grid-unit) * 3);
-  margin: calc(var(--grid-unit) * 4) 0;
-}
-
-/* Update post previews */
-.post-preview {
-  background: var(--surface-gradient);
-  border: 1px solid rgba(26, 35, 126, 0.08);
-  border-radius: 12px;
-  padding: calc(var(--grid-unit) * 3);
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .post-preview:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(26, 35, 126, 0.15);
-  border-color: var(--quantum-accent);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent);
 }
 
-/* Scientific metadata */
-.post-meta-scientific {
-  display: flex;
-  gap: 12px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8em;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
+.post-preview .post-title {
+  font-family: var(--font-serif);
+  color: var(--color-primary);
+  margin-bottom: 12px;
 }
 
-.post-meta-scientific .meta-item {
-  padding: 4px 8px;
-  background: rgba(26, 35, 126, 0.05);
-  border-radius: 4px;
-  border: 1px solid rgba(26, 35, 126, 0.1);
+.post-preview .post-title a {
+  color: inherit;
 }
 
-/* Modern Search Styles */
-.modern-search-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 600px;
-  background: var(--surface-gradient);
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(26, 35, 126, 0.3);
-  border: 1px solid rgba(26, 35, 126, 0.1);
-  z-index: 9999;
+/* Tags / Badges */
+.blog-tags a, .theme-tag {
+  display: inline-block;
+  background-color: rgba(79, 209, 197, 0.1);
+  color: var(--color-accent);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.search-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(26, 35, 126, 0.1);
-  display: flex;
-  gap: 12px;
-  align-items: center;
+.blog-tags a:hover, .theme-tag:hover {
+  background-color: var(--color-accent);
+  color: var(--color-surface);
 }
 
-.search-input-wrapper {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
+/* Buttons */
+.btn-primary, .btn-theme-primary {
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.search-icon {
-  position: absolute;
-  left: 12px;
-  width: 18px;
-  height: 18px;
-  color: var(--text-secondary);
-  z-index: 1;
+.btn-primary:hover, .btn-theme-primary:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  color: white;
 }
 
-#modern-search-input {
-  width: 100%;
-  padding: 12px 16px 12px 40px;
-  border: 2px solid rgba(26, 35, 126, 0.1);
-  border-radius: 8px;
-  font-size: 16px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--text-primary);
-  transition: all 0.3s ease;
+/* Footer */
+footer {
+  background-color: var(--color-primary);
+  color: rgba(255, 255, 255, 0.7);
+  padding: calc(var(--grid-unit) * 6) 0;
+  margin-top: calc(var(--grid-unit) * 8);
 }
 
-#modern-search-input:focus {
-  outline: none;
-  border-color: var(--quantum-accent);
-  box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
+footer a {
+  color: var(--color-accent);
 }
 
-.search-loading {
-  position: absolute;
-  right: 12px;
-  display: flex;
-  align-items: center;
+footer a:hover {
+  color: var(--color-surface);
 }
 
-.loading-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--quantum-accent);
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+footer .copyright {
+  color: rgba(255, 255, 255, 0.5);
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
-.search-close {
-  padding: 8px;
-  background: rgba(26, 35, 126, 0.05);
-  border: 1px solid rgba(26, 35, 126, 0.1);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+/* 4. Search Modal
+/* ========================================================================== */
 
-.search-close:hover {
-  background: rgba(26, 35, 126, 0.1);
-  transform: scale(1.05);
-}
-
-.search-close svg {
-  width: 20px;
-  height: 20px;
-  color: var(--text-secondary);
-}
-
-.search-results {
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 0;
-}
-
-.search-suggestions {
-  padding: 20px;
-}
-
-.suggestion-item {
-  padding: 12px 16px;
-  color: var(--text-secondary);
-  font-size: 14px;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  background: rgba(26, 35, 126, 0.03);
-  border: 1px solid rgba(26, 35, 126, 0.05);
-}
-
-.search-result-item {
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(26, 35, 126, 0.05);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.search-result-item:hover,
-.search-result-item.selected {
-  background: rgba(0, 230, 118, 0.05);
-  border-left: 3px solid var(--quantum-accent);
-}
-
-.result-title {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-  font-size: 16px;
-}
-
-.result-excerpt {
-  color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.4;
-  margin-bottom: 4px;
-}
-
-.result-meta {
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.highlight {
-  background: rgba(0, 230, 118, 0.2);
-  color: var(--quantum-primary);
-  font-weight: 600;
-  padding: 1px 2px;
-  border-radius: 2px;
-}
-
-.search-footer {
-  padding: 12px 20px;
-  border-top: 1px solid rgba(26, 35, 126, 0.1);
-  background: rgba(26, 35, 126, 0.02);
-}
-
-.search-shortcuts {
-  display: flex;
-  gap: 16px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* Overlay background */
+/* Search Overlay Background */
 #beautifuljekyll-search-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(13, 20, 33, 0.8);
+  background-color: rgba(26, 32, 44, 0.8);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 9998;
-  display: flex;
-  align-items: center;
+  display: none; /* Controlled by JS */
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 15vh;
 }
 
-.overflow-hidden {
+/* Search Modal Container */
+#beautifuljekyll-search-overlay .search-container {
+  width: 90%;
+  max-width: 600px;
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
   overflow: hidden;
 }
 
-/* Scientific Navigation */
-.navbar {
-  background: linear-gradient(135deg, var(--quantum-primary) 0%, var(--quantum-secondary) 100%);
-  border-bottom: 1px solid rgba(0, 230, 118, 0.2);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.navbar-brand {
-  font-family: 'IBM Plex Serif', serif;
-  font-weight: 600;
-  color: var(--quantum-light) !important;
-}
-
-.navbar-nav .nav-link {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  color: var(--quantum-light) !important;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.navbar-nav .nav-link:hover {
-  color: var(--quantum-accent) !important;
-  transform: translateY(-1px);
-}
-
-.navbar-nav .nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--quantum-accent);
-  transition: width 0.3s ease;
-}
-
-.navbar-nav .nav-link:hover::after {
+/* Search Input */
+#nav-search-input {
   width: 100%;
+  padding: 16px 20px;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 1.1rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  outline: none;
 }
 
-/* Scientific Post Cards */
-.post-preview {
-  background: var(--surface-gradient);
-  border: 1px solid rgba(26, 35, 126, 0.08);
-  border-radius: 12px;
-  padding: calc(var(--grid-unit) * 3);
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-bottom: calc(var(--grid-unit) * 3);
+#nav-search-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
 }
 
-.post-preview:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(26, 35, 126, 0.15);
-  border-color: var(--quantum-accent);
+/* Search Results */
+#search-results-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--grid-unit);
 }
 
-.post-preview .post-title {
-  font-family: 'IBM Plex Serif', serif;
-  color: var(--quantum-primary);
-  margin-bottom: 12px;
+#search-results-container li {
+  padding: 12px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.post-preview .post-title a {
-  color: inherit;
-  text-decoration: none;
-  transition: color 0.3s ease;
+#search-results-container li:hover {
+  background-color: var(--color-background);
 }
 
-.post-preview .post-title a:hover {
-  color: var(--quantum-accent);
+#search-results-container li a {
+  font-weight: 500;
+  color: var(--color-primary);
+  display: block;
 }
 
-/* Scientific Footer */
-.footer {
-  background: var(--quantum-gradient);
-  color: var(--quantum-light);
-  padding: calc(var(--grid-unit) * 6) 0;
-  margin-top: calc(var(--grid-unit) * 8);
+#search-results-container li small {
+  color: var(--color-text-secondary);
+  font-size: 0.9em;
+  display: block;
+  margin-top: 4px;
 }
 
-.footer a {
-  color: var(--quantum-accent);
-  transition: all 0.3s ease;
+#search-no-results {
+  padding: 2rem;
+  text-align: center;
 }
 
-.footer a:hover {
-  color: var(--quantum-light);
-  text-decoration: none;
-}
-
-/* Scientific Avatar */
-.avatar-container {
-  position: relative;
-  display: inline-block;
-}
-
-.avatar-img-border {
-  border: 3px solid var(--quantum-accent);
-  border-radius: 50%;
-  box-shadow: 0 0 20px var(--glow-quantum);
-  transition: all 0.3s ease;
-}
-
-.avatar-img-border:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px var(--glow-quantum);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .modern-search-container {
-    width: 95%;
-    margin: 20px auto;
-  }
-  
-  .scientific-grid {
-    grid-template-columns: 1fr;
-    gap: calc(var(--grid-unit) * 2);
-  }
-  
-  h1::before, h2::before {
-    left: -12px;
-    width: 2px;
-  }
+/* Search Close Button (integrated into search.html JS) */
+#nav-search-exit {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
 }

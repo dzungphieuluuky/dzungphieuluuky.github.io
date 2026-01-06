@@ -2,11 +2,11 @@
 layout: post
 title: Why I started a blog
 subtitle: A change in my journey
-cover-img: /assets/img/blog-cover.jpg
-thumbnail-img: /assets/img/blog-thumbnail.jpg
-share-img: /assets/img/blog-cover.jpg
-tags: [misc]
-author: Dung Pham
+cover-img:
+thumbnail-img:
+share-img:
+tags: [personal, learning-journey]
+author: dzungphieuluuky
 ---
 
 The first day I came to university, I met this guy. He is a smart guy, having graduated from a famous high school in Ho Chi Minh City. In other words, he is really really good at maths. In the first lecture on Introduction to Programming, I came to the class late by about 15 minutes. All the seats seem to be full, only one seat beside this guy's seat is empty, so yeah I jumped right to the seat. 

@@ -205,19 +205,19 @@ python FontDiffusion/export_hf_dataset_to_disk.py \
 **Khi git clone**: Sử dụng khi có nhiều GPU để tăng tốc tạo dữ liệu.
 
 # Dataset
-Dataset đang dược host tại https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data.
+Dataset đang dược host tại [https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data](https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data).
 - Train original: tổng lượng data đã generate.
 - Train: data dùng để train sau khi split.
 - Val: data dùng để val sau khi split.
 
 # Models
-Các file model như content encoder, style encoder và unet đang được host ở https://huggingface.co/dzungpham/font-diffusion-weights. Các file đã được convert từ định dạng .pth cũ của tác giả thành file .safetensors để hoà hợp sinh thái của HF và xử lý nhanh hơn.
+Các file model như content encoder, style encoder và unet đang được host ở [https://huggingface.co/dzungpham/font-diffusion-weights](https://huggingface.co/dzungpham/font-diffusion-weights). Các file đã được convert từ định dạng .pth cũ của tác giả thành file .safetensors để hoà hợp sinh thái của HF và xử lý nhanh hơn.
 
 # Source code
-Code đang lưu ở github repository: https://github.com/dzungphieuluuky/FontDiffusion.git
+Code đang lưu ở github repository: [https://github.com/dzungphieuluuky/FontDiffusion.git](https://github.com/dzungphieuluuky/FontDiffusion.git)
 
 # Notebook
-Link notebook Kaggle: https://www.kaggle.com/code/dzung271828/font-diffusion
+Link notebook Kaggle: [https://www.kaggle.com/code/dzung271828/font-diffusion](https://www.kaggle.com/code/dzung271828/font-diffusion)
 
 # Weights and Biases
 Dữ liệu training và inference được lưu ở Weights and Biases.

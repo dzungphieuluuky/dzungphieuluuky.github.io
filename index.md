@@ -5,7 +5,7 @@ subtitle: "You don't have to be great to start, but you have to start to be grea
 ---
 
 # About Me
-My full name is Phạm Ngọc Dũng. I'm currently a third-year university undergraduate student majoring in information technology.  
+Hi there I'm dzungphieuluuky. I'm currently an undergraduate student with interest in physics and deep learning.
 
 I'm a science enthusiast and a student fascinated by the intersection of mathematics, computer science, and physics. 
 

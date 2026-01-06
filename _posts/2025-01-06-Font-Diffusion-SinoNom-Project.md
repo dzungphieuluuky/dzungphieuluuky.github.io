@@ -199,4 +199,4 @@ Một số hình ảnh log từ quá trình train Phase 1 (Perceptual loss và O
    - Unseen content seen style (UCSS)
    - Unseen content unseen style (UCUS)
 
-   Do đó hủ yếu đánh giá trên tập UCUS, khi cần debug performance cụ thể cho 1 yếu tố nào thì có thể dùng 2 tập SCUS và UCSS để xét riêng content hoặc style.
+   Do đó chủ yếu đánh giá trên tập UCUS, khi cần debug performance cụ thể cho 1 yếu tố nào thì có thể dùng 2 tập SCUS và UCSS để xét riêng content hoặc style.

@@ -227,5 +227,6 @@ Một số hình ảnh khi train phase 1 từ pretrained model với perceptual 
 ![offset loss](../figures/offset_loss.png)
 ![diffusion loss](../figures/diff_loss.png)
 
-# Kết luận
+# Hướng tiếp theo
 - Model gần như đã bão hoà với architecture hiện tại. Nếu tích hợp Style Transformation Module từ FSTDiff thì có thể làm tăng capacity khiến model tốt hơn nhưng cần nhiều thời gian debug các lỗi dimension mismatch giữa các module từ codebase hiện tại của FontDiffuser.
+- Có thể kết hợp cả 2 paper lại để áp dụng multi scale extraction cho cả ảnh content và ảnh style. Debug module style transformation và thêm hàm loss consistency và có thể các hàm loss hỗ trợ khác vô hàm loss tổng.

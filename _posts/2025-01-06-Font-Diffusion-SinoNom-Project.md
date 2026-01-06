@@ -41,24 +41,18 @@ Dưới đây là mô tả chức năng của các script chính trong repositor
 
 ### Nhóm Inference & Data Generation
 
-| Filename | Chức năng |
-| :--- | :--- |
-| **`sample_batch.py`** | Script tạo ảnh và đánh giá trên **1 GPU**. Sử dụng hash để tránh trùng lặp và hỗ trợ resume. |
-| **`sample_batch_multi_gpus.py`** | Phiên bản **đa GPU** (Recommended). Tăng tốc độ sinh dữ liệu (gấp đôi so với đơn GPU), đạt ~1.7s/sample. |
+- **`sample_batch.py`:** Script tạo ảnh và đánh giá trên **1 GPU**. Sử dụng hash để tránh trùng lặp và hỗ trợ resume.
+- **`sample_batch_multi_gpus.py`:** Phiên bản **đa GPU** (Recommended). Tăng tốc độ sinh dữ liệu (gấp đôi so với đơn GPU), đạt ~1.7s/sample.
 
 ### Nhóm Quản lý Dataset
 
-| Filename | Chức năng |
-| :--- | :--- |
-| **`create_hf_dataset.py`** | Chuyển đổi ảnh sang format HF Dataset (parquet) và upload lên Hub. |
-| **`export_hf_dataset_to_disk.py`** | Tải dataset từ HF và giải nén thành cấu trúc thư mục chuẩn (`ContentImage/`, `TargetImage/`) để training. |
-| **`create_validation_split.py`** | Chia tập dữ liệu thành Train/Val dựa trên tỷ lệ và seed, đảm bảo tính ngẫu nhiên của font/style. |
+- **`create_hf_dataset.py`:** Chuyển đổi ảnh sang format HF Dataset (parquet) và upload lên Hub.
+- **`export_hf_dataset_to_disk.py`:** Tải dataset từ HF và giải nén thành cấu trúc thư mục chuẩn (`ContentImage/`, `TargetImage/`) để training.
+- **`create_validation_split.py`:** Chia tập dữ liệu thành Train/Val dựa trên tỷ lệ và seed, đảm bảo tính ngẫu nhiên của font/style.
 
 ### Nhóm Training
 
-| Filename | Chức năng |
-| :--- | :--- |
-| **`my_train.py`** | Script training chính. Hỗ trợ 2 phase, loss diffusion/perceptual/offset/SC, và distributed training với Accelerate. |
+- **`my_train.py`:** Script training chính. Hỗ trợ 2 phase, loss diffusion/perceptual/offset/SC, và distributed training với Accelerate.
 
 ---
 
@@ -139,7 +133,6 @@ accelerate launch FontDiffusion/my_train.py \
 **Upload lên HF Hub:**
 
 ```bash
-# Ví dụ cho tập Train Original
 python FontDiffusion/create_hf_dataset.py \
   --data-dir "my_dataset/train_original" \
   --repo-id dzungpham/font-diffusion-generated-data \
@@ -164,8 +157,8 @@ python FontDiffusion/export_hf_dataset_to_disk.py \
 - **Source Code (GitHub):** [https://github.com/dzungphieuluuky/FontDiffusion.git](https://github.com/dzungphieuluuky/FontDiffusion.git)
 - **Notebook (Kaggle):** [https://www.kaggle.com/code/dzung271828/font-diffusion](https://www.kaggle.com/code/dzung271828/font-diffusion)
 - **Dataset (Hugging Face):** [https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data](https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data)
-  - **Train original:** Tổng lượng data đã generate.
-  - **Train/Val:** Data đã split sẵn sàng cho training.
+  - Train original: Tổng lượng data đã generate.
+  - Train/Val: Data đã split sẵn sàng cho training.
 - **Pretrained Models (Weights):** Gồm có các module sau, đã được chuyển từ .pth sang .safetensors vì tốc độ nhanh hơn và tích hợp tốt với hệ sinh thái của HF:
   - content_encoder.safetensors
   - style_encoder.safetensors
@@ -180,12 +173,10 @@ python FontDiffusion/export_hf_dataset_to_disk.py \
 
 Một số hình ảnh log từ quá trình train Phase 1 (Perceptual loss và Offset loss coefficient đã được điều chỉnh tăng so với script gốc):
 
-| Loss Type | Chart |
-| :--- | :--- |
-| **Train Loss** | ![train loss](../figures/train_loss.png) |
-| **Perceptual Loss** | ![percept loss](../figures/percept_loss.png) |
-| **Offset Loss** | ![offset loss](../figures/offset_loss.png) |
-| **Diffusion Loss** | ![diffusion loss](../figures/diff_loss.png) |
+- **Train Loss:** ![train loss](../figures/train_loss.png)
+- **Perceptual Loss:** ![percept loss](../figures/percept_loss.png)
+- **Offset Loss:** ![offset loss](../figures/offset_loss.png)
+- **Diffusion Loss:** ![diffusion loss](../figures/diff_loss.png)
 
 ---
 

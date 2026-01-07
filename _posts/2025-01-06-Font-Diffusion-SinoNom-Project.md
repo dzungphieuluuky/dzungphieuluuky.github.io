@@ -15,10 +15,10 @@ author: dzungphieuluuky
 
 ### 1.1. Tổng quan đồ án
 Dự án này bao gồm 4 module chính:
-- Dictionary: xây dựng từ điển/tự điển để hỗ trợ truy vấn và trích xuất thông tin từ vựng để hỗ trợ cho việc so sánh, đối chiếu ở các pha sau.
-- Font Diffusion: module này hỗ trợ việc tạo sinh nhiều style khác nhau cho cùng 1 chữ content để hỗ trợ data augmentation (tăng cường dữ liệu) và giúp module OCR (Optical Character Recognition) đối sánh ảnh cho ra kết quả chính xác cao hơn nhờ dùng ảnh đã được diffused từ các ảnh content gốc.
-- Image Comparison và OCR: module này hỗ trợ đối sánh các ảnh có độ giống nhau cao để cho ra kết quả dạng mã Unicode character cho module Levehnstein Aligment bên dưới. Module này được cung cấp thêm ảnh đã qua diffused từ Font Diffusion để các ảnh dùng để đối sánh chân thực và có style giống với input đầu vào để tăng độ chính xác đặc biệt với những cặp chữ có độ giống nhau cao và có thể tạo dataset (image - character).
-- Levehnstein Alignment: dùng thuật toán Levehnstein để chuyển tự (align) từng cặp chữ với nhau để tạo thành bộ dataset (character - character).
+- **Dictionary**: xây dựng từ điển/tự điển để hỗ trợ truy vấn và trích xuất thông tin từ vựng để hỗ trợ cho việc so sánh, đối chiếu ở các pha sau.
+- **Font Diffusion**: module này hỗ trợ việc tạo sinh nhiều style khác nhau cho cùng 1 chữ content để hỗ trợ data augmentation (tăng cường dữ liệu) và giúp module OCR (Optical Character Recognition) đối sánh ảnh cho ra kết quả chính xác cao hơn nhờ dùng ảnh đã được diffused từ các ảnh content gốc.
+- **Image Comparison và OCR**: module này hỗ trợ đối sánh các ảnh có độ giống nhau cao để cho ra kết quả dạng mã Unicode character cho module Levehnstein Aligment bên dưới. Module này được cung cấp thêm ảnh đã qua diffused từ Font Diffusion để các ảnh dùng để đối sánh chân thực và có style giống với input đầu vào để tăng độ chính xác đặc biệt với những cặp chữ có độ giống nhau cao và có thể tạo dataset (image - character).
+- **Levehnstein Alignment**: dùng thuật toán Levehnstein để chuyển tự (align) từng cặp chữ với nhau để tạo thành bộ dataset (character - character).
 
 ### 1.2. Module Font Diffusion
 Module Font Diffusion này sử dụng các thư viện hỗ trợ sau:

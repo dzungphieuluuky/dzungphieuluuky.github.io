@@ -18,7 +18,7 @@
   
   /* Text Colors */
   --text-primary: #264653;
-  --text-secondary: #2a9d8f;
+  --text-secondary: #264653;
   --text-muted: #6a8e7f;
   
   /* Glass Effects */
@@ -125,7 +125,7 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-size: 3.5rem;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--accent-dark), var(--accent-orange));
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -9,7 +9,7 @@ layout: page
 <ul class="posts-list list-unstyled" role="list">
   {% for post in posts %}
   <li class="post-preview">
-    <div class="post-preview-inner"></div>
+    <div class="post-preview-inner">
       {%- capture thumbnail -%}
         {% if post.thumbnail-img %}
           {{ post.thumbnail-img }}

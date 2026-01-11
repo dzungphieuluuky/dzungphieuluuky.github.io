@@ -1,9 +1,4 @@
 // ====================================
-// Modern Dark Portfolio JavaScript
-// Intersection Observer • Custom Cursor • Particles
-// ====================================
-
-// ====================================
 // 1. Reading Progress Bar
 // ====================================
 
@@ -48,7 +43,6 @@ const ScrollReveal = {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
-          // Optionally unobserve after reveal
           observer.unobserve(entry.target);
         }
       });
@@ -57,8 +51,8 @@ const ScrollReveal = {
       rootMargin: '0px 0px -100px 0px'
     });
     
-    // Observe elements
-    const elements = document.querySelectorAll('.post-preview, .glass-card, .bento-item, h2, h3');
+    // Observe elements - fixed selector for post-preview compatibility
+    const elements = document.querySelectorAll('.post-preview, .glass-card, .bento-item, article h2, article h3, main h2, main h3');
     elements.forEach(el => {
       el.classList.add('reveal');
       observer.observe(el);
@@ -100,7 +94,6 @@ const CustomCursor = {
     
     // Smooth animation
     const animateCursor = () => {
-      // Dot follows immediately
       dotX = mouseX;
       dotY = mouseY;
       
@@ -112,8 +105,8 @@ const CustomCursor = {
     
     animateCursor();
     
-    // Scale on hover over links/buttons
-    const interactiveElements = 'a, button, .btn-primary, .btn-glow, input, textarea';
+    // Scale on hover over links/buttons - fixed selector
+    const interactiveElements = 'a, button, .btn-primary, .btn-glow, .copy-btn, input, textarea, .search-input';
     
     document.addEventListener('mouseover', (e) => {
       if (e.target.matches(interactiveElements)) {
@@ -197,7 +190,8 @@ const ParticleEffect = {
   
   drawParticles: function() {
     this.particles.forEach(particle => {
-      this.ctx.fillStyle = 'rgba(42, 157, 143, 0.5)';
+      // Updated color to match custom-styles.css accent-teal
+      this.ctx.fillStyle = 'rgba(42, 157, 143, 0.3)';
       this.ctx.beginPath();
       this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
       this.ctx.closePath();
@@ -214,7 +208,7 @@ const ParticleEffect = {
         
         if (distance < 100) {
           const opacity = 1 - (distance / 100);
-          this.ctx.strokeStyle = `rgba(42, 157, 143, ${opacity * 0.2})`;
+          this.ctx.strokeStyle = `rgba(42, 157, 143, ${opacity * 0.15})`;
           this.ctx.lineWidth = 1;
           this.ctx.beginPath();
           this.ctx.moveTo(this.particles[a].x, this.particles[a].y);
@@ -227,11 +221,9 @@ const ParticleEffect = {
   
   moveParticles: function() {
     this.particles.forEach(particle => {
-      // Move particle
       particle.x += particle.speedX;
       particle.y += particle.speedY;
       
-      // Bounce off edges
       if (particle.x > this.canvas.width || particle.x < 0) {
         particle.speedX *= -1;
       }
@@ -239,7 +231,6 @@ const ParticleEffect = {
         particle.speedY *= -1;
       }
       
-      // Mouse interaction
       if (this.mouse.x !== null && this.mouse.y !== null) {
         const dx = this.mouse.x - particle.x;
         const dy = this.mouse.y - particle.y;
@@ -282,25 +273,21 @@ const TOCHighlight = {
     const toc = document.querySelector('.toc');
     if (!toc) return;
     
-    // Get all sections
     const headers = document.querySelectorAll('h2[id], h3[id]');
     this.sections = Array.from(headers);
     
     if (this.sections.length === 0) return;
     
-    // Create observer
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         const id = entry.target.getAttribute('id');
         const tocLink = document.querySelector(`.toc a[href="#${id}"]`);
         
         if (entry.isIntersecting) {
-          // Remove active from all
           document.querySelectorAll('.toc a').forEach(link => {
             link.classList.remove('active');
           });
           
-          // Add active to current
           if (tocLink) {
             tocLink.classList.add('active');
           }
@@ -311,7 +298,6 @@ const TOCHighlight = {
       rootMargin: '-100px 0px -66% 0px'
     });
     
-    // Observe all sections
     this.sections.forEach(section => observer.observe(section));
     
     console.log('✅ TOC highlighting initialized for', this.sections.length, 'sections');
@@ -330,46 +316,37 @@ const CodeCopy = {
       const pre = codeBlock.parentElement;
       if (!pre || pre.tagName !== 'PRE') return;
       
-      // Make pre clickable
-      pre.style.cursor = 'pointer';
-      pre.setAttribute('title', 'Click to copy code');
+      // Create copy button
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.textContent = 'Copy';
+      copyBtn.setAttribute('title', 'Copy code to clipboard');
       
-      pre.addEventListener('click', async () => {
+      pre.style.position = 'relative';
+      pre.appendChild(copyBtn);
+      
+      copyBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const code = codeBlock.textContent;
         
         try {
           await navigator.clipboard.writeText(code);
           
-          // Visual feedback
-          const originalBefore = window.getComputedStyle(pre, '::before').content;
-          pre.style.setProperty('--copy-text', '"Copied!"');
-          
-          // Change the pseudo-element content
-          pre.classList.add('copied');
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
           
           setTimeout(() => {
-            pre.classList.remove('copied');
-            pre.style.removeProperty('--copy-text');
+            copyBtn.textContent = 'Copy';
+            copyBtn.classList.remove('copied');
           }, 2000);
           
           console.log('✅ Code copied to clipboard');
         } catch (err) {
           console.error('❌ Failed to copy:', err);
+          copyBtn.textContent = 'Failed';
         }
       });
     });
-    
-    // Add CSS for copied state
-    const style = document.createElement('style');
-    style.textContent = `
-      pre.copied::before {
-        content: 'Copied!' !important;
-        background: var(--accent-orange) !important;
-        color: #ffffff !important;
-        border-color: var(--accent-orange) !important;
-      }
-    `;
-    document.head.appendChild(style);
     
     console.log('✅ Code copy initialized for', codeBlocks.length, 'blocks');
   }
@@ -395,8 +372,8 @@ const ImageLightbox = {
     `;
     document.body.appendChild(this.lightbox);
     
-    // Find all images in articles
-    const images = document.querySelectorAll('article img, .post-content img, .content img');
+    // Find all images in articles - improved selector
+    const images = document.querySelectorAll('article img, .post-content img, .content img, main img');
     
     images.forEach(img => {
       img.style.cursor = 'pointer';
@@ -451,7 +428,7 @@ const NavbarScroll = {
     
     let lastScroll = 0;
     
-    window.addEventListener('scroll', () => {
+    window.addEventListener('scroll', throttle(() => {
       const currentScroll = window.scrollY;
       
       if (currentScroll > 100) {
@@ -461,7 +438,7 @@ const NavbarScroll = {
       }
       
       lastScroll = currentScroll;
-    }, { passive: true });
+    }, 50), { passive: true });
     
     console.log('✅ Navbar scroll effect initialized');
   }
@@ -479,11 +456,10 @@ const InlineTOC = {
     const content = document.querySelector('article, .post-content, .content, main');
     if (!content) return;
     
-    // Get all headers
+    // Get all headers - improved to handle auto-numbered headers
     const headers = content.querySelectorAll('h2[id], h3[id]');
-    if (headers.length < 2) return; // Only show if more than 1 section
+    if (headers.length < 2) return;
     
-    // Create inline TOC HTML
     this.toc = document.createElement('nav');
     this.toc.className = 'inline-toc';
     
@@ -492,7 +468,8 @@ const InlineTOC = {
     
     headers.forEach((header) => {
       const id = header.getAttribute('id');
-      const text = header.textContent.trim();
+      // Extract text without the auto-numbered prefix
+      const text = header.textContent.replace(/^\d+\.?\s*/, '').trim();
       const tag = header.tagName;
       
       if (tag === 'H2') {
@@ -514,7 +491,7 @@ const InlineTOC = {
     this.toc.innerHTML = tocHTML;
     document.body.appendChild(this.toc);
     
-    // Create trigger button (for mobile/tablet)
+    // Create trigger button
     this.trigger = document.createElement('button');
     this.trigger.className = 'toc-trigger';
     this.trigger.innerHTML = '☰';
@@ -535,7 +512,6 @@ const InlineTOC = {
       });
     });
     
-    // Highlight active section
     this.highlightActiveSection();
     window.addEventListener('scroll', () => this.highlightActiveSection(), { passive: true });
     
@@ -553,7 +529,6 @@ const InlineTOC = {
       }
     });
     
-    // Update active link
     if (this.toc) {
       this.toc.querySelectorAll('a').forEach(link => {
         link.classList.remove('active');
@@ -576,16 +551,14 @@ const ReadingTime = {
     
     const text = content.textContent || content.innerText;
     const wordCount = text.trim().split(/\s+/).length;
-    const readingTime = Math.ceil(wordCount / 200); // 200 words per minute
+    const readingTime = Math.ceil(wordCount / 200);
     
-    // Find or create metadata bar
     let metadataBar = document.querySelector('.metadata-bar');
     
     if (!metadataBar) {
       metadataBar = document.createElement('div');
       metadataBar.className = 'metadata-bar';
       
-      // Insert after title or at beginning of content
       const title = document.querySelector('h1');
       if (title && title.parentElement) {
         title.parentElement.insertBefore(metadataBar, title.nextSibling);
@@ -594,7 +567,6 @@ const ReadingTime = {
       }
     }
     
-    // Add reading time
     const readingTimeHTML = `
       <div class="metadata-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -620,7 +592,6 @@ const AutoNumbering = {
     const content = document.querySelector('article, .post-content, .content, main');
     if (!content) return;
     
-    // Find all h2 and h3 headers
     const headers = content.querySelectorAll('h2, h3');
     let h2Count = 0;
     let h3Count = 0;
@@ -630,14 +601,12 @@ const AutoNumbering = {
         h2Count++;
         h3Count = 0;
         
-        // Add ID if not present
         if (!header.id) {
           header.id = 'section-' + h2Count;
         }
       } else if (header.tagName === 'H3') {
         h3Count++;
         
-        // Add ID if not present
         if (!header.id) {
           header.id = 'section-' + h2Count + '-' + h3Count;
         }
@@ -650,7 +619,7 @@ const AutoNumbering = {
 
 // ====================================
 // Main Initialization
-// ====================================/antml:parameter>
+// ====================================
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Initializing Modern Portfolio...');
@@ -666,12 +635,12 @@ document.addEventListener('DOMContentLoaded', function() {
   AutoNumbering.init();
   InlineTOC.init();
   
-  // Optional: Custom cursor (desktop only)
+  // Custom cursor (desktop only)
   if (window.innerWidth > 768) {
     CustomCursor.init();
   }
   
-  // Optional: Particle effect (can be performance-intensive)
+  // Optional: Particle effect
   // Uncomment if you want particles:
   // ParticleEffect.init();
   
@@ -682,7 +651,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // Utility Functions
 // ====================================
 
-// Throttle function
 function throttle(func, limit) {
   let inThrottle;
   return function(...args) {
@@ -694,7 +662,6 @@ function throttle(func, limit) {
   };
 }
 
-// Debounce function
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -707,7 +674,6 @@ function debounce(func, wait) {
   };
 }
 
-// Check if element is in viewport
 function isInViewport(element) {
   const rect = element.getBoundingClientRect();
   return (

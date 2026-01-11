@@ -1,35 +1,42 @@
 // ====================================
-// Modern Minimal Portfolio Scripts
-// Inspired by Anthropic & ThinkingMachines
+// 1. Reading Progress Bar
 // ====================================
 
-// Reading Progress Bar
 const ReadingProgress = {
-  init() {
+  init: function() {
     if (!document.getElementById('reading-progress')) {
-      const bar = document.createElement('div');
-      bar.id = 'reading-progress';
-      document.body.appendChild(bar);
+      const progressBar = document.createElement('div');
+      progressBar.id = 'reading-progress';
+      document.body.appendChild(progressBar);
     }
     
-    this.update();
-    window.addEventListener('scroll', () => this.update(), { passive: true });
+    this.updateProgress();
+    window.addEventListener('scroll', () => this.updateProgress(), { passive: true });
   },
   
-  update() {
-    const bar = document.getElementById('reading-progress');
-    if (!bar) return;
+  updateProgress: function() {
+    const progressBar = document.getElementById('reading-progress');
+    if (!progressBar) return;
     
-    const height = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = (window.scrollY / height) * 100;
-    bar.style.width = `${Math.min(progress, 100)}%`;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight - windowHeight;
+    const scrolled = window.scrollY;
+    const progress = (scrolled / documentHeight) * 100;
+    
+    progressBar.style.width = `${Math.min(progress, 100)}%`;
   }
 };
 
-// Scroll Reveal Animation
+// ====================================
+// 2. Intersection Observer (Fade-Up Animation)
+// ====================================
+
 const ScrollReveal = {
-  init() {
-    if (!window.IntersectionObserver) return;
+  init: function() {
+    if (!window.IntersectionObserver) {
+      console.warn('IntersectionObserver not supported');
+      return;
+    }
     
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -40,117 +47,156 @@ const ScrollReveal = {
       });
     }, {
       threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
+      rootMargin: '0px 0px -100px 0px'
     });
     
-    const elements = document.querySelectorAll('.post-preview, .glass-card, article h2, article h3');
+    const elements = document.querySelectorAll('.post-preview, .glass-card, .bento-item, article h2, article h3, main h2, main h3');
     elements.forEach(el => {
       el.classList.add('reveal');
       observer.observe(el);
     });
+    
+    console.log('✅ Scroll reveal initialized for', elements.length, 'elements');
   }
 };
 
-// Custom Cursor (Desktop Only)
+// ====================================
+// 3. Custom Cursor (Desktop Only)
+// ====================================
+
 const CustomCursor = {
-  init() {
-    if (window.innerWidth < 768 || 'ontouchstart' in window) return;
+  dot: null,
+  
+  init: function() {
+    if (window.innerWidth < 768 || 'ontouchstart' in window) {
+      console.log('⚠️ Custom cursor disabled on mobile/touch devices');
+      return;
+    }
     
     this.dot = document.createElement('div');
     this.dot.className = 'custom-cursor-dot';
+    
     document.body.appendChild(this.dot);
     document.body.classList.add('custom-cursor');
     
     let mouseX = 0, mouseY = 0;
+    let dotX = 0, dotY = 0;
     
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
     });
     
-    const animate = () => {
-      this.dot.style.left = `${mouseX}px`;
-      this.dot.style.top = `${mouseY}px`;
-      requestAnimationFrame(animate);
+    const animateCursor = () => {
+      dotX = mouseX;
+      dotY = mouseY;
+      
+      this.dot.style.left = `${dotX}px`;
+      this.dot.style.top = `${dotY}px`;
+      
+      requestAnimationFrame(animateCursor);
     };
-    animate();
     
-    const interactive = 'a, button, .btn-primary, .copy-btn, input, textarea';
+    animateCursor();
+    
+    const interactiveElements = 'a, button, .btn-primary, .btn-glow, .copy-btn, input, textarea, .search-input';
     
     document.addEventListener('mouseover', (e) => {
-      if (e.target.matches(interactive)) {
+      if (e.target.matches(interactiveElements)) {
         this.dot.style.transform = 'scale(1.5)';
       }
     });
     
     document.addEventListener('mouseout', (e) => {
-      if (e.target.matches(interactive)) {
+      if (e.target.matches(interactiveElements)) {
         this.dot.style.transform = 'scale(1)';
       }
     });
+    
+    console.log('✅ Custom cursor initialized');
   }
 };
 
-// Code Copy to Clipboard
+// ====================================
+// 4. Code Copy to Clipboard
+// ====================================
+
 const CodeCopy = {
-  init() {
-    const blocks = document.querySelectorAll('pre code');
+  init: function() {
+    const codeBlocks = document.querySelectorAll('pre code');
     
-    blocks.forEach((block) => {
-      const pre = block.parentElement;
+    codeBlocks.forEach((codeBlock) => {
+      const pre = codeBlock.parentElement;
       if (!pre || pre.tagName !== 'PRE') return;
       
-      const btn = document.createElement('button');
-      btn.className = 'copy-btn';
-      btn.textContent = 'Copy';
-      btn.setAttribute('aria-label', 'Copy code to clipboard');
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.textContent = 'Copy';
+      copyBtn.setAttribute('title', 'Copy code to clipboard');
       
       pre.style.position = 'relative';
-      pre.appendChild(btn);
+      pre.appendChild(copyBtn);
       
-      btn.addEventListener('click', async (e) => {
+      copyBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
+        const code = codeBlock.textContent;
         
         try {
-          await navigator.clipboard.writeText(block.textContent);
-          btn.textContent = 'Copied!';
-          btn.classList.add('copied');
+          await navigator.clipboard.writeText(code);
+          
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
           
           setTimeout(() => {
-            btn.textContent = 'Copy';
-            btn.classList.remove('copied');
+            copyBtn.textContent = 'Copy';
+            copyBtn.classList.remove('copied');
           }, 2000);
+          
+          console.log('✅ Code copied to clipboard');
         } catch (err) {
-          btn.textContent = 'Failed';
-          console.error('Copy failed:', err);
+          console.error('❌ Failed to copy:', err);
+          copyBtn.textContent = 'Failed';
         }
       });
     });
+    
+    console.log('✅ Code copy initialized for', codeBlocks.length, 'blocks');
   }
 };
 
-// Image Lightbox
+// ====================================
+// 5. Image Lightbox
+// ====================================
+
 const ImageLightbox = {
-  init() {
+  lightbox: null,
+  
+  init: function() {
     this.lightbox = document.createElement('div');
     this.lightbox.className = 'lightbox';
     this.lightbox.innerHTML = `
-      <div class="lightbox-close" aria-label="Close lightbox">×</div>
+      <div class="lightbox-close">×</div>
       <div class="lightbox-content">
         <img src="" alt="">
+        <div class="lightbox-caption"></div>
       </div>
     `;
     document.body.appendChild(this.lightbox);
     
-    const images = document.querySelectorAll('article img, .post-content img, main img');
+    const images = document.querySelectorAll('article img, .post-content img, .content img, main img');
+    
     images.forEach(img => {
       img.style.cursor = 'pointer';
       img.addEventListener('click', () => this.open(img));
     });
     
-    this.lightbox.querySelector('.lightbox-close').addEventListener('click', () => this.close());
+    const closeBtn = this.lightbox.querySelector('.lightbox-close');
+    closeBtn.addEventListener('click', () => this.close());
+    
     this.lightbox.addEventListener('click', (e) => {
-      if (e.target === this.lightbox) this.close();
+      if (e.target === this.lightbox) {
+        this.close();
+      }
     });
     
     document.addEventListener('keydown', (e) => {
@@ -158,52 +204,70 @@ const ImageLightbox = {
         this.close();
       }
     });
+    
+    console.log('✅ Image lightbox initialized for', images.length, 'images');
   },
   
-  open(img) {
+  open: function(img) {
     const lightboxImg = this.lightbox.querySelector('img');
+    const caption = this.lightbox.querySelector('.lightbox-caption');
+    
     lightboxImg.src = img.src;
     lightboxImg.alt = img.alt || '';
+    caption.textContent = img.alt || '';
+    
     this.lightbox.classList.add('active');
     document.body.classList.add('overflow-hidden');
   },
   
-  close() {
+  close: function() {
     this.lightbox.classList.remove('active');
     document.body.classList.remove('overflow-hidden');
   }
 };
 
-// Navbar Scroll Effect
+// ====================================
+// 6. Navbar Scroll Effect
+// ====================================
+
 const NavbarScroll = {
-  init() {
+  init: function() {
     const navbar = document.querySelector('.navbar');
     if (!navbar) return;
     
+    let lastScroll = 0;
+    
     window.addEventListener('scroll', throttle(() => {
-      if (window.scrollY > 50) {
+      const currentScroll = window.scrollY;
+      
+      if (currentScroll > 100) {
         navbar.classList.add('scrolled');
       } else {
         navbar.classList.remove('scrolled');
       }
-    }, 100), { passive: true });
+      
+      lastScroll = currentScroll;
+    }, 50), { passive: true });
+    
+    console.log('✅ Navbar scroll effect initialized');
   }
 };
 
 // ====================================
-// 8. Post Table of Contents (At Start of Post)
+// 7. Post Table of Contents (At Start of Post Only)
 // ====================================
+
 const PostTableOfContents = {
   init: function() {
-    // Only run on post pages, not on blog listing pages
-    const content = document.querySelector('article');
-    if (!content) {
-      console.log('⚠️ No article found - TOC not initialized (likely a listing page)');
+    // IMPORTANT: Only run on actual post pages with <article> tag
+    const article = document.querySelector('article');
+    if (!article) {
+      console.log('⚠️ No article tag found - skipping TOC (likely a listing page)');
       return;
     }
     
-    // Get all headers
-    const headers = content.querySelectorAll('h2[id], h3[id]');
+    // Get all headers within the article
+    const headers = article.querySelectorAll('h2[id], h3[id]');
     if (headers.length < 2) {
       console.log('⚠️ Not enough headers for TOC');
       return;
@@ -240,28 +304,31 @@ const PostTableOfContents = {
     tocHTML += '</details>';
     tocHTML += '</div>';
     
-    // Insert TOC at the beginning of content (after h1)
-    const h1 = content.querySelector('h1');
-    if (h1) {
-      h1.insertAdjacentHTML('afterend', tocHTML);
-    } else {
-      content.insertAdjacentHTML('afterbegin', tocHTML);
-    }
+    // Insert TOC after H1 (inside article)
+    article.insertAdjacentHTML('afterbegin', tocHTML);
     
     console.log('✅ Post table of contents initialized with', headers.length, 'sections');
   }
 };
 
-// Reading Time Calculator
+// ====================================
+// 8. Calculate Reading Time
+// ====================================
+
 const ReadingTime = {
-  init() {
-    const content = document.querySelector('article, .post-content, main');
-    if (!content) return;
+  init: function() {
+    // Only run on post pages
+    const article = document.querySelector('article');
+    if (!article) {
+      console.log('⚠️ No article found - skipping reading time');
+      return;
+    }
     
-    const text = content.textContent || content.innerText;
+    const text = article.textContent || article.innerText;
     const wordCount = text.trim().split(/\s+/).length;
     const readingTime = Math.ceil(wordCount / 200);
     
+    // Find or create metadata bar
     let metadataBar = document.querySelector('.metadata-bar');
     
     if (!metadataBar) {
@@ -272,80 +339,68 @@ const ReadingTime = {
       if (title && title.parentElement) {
         title.parentElement.insertBefore(metadataBar, title.nextSibling);
       } else {
-        content.insertBefore(metadataBar, content.firstChild);
+        article.insertBefore(metadataBar, article.firstChild);
       }
     }
     
-    const existing = metadataBar.querySelector('[data-reading-time]');
-    if (!existing) {
-      const html = `
+    // Check if reading time already exists
+    const existingReadingTime = metadataBar.querySelector('[data-reading-time]');
+    if (!existingReadingTime) {
+      const readingTimeHTML = `
         <div class="metadata-item" data-reading-time="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span><strong>${readingTime}</strong> min read</span>
+          <span>Estimated Reading Time: <strong>${readingTime}</strong> min</span>
         </div>
       `;
-      metadataBar.insertAdjacentHTML('afterbegin', html);
+      
+      metadataBar.insertAdjacentHTML('afterbegin', readingTimeHTML);
     }
+    
+    console.log(`✅ Reading time calculated: ${readingTime} minutes (${wordCount} words)`);
   }
 };
 
-// Auto-Number Headers (Add IDs)
+// ====================================
+// 9. Auto-Numbering Headers (Post Pages Only)
+// ====================================
+
 const AutoNumbering = {
-  init() {
-    const content = document.querySelector('article, .post-content, main');
-    if (!content) return;
+  init: function() {
+    // Only run on post pages
+    const article = document.querySelector('article');
+    if (!article) {
+      console.log('⚠️ No article found - skipping auto-numbering');
+      return;
+    }
     
-    const headers = content.querySelectorAll('h2, h3');
+    const headers = article.querySelectorAll('h2, h3');
     let h2Count = 0;
     let h3Count = 0;
     
     headers.forEach(header => {
+      // Skip subtitles
       if (header.classList.contains('subtitle')) return;
       
       if (header.tagName === 'H2') {
         h2Count++;
         h3Count = 0;
-        if (!header.id) header.id = `section-${h2Count}`;
+        
+        if (!header.id) {
+          header.id = 'section-' + h2Count;
+        }
       } else if (header.tagName === 'H3') {
         h3Count++;
-        if (!header.id) header.id = `section-${h2Count}-${h3Count}`;
+        
+        if (!header.id) {
+          header.id = 'section-' + h2Count + '-' + h3Count;
+        }
       }
     });
-  }
-};
-
-// Sidebar TOC Highlight on Scroll
-const SidebarTOC = {
-  init() {
-    const toc = document.querySelector('.inline-toc');
-    if (!toc) return;
     
-    const links = toc.querySelectorAll('a');
-    const sections = Array.from(links).map(link => {
-      const id = link.getAttribute('href').slice(1);
-      return document.getElementById(id);
-    }).filter(Boolean);
-    
-    window.addEventListener('scroll', throttle(() => {
-      let current = '';
-      
-      sections.forEach(section => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= 100) {
-          current = section.id;
-        }
-      });
-      
-      links.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-          link.classList.add('active');
-        }
-      });
-    }, 100), { passive: true });
+    console.log('✅ Auto-numbering initialized for', headers.length, 'headers');
   }
 };
 
@@ -353,20 +408,27 @@ const SidebarTOC = {
 // Main Initialization
 // ====================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 Initializing Modern Portfolio...');
+  
+  // Core features
   ReadingProgress.init();
   ScrollReveal.init();
   NavbarScroll.init();
   CodeCopy.init();
   ImageLightbox.init();
+  
+  // Post-only features (only run if <article> tag exists)
   ReadingTime.init();
   AutoNumbering.init();
   PostTableOfContents.init();
-  SidebarTOC.init();
   
+  // Custom cursor (desktop only)
   if (window.innerWidth > 768) {
     CustomCursor.init();
   }
+  
+  console.log('✅ All features initialized');
 });
 
 // ====================================
@@ -386,8 +448,12 @@ function throttle(func, limit) {
 
 function debounce(func, wait) {
   let timeout;
-  return function(...args) {
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
+    timeout = setTimeout(later, wait);
   };
 }

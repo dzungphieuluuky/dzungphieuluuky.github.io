@@ -1,5 +1,8 @@
-// Enhanced Modern Search with Whale Ocean Theme
-// Optimized and visually enhanced version
+// ====================================
+// Modern Blog Search Script
+// Minimal animations with smooth transitions
+// ====================================
+
 const ModernSearch = {
   searchData: [],
   searchIndex: null,
@@ -13,7 +16,7 @@ const ModernSearch = {
       return;
     }
     
-    console.log('🌊 Initializing Modern Search with Ocean Theme...');
+    console.log('🔍 Initializing Modern Search...');
     this.loadSearchData();
     this.enhanceSearchUI();
     this.bindEvents();
@@ -91,309 +94,8 @@ const ModernSearch = {
     const fallback = searchOverlay.querySelector('.fallback-search');
     if (fallback) fallback.style.display = 'none';
     
-    // Create modern ocean-themed search interface
+    // Create modern search interface
     const modernHTML = `
-      <style>
-        /* Ocean Theme Variables */
-        :root {
-          --ocean-primary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
-          --ocean-secondary: linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%);
-          --ocean-accent: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
-          --ocean-text: #0f172a;
-          --ocean-text-light: #64748b;
-          --ocean-surface: #ffffff;
-          --ocean-surface-hover: #f1f5f9;
-          --ocean-border: #e2e8f0;
-        }
-
-        /* Overlay Backdrop */
-        #beautifuljekyll-search-overlay {
-          position: fixed;
-          inset: 0;
-          z-index: 9999;
-          display: none;
-          background: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(6, 95, 70, 0.4) 100%);
-          backdrop-filter: blur(8px);
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slideDown {
-          from { 
-            opacity: 0;
-            transform: translateY(-20px) scale(0.95);
-          }
-          to { 
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        /* Search Container */
-        .modern-search-container {
-          position: absolute;
-          top: 10vh;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 90%;
-          max-width: 700px;
-          background: var(--ocean-surface);
-          border-radius: 16px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-          overflow: hidden;
-          animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        /* Decorative Gradient Bar */
-        .search-gradient-bar {
-          height: 4px;
-          background: var(--ocean-primary);
-        }
-
-        /* Search Header */
-        .search-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 16px;
-          border-bottom: 1px solid var(--ocean-border);
-        }
-
-        .search-input-wrapper {
-          flex: 1;
-          position: relative;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 16px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 20px;
-          height: 20px;
-          color: var(--ocean-text-light);
-        }
-
-        #modern-search-input {
-          width: 100%;
-          padding: 14px 48px 14px 48px;
-          font-size: 16px;
-          border: 2px solid transparent;
-          border-radius: 12px;
-          background: #f8fafc;
-          color: var(--ocean-text);
-          outline: none;
-          transition: all 0.3s ease;
-        }
-
-        #modern-search-input:focus {
-          background: var(--ocean-surface);
-          border-color: #0ea5e9;
-          box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
-        }
-
-        #modern-search-input::placeholder {
-          color: var(--ocean-text-light);
-        }
-
-        .search-loading {
-          position: absolute;
-          right: 16px;
-          top: 50%;
-          transform: translateY(-50%);
-        }
-
-        .loading-spinner {
-          width: 20px;
-          height: 20px;
-          border: 2px solid #e2e8f0;
-          border-top-color: #0ea5e9;
-          border-radius: 50%;
-          animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        .search-close {
-          padding: 8px;
-          background: var(--ocean-surface-hover);
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.2s;
-          color: var(--ocean-text-light);
-        }
-
-        .search-close:hover {
-          background: #e2e8f0;
-          color: var(--ocean-text);
-          transform: scale(1.05);
-        }
-
-        /* Search Results */
-        .search-results {
-          max-height: 60vh;
-          overflow-y: auto;
-          padding: 8px;
-        }
-
-        .search-results::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .search-results::-webkit-scrollbar-track {
-          background: #f1f5f9;
-        }
-
-        .search-results::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 4px;
-        }
-
-        .search-results::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
-        }
-
-        /* Suggestions */
-        .search-suggestions {
-          padding: 16px;
-        }
-
-        .suggestion-item {
-          padding: 16px;
-          margin-bottom: 8px;
-          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-          border-radius: 12px;
-          color: var(--ocean-text);
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
-
-        .suggestion-item:hover {
-          transform: translateX(4px);
-          box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
-        }
-
-        /* Result Items */
-        .search-result-item {
-          padding: 16px;
-          margin-bottom: 6px;
-          border-radius: 12px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          border: 2px solid transparent;
-        }
-
-        .search-result-item:hover {
-          background: var(--ocean-surface-hover);
-          transform: translateX(4px);
-        }
-
-        .search-result-item.selected {
-          background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
-          border-color: #0ea5e9;
-          box-shadow: 0 4px 16px rgba(14, 165, 233, 0.2);
-          transform: scale(1.02);
-        }
-
-        .result-title {
-          font-size: 16px;
-          font-weight: 600;
-          color: var(--ocean-text);
-          margin-bottom: 6px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .result-title::before {
-          content: '✨';
-          font-size: 14px;
-        }
-
-        .result-excerpt {
-          font-size: 14px;
-          color: var(--ocean-text-light);
-          line-height: 1.5;
-          margin-bottom: 6px;
-        }
-
-        .result-meta {
-          font-size: 12px;
-          color: #94a3b8;
-        }
-
-        .highlight {
-          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-          color: #92400e;
-          padding: 2px 4px;
-          border-radius: 4px;
-          font-weight: 600;
-        }
-
-        /* Footer */
-        .search-footer {
-          padding: 12px 16px;
-          background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-          border-top: 1px solid var(--ocean-border);
-        }
-
-        .search-shortcuts {
-          display: flex;
-          justify-content: center;
-          gap: 24px;
-          font-size: 12px;
-          color: var(--ocean-text-light);
-        }
-
-        .search-shortcuts span {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .key-button {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          min-width: 24px;
-          padding: 4px 8px;
-          font-size: 11px;
-          font-weight: 600;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          color: var(--ocean-text);
-          background: var(--ocean-surface);
-          border: 1px solid #cbd5e1;
-          border-radius: 6px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 -2px 0 rgba(0, 0, 0, 0.05);
-          margin: 0 2px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 640px) {
-          .modern-search-container {
-            top: 5vh;
-            width: 95%;
-            max-width: none;
-          }
-
-          .search-results {
-            max-height: 70vh;
-          }
-
-          .search-shortcuts {
-            flex-wrap: wrap;
-            gap: 12px;
-          }
-        }
-      </style>
-
       <div class="modern-search-container">
         <div class="search-gradient-bar"></div>
         
@@ -406,7 +108,7 @@ const ModernSearch = {
             <input 
               type="text" 
               id="modern-search-input" 
-              placeholder="🌊 Accio! Something is coming to you..." 
+              placeholder="Search articles, ideas, thoughts..." 
               autocomplete="off"
               spellcheck="false"
             >
@@ -415,7 +117,7 @@ const ModernSearch = {
             </div>
           </div>
           <button class="search-close" id="modern-search-close" aria-label="Close search">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -424,9 +126,9 @@ const ModernSearch = {
         
         <div class="search-results" id="modern-search-results">
           <div class="search-suggestions">
-            <div class="suggestion-item">🌊 Accio! Something is coming to you...</div>
-            <div class="suggestion-item">🐋 Reverio! Discover ideas, magics, spells...</div>
-            <div class="suggestion-item">⚡ Quantum teleportation with keyboard shortcuts</div>
+            <div class="suggestion-item">💡 Start typing to search through articles</div>
+            <div class="suggestion-item">🔍 Find posts by title, content, or keywords</div>
+            <div class="suggestion-item">⌨️ Use keyboard arrows to navigate results</div>
           </div>
         </div>
         
@@ -441,7 +143,7 @@ const ModernSearch = {
     `;
     
     searchOverlay.innerHTML = modernHTML;
-    console.log('✅ Enhanced ocean-themed UI created');
+    console.log('✅ Modern search UI created');
   },
   
   bindEvents: function() {
@@ -454,7 +156,7 @@ const ModernSearch = {
       return;
     }
     
-    // Search input with optimized debouncing
+    // Search input with debouncing
     searchInput.addEventListener('input', (e) => {
       clearTimeout(this.debounceTimer);
       const query = e.target.value.trim();
@@ -557,9 +259,9 @@ const ModernSearch = {
     if (results.length === 0) {
       container.innerHTML = `
         <div class="search-suggestions">
-          <div class="suggestion-item">🔍 OOPS, no sign of existence for "${this.escapeHtml(query)}"</div>
-          <div class="suggestion-item">💡 Rephrase the finding spell to reveal it...</div>
-          <div class="suggestion-item">🎯 Try different keywords or check for typos</div>
+          <div class="suggestion-item">🔍 No results found for "${this.escapeHtml(query)}"</div>
+          <div class="suggestion-item">💡 Try different keywords or check spelling</div>
+          <div class="suggestion-item">🎯 Search is case-insensitive and matches partial words</div>
         </div>
       `;
       return;
@@ -612,9 +314,9 @@ const ModernSearch = {
     if (container) {
       container.innerHTML = `
         <div class="search-suggestions">
-          <div class="suggestion-item">🌊 Accio! Something is coming to you...</div>
-          <div class="suggestion-item">🐋 Reverio! Discover ideas, magics, spells...</div>
-          <div class="suggestion-item">⚡ Quantum teleportation with keyboard shortcuts</div>
+          <div class="suggestion-item">💡 Start typing to search through articles</div>
+          <div class="suggestion-item">🔍 Find posts by title, content, or keywords</div>
+          <div class="suggestion-item">⌨️ Use keyboard arrows to navigate results</div>
         </div>
       `;
     }
@@ -655,12 +357,12 @@ const ModernSearch = {
     const input = document.getElementById('modern-search-input');
     
     if (overlay && input) {
-      overlay.style.display = 'block';
+      overlay.style.display = 'flex';
       setTimeout(() => {
         input.focus();
         this.showSuggestions();
       }, 100);
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('overflow-hidden');
     }
   },
   
@@ -670,7 +372,7 @@ const ModernSearch = {
     
     if (overlay) {
       overlay.style.display = 'none';
-      document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden');
       
       if (input) {
         input.value = '';
@@ -680,9 +382,12 @@ const ModernSearch = {
   }
 };
 
-// Main initialization
+// ====================================
+// Page Enhancements
+// ====================================
+
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 Enhanced search script loading...');
+  console.log('🚀 Initializing page enhancements...');
   
   // Initialize search after a short delay
   setTimeout(() => {
@@ -697,29 +402,33 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         const target = document.querySelector(href);
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          target.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
         }
       }
     });
   });
   
-  // Enhanced navbar scroll effect with ocean gradient
+  // Enhanced navbar scroll effect
   const navbar = document.querySelector('.navbar');
   if (navbar) {
+    let lastScroll = 0;
     let ticking = false;
     
     function handleScroll() {
+      const currentScroll = window.scrollY;
+      
       if (!ticking) {
         requestAnimationFrame(() => {
-          if (window.scrollY > 50) {
-            navbar.style.background = 'linear-gradient(135deg, rgba(14, 165, 233, 0.95) 0%, rgba(6, 182, 212, 0.95) 100%)';
-            navbar.style.backdropFilter = 'blur(12px)';
-            navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.15)';
+          if (currentScroll > 50) {
+            navbar.classList.add('scrolled');
           } else {
-            navbar.style.background = '';
-            navbar.style.backdropFilter = '';
-            navbar.style.boxShadow = '';
+            navbar.classList.remove('scrolled');
           }
+          
+          lastScroll = currentScroll;
           ticking = false;
         });
         ticking = true;
@@ -729,27 +438,79 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', handleScroll, { passive: true });
   }
   
-  // Animate posts on scroll with ocean wave effect
+  // Animate posts on scroll (minimal, subtle)
   if (window.IntersectionObserver) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry, index) => {
         if (entry.isIntersecting) {
+          // Add small delay based on index for stagger effect
           setTimeout(() => {
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
-          }, index * 100);
+          }, index * 50); // Reduced delay for subtlety
+          
+          // Unobserve after animation
+          observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    }, { 
+      threshold: 0.1, 
+      rootMargin: '0px 0px -50px 0px' 
+    });
     
-    document.querySelectorAll('.post-preview').forEach((post, index) => {
+    // Observe post previews
+    document.querySelectorAll('.post-preview').forEach((post) => {
       post.style.opacity = '0';
-      post.style.transform = 'translateY(30px)';
-      post.style.transition = `opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s, 
-                               transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s`;
+      post.style.transform = 'translateY(20px)';
+      post.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
       observer.observe(post);
     });
   }
   
-  console.log('✅ Enhanced search script initialization complete');
+  // Add stagger animation to tags
+  document.querySelectorAll('.post-tag').forEach((tag, index) => {
+    tag.style.animationDelay = `${index * 0.05}s`;
+  });
+  
+  console.log('✅ Page enhancements initialized');
 });
+
+// ====================================
+// Utility Functions
+// ====================================
+
+// Throttle function for scroll events
+function throttle(func, limit) {
+  let inThrottle;
+  return function(...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
+
+// Debounce function for search input
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Check if element is in viewport
+function isInViewport(element) {
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: dzungphieuluuky's website
+title: dzungphieuluuky and his repository
 subtitle: "My vibe coding personal website"
 ---
 

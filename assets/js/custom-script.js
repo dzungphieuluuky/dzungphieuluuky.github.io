@@ -639,7 +639,22 @@ document.addEventListener('DOMContentLoaded', function() {
   if (window.innerWidth > 768) {
     CustomCursor.init();
   }
-  
+
+  // Convert <pre><code class="language-mermaid">...</code></pre> to <div class="mermaid">...</div>
+  document.querySelectorAll('pre > code.language-mermaid').forEach(function(codeBlock) {
+    const pre = codeBlock.parentElement;
+    const mermaidCode = codeBlock.textContent;
+    const mermaidDiv = document.createElement('div');
+    mermaidDiv.className = 'mermaid';
+    mermaidDiv.textContent = mermaidCode;
+    pre.parentNode.replaceChild(mermaidDiv, pre);
+  });
+
+  // If mermaid is loaded, initialize (optional, if not already done elsewhere)
+  if (window.mermaid) {
+    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+  }
+
   console.log('✅ All features initialized');
 });
 

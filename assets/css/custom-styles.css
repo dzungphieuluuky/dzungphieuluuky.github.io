@@ -997,3 +997,11 @@ body.custom-cursor {
     gap: 0.75rem;
   }
 }
+
+.mermaid {
+  background: var(--bg-secondary, #fff);
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+  padding: 1rem;
+  overflow-x: auto;
+}

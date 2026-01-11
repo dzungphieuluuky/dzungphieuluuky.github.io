@@ -190,18 +190,30 @@ const NavbarScroll = {
   }
 };
 
-// Post Table of Contents (Beginning of Content)
+// ====================================
+// 8. Post Table of Contents (At Start of Post)
+// ====================================
 const PostTableOfContents = {
-  init() {
-    const content = document.querySelector('article, .post-content, main');
-    if (!content) return;
+  init: function() {
+    // Only run on post pages, not on blog listing pages
+    const content = document.querySelector('article');
+    if (!content) {
+      console.log('⚠️ No article found - TOC not initialized (likely a listing page)');
+      return;
+    }
     
+    // Get all headers
     const headers = content.querySelectorAll('h2[id], h3[id]');
-    if (headers.length < 2) return;
+    if (headers.length < 2) {
+      console.log('⚠️ Not enough headers for TOC');
+      return;
+    }
     
-    let html = '<div class="post-toc-box"><details open>';
-    html += '<summary>Table of Contents</summary>';
-    html += '<ul class="post-toc-list">';
+    // Build TOC HTML
+    let tocHTML = '<div class="post-toc-box">';
+    tocHTML += '<details open>';
+    tocHTML += '<summary>▼ Table of Contents</summary>';
+    tocHTML += '<ul class="post-toc-list">';
     
     let currentH2 = null;
     
@@ -211,23 +223,32 @@ const PostTableOfContents = {
       const tag = header.tagName;
       
       if (tag === 'H2') {
-        if (currentH2 !== null) html += '</ul></li>';
-        html += `<li><a href="#${id}">${text}</a><ul>`;
+        if (currentH2 !== null) {
+          tocHTML += '</ul></li>';
+        }
+        tocHTML += '<li><a href="#' + id + '">' + text + '</a><ul>';
         currentH2 = id;
       } else if (tag === 'H3') {
-        html += `<li><a href="#${id}">${text}</a></li>`;
+        tocHTML += '<li><a href="#' + id + '">' + text + '</a></li>';
       }
     });
     
-    if (currentH2 !== null) html += '</ul></li>';
-    html += '</ul></details></div>';
-    
-    const firstHeading = content.querySelector('h2, h3');
-    if (firstHeading) {
-      firstHeading.insertAdjacentHTML('beforebegin', html);
-    } else {
-      content.insertAdjacentHTML('afterbegin', html);
+    if (currentH2 !== null) {
+      tocHTML += '</ul></li>';
     }
+    tocHTML += '</ul>';
+    tocHTML += '</details>';
+    tocHTML += '</div>';
+    
+    // Insert TOC at the beginning of content (after h1)
+    const h1 = content.querySelector('h1');
+    if (h1) {
+      h1.insertAdjacentHTML('afterend', tocHTML);
+    } else {
+      content.insertAdjacentHTML('afterbegin', tocHTML);
+    }
+    
+    console.log('✅ Post table of contents initialized with', headers.length, 'sections');
   }
 };
 

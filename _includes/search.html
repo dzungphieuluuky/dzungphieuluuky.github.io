@@ -5,15 +5,20 @@
 <div id="beautifuljekyll-search-overlay" style="display: none;">
   <!-- Modern search will be injected by JavaScript -->
   
-  <!-- Fallback for non-JS users -->
-  <div class="fallback-search">
-    <div class="search-fallback-header">
-      <input type="text" id="nav-search-input" placeholder="Something from the quantum realm...">
-      <button id="nav-search-exit" title="Close search">✕</button>
-    </div>
-    <ul id="search-results-container"></ul>
+  <div class="search-container">
+    <input 
+      type="text" 
+      class="search-input" 
+      placeholder="Search posts..."
+      aria-label="Search"
+    >
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <div class="search-results" id="search-results"></div>
   </div>
-  
+
   <!-- Simple Jekyll Search as fallback -->
   <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
   <script>

@@ -9,8 +9,7 @@ layout: page
 <ul class="posts-list list-unstyled" role="list">
   {% for post in posts %}
   <li class="post-preview">
-    <article>
-
+    <div class="post-preview-inner"></div>
       {%- capture thumbnail -%}
         {% if post.thumbnail-img %}
           {{ post.thumbnail-img }}
@@ -94,7 +93,7 @@ layout: page
       </div>
       {% endif %}
 
-    </article>
+    </div>
   </li>
   {% endfor %}
 </ul>

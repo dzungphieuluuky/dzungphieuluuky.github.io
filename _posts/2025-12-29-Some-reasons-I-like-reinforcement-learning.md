@@ -40,7 +40,7 @@ We can view the SL training setup as a pulling process that continuously pull th
 
 On the other hand, we can see that the target of the RL training setup is only 
 
-## 2. The interaction between model and data: static and dynamic
+## The interaction between model and data: static and dynamic
 
 In SL, the dataset is a "dead" artifact—a tomb of information that never changes. In RL, the dataset is "alive." As the agent improves, the data it collects becomes more sophisticated. This creates a feedback loop where the model’s own behavior shapes its future learning environment. It’s the difference between studying a map (SL) and actually driving the car (RL).
 

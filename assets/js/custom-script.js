@@ -263,49 +263,7 @@ const ParticleEffect = {
 };
 
 // ====================================
-// 5. Table of Contents Active Section Highlighting
-// ====================================
-
-const TOCHighlight = {
-  sections: [],
-  
-  init: function() {
-    const toc = document.querySelector('.toc');
-    if (!toc) return;
-    
-    const headers = document.querySelectorAll('h2[id], h3[id]');
-    this.sections = Array.from(headers);
-    
-    if (this.sections.length === 0) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const id = entry.target.getAttribute('id');
-        const tocLink = document.querySelector(`.toc a[href="#${id}"]`);
-        
-        if (entry.isIntersecting) {
-          document.querySelectorAll('.toc a').forEach(link => {
-            link.classList.remove('active');
-          });
-          
-          if (tocLink) {
-            tocLink.classList.add('active');
-          }
-        }
-      });
-    }, {
-      threshold: 0.5,
-      rootMargin: '-100px 0px -66% 0px'
-    });
-    
-    this.sections.forEach(section => observer.observe(section));
-    
-    console.log('✅ TOC highlighting initialized for', this.sections.length, 'sections');
-  }
-};
-
-// ====================================
-// 6. Copy to Clipboard for Code Blocks
+// 5. Copy to Clipboard for Code Blocks
 // ====================================
 
 const CodeCopy = {
@@ -353,7 +311,7 @@ const CodeCopy = {
 };
 
 // ====================================
-// 7. Image Lightbox
+// 6. Image Lightbox
 // ====================================
 
 const ImageLightbox = {
@@ -418,7 +376,7 @@ const ImageLightbox = {
 };
 
 // ====================================
-// 8. Navbar Scroll Effect
+// 7. Navbar Scroll Effect
 // ====================================
 
 const NavbarScroll = {
@@ -445,30 +403,28 @@ const NavbarScroll = {
 };
 
 // ====================================
-// 9. Inline Table of Contents (Right Sidebar)
+// 8. Post Table of Contents (At Start of Post)
 // ====================================
 
-const InlineTOC = {
-  toc: null,
-  trigger: null,
-  
+const PostTableOfContents = {
   init: function() {
     const content = document.querySelector('article, .post-content, .content, main');
     if (!content) return;
     
-    // Get all headers - improved to handle auto-numbered headers
+    // Get all headers
     const headers = content.querySelectorAll('h2[id], h3[id]');
     if (headers.length < 2) return;
     
-    this.toc = document.createElement('nav');
-    this.toc.className = 'inline-toc';
+    // Build TOC HTML
+    let tocHTML = '<div class="post-toc-box">';
+    tocHTML += '<details open>';
+    tocHTML += '<summary>▼ Table of Contents</summary>';
+    tocHTML += '<ul class="post-toc-list">';
     
-    let tocHTML = '<span class="inline-toc-title">Contents</span><ul>';
     let currentH2 = null;
     
     headers.forEach((header) => {
       const id = header.getAttribute('id');
-      // Extract text without the auto-numbered prefix
       const text = header.textContent.replace(/^\d+\.?\s*/, '').trim();
       const tag = header.tagName;
       
@@ -487,72 +443,35 @@ const InlineTOC = {
       tocHTML += '</ul></li>';
     }
     tocHTML += '</ul>';
+    tocHTML += '</details>';
+    tocHTML += '</div>';
     
-    this.toc.innerHTML = tocHTML;
-    document.body.appendChild(this.toc);
-    
-    // Create trigger button
-    this.trigger = document.createElement('button');
-    this.trigger.className = 'toc-trigger';
-    this.trigger.innerHTML = '☰';
-    this.trigger.setAttribute('title', 'Toggle table of contents');
-    document.body.appendChild(this.trigger);
-    
-    // Add click listeners
-    this.trigger.addEventListener('click', () => {
-      this.toc.classList.toggle('active');
-    });
-    
-    // Close TOC when clicking a link
-    this.toc.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth < 1400) {
-          this.toc.classList.remove('active');
-        }
-      });
-    });
-    
-    this.highlightActiveSection();
-    window.addEventListener('scroll', () => this.highlightActiveSection(), { passive: true });
-    
-    console.log('✅ Inline TOC initialized with', headers.length, 'sections');
-  },
-  
-  highlightActiveSection: function() {
-    const headers = document.querySelectorAll('h2[id], h3[id]');
-    let activeId = null;
-    
-    headers.forEach(header => {
-      const rect = header.getBoundingClientRect();
-      if (rect.top < 200) {
-        activeId = header.getAttribute('id');
-      }
-    });
-    
-    if (this.toc) {
-      this.toc.querySelectorAll('a').forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === '#' + activeId) {
-          link.classList.add('active');
-        }
-      });
+    // Insert TOC at the beginning of content
+    const firstHeading = content.querySelector('h2, h3');
+    if (firstHeading) {
+      firstHeading.insertAdjacentHTML('beforebegin', tocHTML);
+    } else {
+      content.insertAdjacentHTML('afterbegin', tocHTML);
     }
+    
+    console.log('✅ Post table of contents initialized with', headers.length, 'sections');
   }
 };
 
 // ====================================
-// 10. Calculate Reading Time
+// 9. Calculate Reading Time & Add to Post
 // ====================================
 
 const ReadingTime = {
   init: function() {
-    const content = document.querySelector('article, .post-content, .content');
+    const content = document.querySelector('article, .post-content, .content, main');
     if (!content) return;
     
     const text = content.textContent || content.innerText;
     const wordCount = text.trim().split(/\s+/).length;
     const readingTime = Math.ceil(wordCount / 200);
     
+    // Find or create metadata bar
     let metadataBar = document.querySelector('.metadata-bar');
     
     if (!metadataBar) {
@@ -567,24 +486,28 @@ const ReadingTime = {
       }
     }
     
-    const readingTimeHTML = `
-      <div class="metadata-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-        <span><strong>${readingTime}</strong> min read</span>
-      </div>
-    `;
-    
-    metadataBar.insertAdjacentHTML('beforeend', readingTimeHTML);
+    // Check if reading time already exists
+    const existingReadingTime = metadataBar.querySelector('[data-reading-time]');
+    if (!existingReadingTime) {
+      const readingTimeHTML = `
+        <div class="metadata-item" data-reading-time="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Estimated Reading Time: <strong>${readingTime}</strong> min</span>
+        </div>
+      `;
+      
+      metadataBar.insertAdjacentHTML('afterbegin', readingTimeHTML);
+    }
     
     console.log(`✅ Reading time calculated: ${readingTime} minutes (${wordCount} words)`);
   }
 };
 
 // ====================================
-// 11. Auto-Numbering Headers
+// 10. Auto-Numbering Headers (Post Pages Only)
 // ====================================
 
 const AutoNumbering = {
@@ -597,6 +520,9 @@ const AutoNumbering = {
     let h3Count = 0;
     
     headers.forEach(header => {
+      // Skip subtitles
+      if (header.classList.contains('subtitle')) return;
+      
       if (header.tagName === 'H2') {
         h2Count++;
         h3Count = 0;
@@ -630,10 +556,9 @@ document.addEventListener('DOMContentLoaded', function() {
   NavbarScroll.init();
   CodeCopy.init();
   ImageLightbox.init();
-  TOCHighlight.init();
   ReadingTime.init();
   AutoNumbering.init();
-  InlineTOC.init();
+  PostTableOfContents.init();
   
   // Custom cursor (desktop only)
   if (window.innerWidth > 768) {

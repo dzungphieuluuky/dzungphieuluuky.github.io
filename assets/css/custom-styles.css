@@ -1102,3 +1102,72 @@ body.custom-cursor {
   box-shadow: 0 0 20px var(--accent-glow);
   transform: translateY(-2px);
 }
+
+/* ====================================
+   Post Table of Contents Box
+   ==================================== */
+
+.post-toc-box {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.post-toc-box details {
+  cursor: pointer;
+}
+
+.post-toc-box summary {
+  font-weight: 600;
+  color: var(--accent-dark);
+  user-select: none;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.post-toc-box summary:hover {
+  color: var(--accent-orange);
+}
+
+.post-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-toc-list li {
+  margin-bottom: 0.5rem;
+}
+
+.post-toc-list a {
+  color: var(--accent-orange);
+  font-size: 0.95rem;
+  transition: all var(--transition-base);
+}
+
+.post-toc-list a:hover {
+  color: var(--accent-red);
+  padding-left: 0.5rem;
+}
+
+.post-toc-list ul {
+  list-style: none;
+  padding-left: 1.5rem;
+  margin-top: 0.3rem;
+}
+
+.post-toc-list ul li {
+  margin-bottom: 0.35rem;
+}
+
+.post-toc-list ul a {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.post-toc-list ul a:hover {
+  color: var(--accent-orange);
+}

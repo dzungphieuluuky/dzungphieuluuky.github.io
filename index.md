@@ -1,19 +1,19 @@
 ---
 layout: page
-title: Welcome to my website
-subtitle: "You don't have to be great to start, but you have to start to be great"
+title: dzungphieuluuky's website
+subtitle: "My vibe coding personal website"
 ---
 
 # About Me
-Hi there I'm dzungphieuluuky. I'm currently an undergraduate student with interest in physics and deep learning.
+Hi there I'm dzungphieuluuky. I'm currently an undergraduate student and an enthusiast in physics and deep learning.
 
-I'm a science enthusiast and a student fascinated by the intersection of mathematics, computer science, and physics. 
+I'm fascinated by the intersection of mathematics, computer science, and physics. 
 
 # Interests
 Currently, my main interests are:
-- **Reinforcement Learning**: a subfield of artificial intelligence that create smart agents that can do things through trials and errors.
-- **Quantum Computing**: a field that try to use the magic of quantum physics to develop computers.
-- **Diffusion Models**: a kind of models that's inspired from diffusion process to build generative model, just curious about them recently.
+- **Reinforcement Learning**: a machine learning subfield to train an agent to do something automatically for you.
+- **Quantum Computing**: a field increasingly gain more popularity in community and hope to build super computer with the help of quantum phenomena.
+- **Diffusion Models**: a kind of models that's inspired from diffusion process to build generative model, which is kind of surprising from my own perspective.
 
 # Favourite Channels
 Watching YouTube is one of my ways of burning time when I'm free, some of my favourite channels are:

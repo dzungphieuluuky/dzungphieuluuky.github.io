@@ -405,30 +405,64 @@ const AutoNumbering = {
 };
 
 // ====================================
-// 10. Enhanced Search with Keyboard Navigation
+// 10. Enhanced Search with Keyboard Navigation (Modal Version)
 // ====================================
 
 const EnhancedSearch = {
   searchInput: null,
   searchResults: null,
+  searchModal: null,
+  searchTrigger: null,
   allResults: [],
   selectedIndex: -1,
   
   init: function() {
     this.searchInput = document.querySelector('.search-input');
     this.searchResults = document.querySelector('.search-results');
+    this.searchModal = document.getElementById('search-modal');
+    this.searchTrigger = document.getElementById('search-trigger');
     
-    if (!this.searchInput || !this.searchResults) {
+    if (!this.searchInput || !this.searchResults || !this.searchModal || !this.searchTrigger) {
       console.log('⚠️ Search elements not found');
       return;
     }
     
-    // Event listeners
+    // Event listeners for trigger button
+    this.searchTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openModal();
+    });
+    
+    // Event listeners for search input
     this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
     this.searchInput.addEventListener('keydown', (e) => this.handleKeyboard(e));
-    document.addEventListener('click', (e) => this.handleClickOutside(e));
     
-    console.log('✅ Enhanced search initialized');
+    // Close modal handlers
+    document.addEventListener('click', (e) => this.handleClickOutside(e));
+    document.querySelector('.search-modal-close').addEventListener('click', () => this.closeModal());
+    
+    // Keyboard shortcut to open search (Ctrl/Cmd + K)
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        this.openModal();
+      }
+    });
+    
+    console.log('✅ Enhanced search initialized (Modal)');
+  },
+  
+  openModal: function() {
+    this.searchModal.classList.add('active');
+    this.searchInput.focus();
+  },
+  
+  closeModal: function() {
+    this.searchModal.classList.remove('active');
+    this.searchInput.value = '';
+    this.searchResults.classList.remove('active');
+    this.allResults = [];
+    this.selectedIndex = -1;
   },
   
   handleSearch: async function(e) {
@@ -482,14 +516,14 @@ const EnhancedSearch = {
         <div class="search-result-item ${isSelected}" data-index="${index}">
           <div class="search-result-title">${this.escapeHtml(result.title)}</div>
           <div class="search-result-excerpt">${this.escapeHtml(result.excerpt)}</div>
-          ${result.tags && result.tags.length > 0 ? `
+          ${result.category ? `
             <div class="search-result-tags">
-              ${result.tags.slice(0, 2).map(tag => `
-                <span class="search-result-category">${this.escapeHtml(tag)}</span>
+              ${result.category.split(',').slice(0, 2).map(tag => `
+                <span class="search-result-category">${this.escapeHtml(tag.trim())}</span>
               `).join('')}
             </div>
           ` : ''}
-          <a href="${result.url}" class="search-result-link" style="display: none;"></a>
+          <a href="${result.url}" class="search-result-link"></a>
         </div>
       `;
     });
@@ -538,10 +572,7 @@ const EnhancedSearch = {
         
       case 'Escape':
         e.preventDefault();
-        this.searchResults.classList.remove('active');
-        this.allResults = [];
-        this.selectedIndex = -1;
-        this.searchInput.value = '';
+        this.closeModal();
         break;
     }
   },
@@ -561,13 +592,14 @@ const EnhancedSearch = {
   selectResult: function(index) {
     if (index >= 0 && index < this.allResults.length) {
       const result = this.allResults[index];
+      this.closeModal();
       window.location.href = result.url;
     }
   },
   
   handleClickOutside: function(e) {
-    if (!e.target.closest('.search-container')) {
-      this.searchResults.classList.remove('active');
+    if (e.target === this.searchModal) {
+      this.closeModal();
     }
   },
   

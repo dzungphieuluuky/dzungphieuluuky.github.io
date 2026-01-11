@@ -2,20 +2,28 @@
 
 <meta name="baseurl" content="{{ site.baseurl }}">
 
-<div class="search-container">
-  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="11" cy="11" r="8"></circle>
-    <path d="m21 21-4.35-4.35"></path>
-  </svg>
-  <input 
-    type="text" 
-    class="search-input" 
-    placeholder="Search posts and articles..."
-    aria-label="Search"
-    autocomplete="off"
-  >
-  <div class="search-results" id="search-results"></div>
-  <div class="search-hint">↑↓ Navigate • ⏎ Select • Esc Close</div>
+<!-- Search Modal (Hidden by default) -->
+<div class="search-modal" id="search-modal">
+  <div class="search-modal-content">
+    <button class="search-modal-close" aria-label="Close search">&times;</button>
+    
+    <div class="search-container">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search posts and articles..."
+        aria-label="Search"
+        autocomplete="off"
+        autofocus
+      >
+      <div class="search-results" id="search-results"></div>
+      <div class="search-hint">↑↓ Navigate • ⏎ Select • Esc Close</div>
+    </div>
+  </div>
 </div>
 
 {% endif %}

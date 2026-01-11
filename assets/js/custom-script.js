@@ -69,12 +69,11 @@ const ScrollReveal = {
 };
 
 // ====================================
-// 3. Custom Cursor with Trail
+// 3. Custom Cursor with Trail (Dot Only)
 // ====================================
 
 const CustomCursor = {
   dot: null,
-  outline: null,
   
   init: function() {
     // Only enable on desktop
@@ -87,17 +86,12 @@ const CustomCursor = {
     this.dot = document.createElement('div');
     this.dot.className = 'custom-cursor-dot';
     
-    this.outline = document.createElement('div');
-    this.outline.className = 'custom-cursor-outline';
-    
     document.body.appendChild(this.dot);
-    document.body.appendChild(this.outline);
     document.body.classList.add('custom-cursor');
     
     // Track mouse movement
     let mouseX = 0, mouseY = 0;
     let dotX = 0, dotY = 0;
-    let outlineX = 0, outlineY = 0;
     
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
@@ -110,34 +104,25 @@ const CustomCursor = {
       dotX = mouseX;
       dotY = mouseY;
       
-      // Outline follows with delay
-      outlineX += (mouseX - outlineX) * 0.15;
-      outlineY += (mouseY - outlineY) * 0.15;
-      
       this.dot.style.left = `${dotX}px`;
       this.dot.style.top = `${dotY}px`;
-      
-      this.outline.style.left = `${outlineX - 20}px`;
-      this.outline.style.top = `${outlineY - 20}px`;
       
       requestAnimationFrame(animateCursor);
     };
     
     animateCursor();
     
-    // Expand on hover over links/buttons
+    // Scale on hover over links/buttons
     const interactiveElements = 'a, button, .btn-primary, .btn-glow, input, textarea';
     
     document.addEventListener('mouseover', (e) => {
       if (e.target.matches(interactiveElements)) {
-        this.outline.classList.add('expand');
         this.dot.style.transform = 'scale(1.5)';
       }
     });
     
     document.addEventListener('mouseout', (e) => {
       if (e.target.matches(interactiveElements)) {
-        this.outline.classList.remove('expand');
         this.dot.style.transform = 'scale(1)';
       }
     });
@@ -212,7 +197,7 @@ const ParticleEffect = {
   
   drawParticles: function() {
     this.particles.forEach(particle => {
-      this.ctx.fillStyle = 'rgba(0, 255, 65, 0.5)';
+      this.ctx.fillStyle = 'rgba(42, 157, 143, 0.5)';
       this.ctx.beginPath();
       this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
       this.ctx.closePath();
@@ -229,7 +214,7 @@ const ParticleEffect = {
         
         if (distance < 100) {
           const opacity = 1 - (distance / 100);
-          this.ctx.strokeStyle = `rgba(0, 255, 65, ${opacity * 0.2})`;
+          this.ctx.strokeStyle = `rgba(42, 157, 143, ${opacity * 0.2})`;
           this.ctx.lineWidth = 1;
           this.ctx.beginPath();
           this.ctx.moveTo(this.particles[a].x, this.particles[a].y);
@@ -379,9 +364,9 @@ const CodeCopy = {
     style.textContent = `
       pre.copied::before {
         content: 'Copied!' !important;
-        background: var(--accent-green) !important;
-        color: var(--bg-primary) !important;
-        border-color: var(--accent-green) !important;
+        background: var(--accent-orange) !important;
+        color: #ffffff !important;
+        border-color: var(--accent-orange) !important;
       }
     `;
     document.head.appendChild(style);
@@ -483,7 +468,105 @@ const NavbarScroll = {
 };
 
 // ====================================
-// 9. Calculate Reading Time
+// 9. Inline Table of Contents (Right Sidebar)
+// ====================================
+
+const InlineTOC = {
+  toc: null,
+  trigger: null,
+  
+  init: function() {
+    const content = document.querySelector('article, .post-content, .content, main');
+    if (!content) return;
+    
+    // Get all headers
+    const headers = content.querySelectorAll('h2[id], h3[id]');
+    if (headers.length < 2) return; // Only show if more than 1 section
+    
+    // Create inline TOC HTML
+    this.toc = document.createElement('nav');
+    this.toc.className = 'inline-toc';
+    
+    let tocHTML = '<span class="inline-toc-title">Contents</span><ul>';
+    let currentH2 = null;
+    
+    headers.forEach((header) => {
+      const id = header.getAttribute('id');
+      const text = header.textContent.trim();
+      const tag = header.tagName;
+      
+      if (tag === 'H2') {
+        if (currentH2 !== null) {
+          tocHTML += '</ul></li>';
+        }
+        tocHTML += '<li><a href="#' + id + '">' + text + '</a><ul>';
+        currentH2 = id;
+      } else if (tag === 'H3') {
+        tocHTML += '<li><a href="#' + id + '">' + text + '</a></li>';
+      }
+    });
+    
+    if (currentH2 !== null) {
+      tocHTML += '</ul></li>';
+    }
+    tocHTML += '</ul>';
+    
+    this.toc.innerHTML = tocHTML;
+    document.body.appendChild(this.toc);
+    
+    // Create trigger button (for mobile/tablet)
+    this.trigger = document.createElement('button');
+    this.trigger.className = 'toc-trigger';
+    this.trigger.innerHTML = '☰';
+    this.trigger.setAttribute('title', 'Toggle table of contents');
+    document.body.appendChild(this.trigger);
+    
+    // Add click listeners
+    this.trigger.addEventListener('click', () => {
+      this.toc.classList.toggle('active');
+    });
+    
+    // Close TOC when clicking a link
+    this.toc.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1400) {
+          this.toc.classList.remove('active');
+        }
+      });
+    });
+    
+    // Highlight active section
+    this.highlightActiveSection();
+    window.addEventListener('scroll', () => this.highlightActiveSection(), { passive: true });
+    
+    console.log('✅ Inline TOC initialized with', headers.length, 'sections');
+  },
+  
+  highlightActiveSection: function() {
+    const headers = document.querySelectorAll('h2[id], h3[id]');
+    let activeId = null;
+    
+    headers.forEach(header => {
+      const rect = header.getBoundingClientRect();
+      if (rect.top < 200) {
+        activeId = header.getAttribute('id');
+      }
+    });
+    
+    // Update active link
+    if (this.toc) {
+      this.toc.querySelectorAll('a').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + activeId) {
+          link.classList.add('active');
+        }
+      });
+    }
+  }
+};
+
+// ====================================
+// 10. Calculate Reading Time
 // ====================================
 
 const ReadingTime = {
@@ -529,8 +612,45 @@ const ReadingTime = {
 };
 
 // ====================================
-// Main Initialization
+// 11. Auto-Numbering Headers
 // ====================================
+
+const AutoNumbering = {
+  init: function() {
+    const content = document.querySelector('article, .post-content, .content, main');
+    if (!content) return;
+    
+    // Find all h2 and h3 headers
+    const headers = content.querySelectorAll('h2, h3');
+    let h2Count = 0;
+    let h3Count = 0;
+    
+    headers.forEach(header => {
+      if (header.tagName === 'H2') {
+        h2Count++;
+        h3Count = 0;
+        
+        // Add ID if not present
+        if (!header.id) {
+          header.id = 'section-' + h2Count;
+        }
+      } else if (header.tagName === 'H3') {
+        h3Count++;
+        
+        // Add ID if not present
+        if (!header.id) {
+          header.id = 'section-' + h2Count + '-' + h3Count;
+        }
+      }
+    });
+    
+    console.log('✅ Auto-numbering initialized for', headers.length, 'headers');
+  }
+};
+
+// ====================================
+// Main Initialization
+// ====================================/antml:parameter>
 
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 Initializing Modern Portfolio...');
@@ -543,6 +663,8 @@ document.addEventListener('DOMContentLoaded', function() {
   ImageLightbox.init();
   TOCHighlight.init();
   ReadingTime.init();
+  AutoNumbering.init();
+  InlineTOC.init();
   
   // Optional: Custom cursor (desktop only)
   if (window.innerWidth > 768) {

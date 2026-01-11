@@ -1,13 +1,280 @@
 ---
 layout: default
-title: 404 - Page not found
+title: 404 - Page Not Found
 permalink: /404.html
 ---
 
-<div class="text-center">
-  <h1>Whoops, this page doesn't exist.</h1>
-  <h1>Move along. (404 error)</h1>
-  <br/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  <img src="{{ 'assets/img/404-southpark.jpg' | relative_url }}" alt="Not found" />
-</div>
+    body {
+      font-family: 'Lora', serif;
+      background: linear-gradient(135deg, #0f1419 0%, #1a237e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e6f1ff;
+    }
+
+    /* Background Magic Particles */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      background: #e9c46a;
+      border-radius: 50%;
+      opacity: 0.2;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 800px;
+      padding: 2rem;
+    }
+
+    .error-header {
+      color: #90caf9;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-subheader {
+      color: #64b5f6;
+      font-style: italic;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .error-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .error-number {
+      font-size: clamp(4rem, 20vw, 12rem);
+      font-weight: 900;
+      color: #e6f1ff;
+      line-height: 1;
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .mimic-container {
+      width: 250px;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mimic-container svg {
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .error-text {
+      margin: 2rem 0;
+    }
+
+    .error-text h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #e6f1ff;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .error-text p {
+      color: #90caf9;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .back-button {
+      margin-top: 2rem;
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 9999px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+    }
+
+    .back-button:hover {
+      background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(79, 70, 229, 0.4);
+    }
+
+    .back-button:active {
+      transform: scale(0.95);
+    }
+
+    /* GIF Container */
+    .gif-container {
+      margin: 2rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gif-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      max-height: 400px;
+    }
+
+    @media (max-width: 768px) {
+      .error-display {
+        gap: 0.5rem;
+      }
+
+      .mimic-container {
+        width: 180px;
+        height: 180px;
+      }
+
+      .error-text h2 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Particles Background -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="error-header">404 Error Page</div>
+    <div class="error-subheader">Page Not Found</div>
+
+    <!-- Option 1: Use SVG Mimic (Recommended) -->
+    <div class="error-display">
+      <div class="error-number">4</div>
+      
+      <div class="mimic-container">
+        <svg viewBox="0 0 200 200" width="200" height="200">
+          <!-- Shadow -->
+          <ellipse cx="100" cy="170" rx="60" ry="15" fill="rgba(100, 181, 246, 0.1)" />
+          
+          <!-- Legs (Bouncing) -->
+          <g id="legs">
+            <!-- Left Leg -->
+            <path d="M75 110 L60 145 L45 140" fill="none" stroke="#e6f1ff" stroke-width="12" stroke-linecap="round" />
+            <path d="M45 140 L35 150" fill="none" stroke="#5b21b6" stroke-width="14" stroke-linecap="round" />
+            
+            <!-- Right Leg -->
+            <path d="M125 110 L140 145 L155 140" fill="none" stroke="#e6f1ff" stroke-width="12" stroke-linecap="round" />
+            <path d="M155 140 L165 150" fill="none" stroke="#5b21b6" stroke-width="14" stroke-linecap="round" />
+          </g>
+
+          <!-- Mimic Box -->
+          <rect x="40" y="50" width="120" height="80" rx="10" fill="#4c1d95" stroke="#1e1b4b" stroke-width="4" />
+          <rect x="40" y="50" width="120" height="30" rx="10" fill="#6d28d9" stroke="#1e1b4b" stroke-width="4" />
+          
+          <!-- Gold Trim -->
+          <rect x="40" y="75" width="120" height="5" fill="#fbbf24" />
+          <circle cx="100" cy="85" r="8" fill="#fbbf24" stroke="#1e1b4b" stroke-width="2" />
+
+          <!-- Teeth -->
+          <path d="M50 80 L60 95 L70 80 L80 95 L90 80 L100 95 L110 80 L120 95 L130 80 L140 95 L150 80" 
+                fill="white" stroke="#1e1b4b" stroke-width="1" />
+          
+          <!-- Eyes -->
+          <circle cx="75" cy="65" r="4" fill="#ef4444" opacity="0.8" />
+          <circle cx="125" cy="65" r="4" fill="#ef4444" opacity="0.8" />
+
+          <!-- Ears -->
+          <path d="M30 60 Q20 40 45 55" fill="#fecaca" stroke="#1e1b4b" stroke-width="2" />
+          <path d="M170 60 Q180 40 155 55" fill="#fecaca" stroke="#1e1b4b" stroke-width="2" />
+        </svg>
+      </div>
+
+      <div class="error-number">4</div>
+    </div>
+
+    <!-- Option 2: Use GIF Instead (Uncomment if you have a GIF) -->
+    <!-- 
+    <div class="gif-container">
+      <img src="/path/to/your/404.gif" alt="404 Error Animation">
+    </div>
+    -->
+
+    <!-- Error Message -->
+    <div class="error-text">
+      <h2>Uh-oh! Nothing here...</h2>
+      <p>
+        It seems Frieren was lured by the promise of a rare grimoire...
+        but it was just another Mimic. We can't find the page you're looking for.
+      </p>
+    </div>
+
+    <!-- Back Button -->
+    <button class="back-button" onclick="window.location='/'">
+      Go Back Home
+    </button>
+  </div>
+
+  <script>
+    // Generate random particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.width = Math.random() * 10 + 5 + 'px';
+      particle.style.height = particle.style.width;
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 5 + 's';
+      particle.style.animationDuration = Math.random() * 3 + 2 + 's';
+      particlesContainer.appendChild(particle);
+    }
+  </script>
+</body>
+</html>

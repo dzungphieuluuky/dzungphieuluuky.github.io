@@ -1,485 +1,566 @@
 // ====================================
-// Modern Blog Search Script
-// Minimal animations with smooth transitions
+// Modern Dark Portfolio JavaScript
+// Intersection Observer • Custom Cursor • Particles
 // ====================================
 
-const ModernSearch = {
-  searchData: [],
-  searchIndex: null,
-  currentResults: [],
-  selectedIndex: -1,
-  debounceTimer: null,
-  
+// ====================================
+// 1. Reading Progress Bar
+// ====================================
+
+const ReadingProgress = {
   init: function() {
-    if (!document.getElementById("beautifuljekyll-search-overlay")) {
-      console.log('Search overlay not found');
-      return;
+    // Create progress bar if it doesn't exist
+    if (!document.getElementById('reading-progress')) {
+      const progressBar = document.createElement('div');
+      progressBar.id = 'reading-progress';
+      document.body.appendChild(progressBar);
     }
     
-    console.log('🔍 Initializing Modern Search...');
-    this.loadSearchData();
-    this.enhanceSearchUI();
-    this.bindEvents();
-    this.initKeyboardShortcuts();
+    this.updateProgress();
+    window.addEventListener('scroll', () => this.updateProgress(), { passive: true });
   },
   
-  loadSearchData: async function() {
-    try {
-      const baseurl = document.querySelector('meta[name="baseurl"]')?.content || '';
-      const response = await fetch(`${baseurl}/assets/data/searchcorpus.json`);
-      
-      if (response.ok) {
-        this.searchData = await response.json();
-        console.log('✅ Search data loaded:', this.searchData.length, 'items');
-      } else {
-        console.warn('⚠️ Search corpus not found, extracting from page');
-        this.extractPageData();
-      }
-      
-      this.buildSearchIndex();
-    } catch (error) {
-      console.warn('⚠️ Search data loading failed:', error);
-      this.extractPageData();
-      this.buildSearchIndex();
-    }
-  },
-  
-  extractPageData: function() {
-    console.log('📚 Extracting page data...');
+  updateProgress: function() {
+    const progressBar = document.getElementById('reading-progress');
+    if (!progressBar) return;
     
-    const posts = document.querySelectorAll('.post-preview, article, .blog-post');
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight - windowHeight;
+    const scrolled = window.scrollY;
+    const progress = (scrolled / documentHeight) * 100;
     
-    this.searchData = Array.from(posts).map((post, index) => {
-      const titleEl = post.querySelector('h2 a, h1, .post-title, .post-title a');
-      const contentEl = post.querySelector('.post-content, .post-excerpt, p');
-      const linkEl = post.querySelector('h2 a, .post-title a, a[href*="/"]');
-      const dateEl = post.querySelector('.post-meta, .post-date, time');
-      
-      const title = titleEl?.textContent?.trim() || `Post ${index + 1}`;
-      const content = contentEl?.textContent?.trim() || '';
-      const url = linkEl?.getAttribute('href') || '#';
-      const date = dateEl?.textContent?.trim() || '';
-      
-      return {
-        title,
-        content,
-        url: url.startsWith('http') ? url : (window.location.origin + url),
-        date,
-        excerpt: content.length > 150 ? content.substring(0, 150) + '...' : content
-      };
-    }).filter(item => item.title && !item.title.startsWith('Post '));
-    
-    console.log('✅ Extracted', this.searchData.length, 'items');
-  },
-  
-  buildSearchIndex: function() {
-    this.searchIndex = this.searchData.map((item, index) => ({
-      ...item,
-      searchText: [
-        item.title || '',
-        item.content || '',
-        item.excerpt || ''
-      ].join(' ').toLowerCase(),
-      index
-    }));
-    
-    console.log('🔍 Search index built with', this.searchIndex.length, 'items');
-  },
-  
-  enhanceSearchUI: function() {
-    const searchOverlay = document.getElementById("beautifuljekyll-search-overlay");
-    if (!searchOverlay) return;
-    
-    // Hide fallback
-    const fallback = searchOverlay.querySelector('.fallback-search');
-    if (fallback) fallback.style.display = 'none';
-    
-    // Create modern search interface
-    const modernHTML = `
-      <div class="modern-search-container">
-        <div class="search-gradient-bar"></div>
-        
-        <div class="search-header">
-          <div class="search-input-wrapper">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input 
-              type="text" 
-              id="modern-search-input" 
-              placeholder="Search articles, ideas, thoughts..." 
-              autocomplete="off"
-              spellcheck="false"
-            >
-            <div class="search-loading" id="search-loading" style="display: none;">
-              <div class="loading-spinner"></div>
-            </div>
-          </div>
-          <button class="search-close" id="modern-search-close" aria-label="Close search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        
-        <div class="search-results" id="modern-search-results">
-          <div class="search-suggestions">
-            <div class="suggestion-item">💡 Start typing to search through articles</div>
-            <div class="suggestion-item">🔍 Find posts by title, content, or keywords</div>
-            <div class="suggestion-item">⌨️ Use keyboard arrows to navigate results</div>
-          </div>
-        </div>
-        
-        <div class="search-footer">
-          <div class="search-shortcuts">
-            <span><kbd class="key-button">↑</kbd><kbd class="key-button">↓</kbd> Navigate</span>
-            <span><kbd class="key-button">Enter</kbd> Select</span>
-            <span><kbd class="key-button">Esc</kbd> Close</span>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    searchOverlay.innerHTML = modernHTML;
-    console.log('✅ Modern search UI created');
-  },
-  
-  bindEvents: function() {
-    const searchInput = document.getElementById('modern-search-input');
-    const searchClose = document.getElementById('modern-search-close');
-    const overlay = document.getElementById('beautifuljekyll-search-overlay');
-    
-    if (!searchInput) {
-      console.warn('⚠️ Search input not found');
-      return;
-    }
-    
-    // Search input with debouncing
-    searchInput.addEventListener('input', (e) => {
-      clearTimeout(this.debounceTimer);
-      const query = e.target.value.trim();
-      
-      if (query.length === 0) {
-        this.showSuggestions();
-        return;
-      }
-      
-      // Show loading
-      const loadingEl = document.getElementById('search-loading');
-      if (loadingEl) loadingEl.style.display = 'block';
-      
-      this.debounceTimer = setTimeout(() => {
-        this.performSearch(query);
-        if (loadingEl) loadingEl.style.display = 'none';
-      }, 250);
-    });
-    
-    // Keyboard navigation
-    searchInput.addEventListener('keydown', (e) => {
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          this.navigateResults(1);
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          this.navigateResults(-1);
-          break;
-        case 'Enter':
-          e.preventDefault();
-          this.selectResult();
-          break;
-        case 'Escape':
-          e.preventDefault();
-          this.closeSearch();
-          break;
-      }
-    });
-    
-    // Close button
-    if (searchClose) {
-      searchClose.addEventListener('click', () => this.closeSearch());
-    }
-    
-    // Close on backdrop click
-    if (overlay) {
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          this.closeSearch();
-        }
-      });
-    }
-    
-    // Override search link
-    const searchLink = document.getElementById('nav-search-link');
-    if (searchLink) {
-      searchLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.openSearch();
-      });
-    }
-    
-    console.log('✅ Search events bound');
-  },
-  
-  initKeyboardShortcuts: function() {
-    // CMD/Ctrl + K to open search
-    document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        this.openSearch();
-      }
-    });
-    
-    console.log('⌨️ Keyboard shortcuts initialized (⌘K to search)');
-  },
-  
-  performSearch: function(query) {
-    if (!query || query.length < 2) {
-      this.showSuggestions();
-      return;
-    }
-    
-    const queryLower = query.toLowerCase();
-    const results = this.searchIndex
-      .filter(item => item.searchText.includes(queryLower))
-      .slice(0, 8);
-    
-    this.currentResults = results;
-    this.selectedIndex = -1;
-    this.displayResults(results, query);
-  },
-  
-  displayResults: function(results, query) {
-    const container = document.getElementById('modern-search-results');
-    if (!container) return;
-    
-    if (results.length === 0) {
-      container.innerHTML = `
-        <div class="search-suggestions">
-          <div class="suggestion-item">🔍 No results found for "${this.escapeHtml(query)}"</div>
-          <div class="suggestion-item">💡 Try different keywords or check spelling</div>
-          <div class="suggestion-item">🎯 Search is case-insensitive and matches partial words</div>
-        </div>
-      `;
-      return;
-    }
-    
-    const resultsHTML = results.map((item, index) => `
-      <div class="search-result-item" data-index="${index}" data-url="${this.escapeHtml(item.url)}">
-        <div class="result-title">${this.highlightText(item.title, query)}</div>
-        <div class="result-excerpt">${this.highlightText(item.excerpt, query)}</div>
-        ${item.date ? `<div class="result-meta">📅 ${this.escapeHtml(item.date)}</div>` : ''}
-      </div>
-    `).join('');
-    
-    container.innerHTML = resultsHTML;
-    
-    // Add click handlers
-    container.querySelectorAll('.search-result-item').forEach((item, index) => {
-      item.addEventListener('click', () => {
-        const url = item.getAttribute('data-url');
-        if (url && url !== '#') {
-          window.location.href = url;
-        }
-      });
-      
-      // Hover to select
-      item.addEventListener('mouseenter', () => {
-        this.selectedIndex = index;
-        this.updateSelection();
-      });
-    });
-  },
-  
-  highlightText: function(text, query) {
-    if (!query || !text) return this.escapeHtml(text);
-    
-    const escapedText = this.escapeHtml(text);
-    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-    
-    return escapedText.replace(regex, '<span class="highlight">$1</span>');
-  },
-  
-  escapeHtml: function(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  },
-  
-  showSuggestions: function() {
-    const container = document.getElementById('modern-search-results');
-    if (container) {
-      container.innerHTML = `
-        <div class="search-suggestions">
-          <div class="suggestion-item">💡 Start typing to search through articles</div>
-          <div class="suggestion-item">🔍 Find posts by title, content, or keywords</div>
-          <div class="suggestion-item">⌨️ Use keyboard arrows to navigate results</div>
-        </div>
-      `;
-    }
-  },
-  
-  navigateResults: function(direction) {
-    const items = document.querySelectorAll('.search-result-item');
-    if (items.length === 0) return;
-    
-    this.selectedIndex += direction;
-    
-    if (this.selectedIndex < 0) {
-      this.selectedIndex = items.length - 1;
-    } else if (this.selectedIndex >= items.length) {
-      this.selectedIndex = 0;
-    }
-    
-    this.updateSelection();
-    items[this.selectedIndex]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  },
-  
-  updateSelection: function() {
-    const items = document.querySelectorAll('.search-result-item');
-    items.forEach((item, index) => {
-      item.classList.toggle('selected', index === this.selectedIndex);
-    });
-  },
-  
-  selectResult: function() {
-    const selected = document.querySelector('.search-result-item.selected');
-    if (selected) {
-      selected.click();
-    }
-  },
-  
-  openSearch: function() {
-    const overlay = document.getElementById('beautifuljekyll-search-overlay');
-    const input = document.getElementById('modern-search-input');
-    
-    if (overlay && input) {
-      overlay.style.display = 'flex';
-      setTimeout(() => {
-        input.focus();
-        this.showSuggestions();
-      }, 100);
-      document.body.classList.add('overflow-hidden');
-    }
-  },
-  
-  closeSearch: function() {
-    const overlay = document.getElementById('beautifuljekyll-search-overlay');
-    const input = document.getElementById('modern-search-input');
-    
-    if (overlay) {
-      overlay.style.display = 'none';
-      document.body.classList.remove('overflow-hidden');
-      
-      if (input) {
-        input.value = '';
-        this.showSuggestions();
-      }
-    }
+    progressBar.style.width = `${Math.min(progress, 100)}%`;
   }
 };
 
 // ====================================
-// Page Enhancements
+// 2. Intersection Observer (Fade-Up Animation)
 // ====================================
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 Initializing page enhancements...');
-  
-  // Initialize search after a short delay
-  setTimeout(() => {
-    ModernSearch.init();
-  }, 500);
-  
-  // Smooth scroll for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      if (href && href.length > 1) {
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) {
-          target.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-          });
-        }
-      }
-    });
-  });
-  
-  // Enhanced navbar scroll effect
-  const navbar = document.querySelector('.navbar');
-  if (navbar) {
-    let lastScroll = 0;
-    let ticking = false;
-    
-    function handleScroll() {
-      const currentScroll = window.scrollY;
-      
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          if (currentScroll > 50) {
-            navbar.classList.add('scrolled');
-          } else {
-            navbar.classList.remove('scrolled');
-          }
-          
-          lastScroll = currentScroll;
-          ticking = false;
-        });
-        ticking = true;
-      }
+const ScrollReveal = {
+  init: function() {
+    if (!window.IntersectionObserver) {
+      console.warn('IntersectionObserver not supported');
+      return;
     }
     
-    window.addEventListener('scroll', handleScroll, { passive: true });
-  }
-  
-  // Animate posts on scroll (minimal, subtle)
-  if (window.IntersectionObserver) {
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, index) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // Add small delay based on index for stagger effect
-          setTimeout(() => {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-          }, index * 50); // Reduced delay for subtlety
-          
-          // Unobserve after animation
+          entry.target.classList.add('active');
+          // Optionally unobserve after reveal
           observer.unobserve(entry.target);
         }
       });
-    }, { 
-      threshold: 0.1, 
-      rootMargin: '0px 0px -50px 0px' 
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
     });
     
-    // Observe post previews
-    document.querySelectorAll('.post-preview').forEach((post) => {
-      post.style.opacity = '0';
-      post.style.transform = 'translateY(20px)';
-      post.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      observer.observe(post);
+    // Observe elements
+    const elements = document.querySelectorAll('.post-preview, .glass-card, .bento-item, h2, h3');
+    elements.forEach(el => {
+      el.classList.add('reveal');
+      observer.observe(el);
     });
+    
+    console.log('✅ Scroll reveal initialized for', elements.length, 'elements');
+  }
+};
+
+// ====================================
+// 3. Custom Cursor with Trail
+// ====================================
+
+const CustomCursor = {
+  dot: null,
+  outline: null,
+  
+  init: function() {
+    // Only enable on desktop
+    if (window.innerWidth < 768 || 'ontouchstart' in window) {
+      console.log('⚠️ Custom cursor disabled on mobile/touch devices');
+      return;
+    }
+    
+    // Create cursor elements
+    this.dot = document.createElement('div');
+    this.dot.className = 'custom-cursor-dot';
+    
+    this.outline = document.createElement('div');
+    this.outline.className = 'custom-cursor-outline';
+    
+    document.body.appendChild(this.dot);
+    document.body.appendChild(this.outline);
+    document.body.classList.add('custom-cursor');
+    
+    // Track mouse movement
+    let mouseX = 0, mouseY = 0;
+    let dotX = 0, dotY = 0;
+    let outlineX = 0, outlineY = 0;
+    
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+    
+    // Smooth animation
+    const animateCursor = () => {
+      // Dot follows immediately
+      dotX = mouseX;
+      dotY = mouseY;
+      
+      // Outline follows with delay
+      outlineX += (mouseX - outlineX) * 0.15;
+      outlineY += (mouseY - outlineY) * 0.15;
+      
+      this.dot.style.left = `${dotX}px`;
+      this.dot.style.top = `${dotY}px`;
+      
+      this.outline.style.left = `${outlineX - 20}px`;
+      this.outline.style.top = `${outlineY - 20}px`;
+      
+      requestAnimationFrame(animateCursor);
+    };
+    
+    animateCursor();
+    
+    // Expand on hover over links/buttons
+    const interactiveElements = 'a, button, .btn-primary, .btn-glow, input, textarea';
+    
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.matches(interactiveElements)) {
+        this.outline.classList.add('expand');
+        this.dot.style.transform = 'scale(1.5)';
+      }
+    });
+    
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.matches(interactiveElements)) {
+        this.outline.classList.remove('expand');
+        this.dot.style.transform = 'scale(1)';
+      }
+    });
+    
+    console.log('✅ Custom cursor initialized');
+  }
+};
+
+// ====================================
+// 4. Particle Canvas Effect
+// ====================================
+
+const ParticleEffect = {
+  canvas: null,
+  ctx: null,
+  particles: [],
+  mouse: { x: null, y: null, radius: 150 },
+  
+  init: function() {
+    // Create canvas
+    this.canvas = document.createElement('canvas');
+    this.canvas.id = 'particle-canvas';
+    document.body.appendChild(this.canvas);
+    
+    this.ctx = this.canvas.getContext('2d');
+    this.resize();
+    
+    // Create particles
+    this.createParticles();
+    
+    // Track mouse
+    window.addEventListener('mousemove', (e) => {
+      this.mouse.x = e.x;
+      this.mouse.y = e.y;
+    });
+    
+    window.addEventListener('resize', () => this.resize());
+    
+    // Start animation
+    this.animate();
+    
+    console.log('✅ Particle effect initialized');
+  },
+  
+  resize: function() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  },
+  
+  createParticles: function() {
+    const numberOfParticles = Math.floor((this.canvas.width * this.canvas.height) / 15000);
+    
+    for (let i = 0; i < numberOfParticles; i++) {
+      this.particles.push({
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height,
+        size: Math.random() * 2 + 1,
+        speedX: Math.random() * 0.5 - 0.25,
+        speedY: Math.random() * 0.5 - 0.25,
+        baseX: null,
+        baseY: null,
+        density: Math.random() * 30 + 1
+      });
+    }
+    
+    // Set base positions
+    this.particles.forEach(particle => {
+      particle.baseX = particle.x;
+      particle.baseY = particle.y;
+    });
+  },
+  
+  drawParticles: function() {
+    this.particles.forEach(particle => {
+      this.ctx.fillStyle = 'rgba(0, 255, 65, 0.5)';
+      this.ctx.beginPath();
+      this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      this.ctx.closePath();
+      this.ctx.fill();
+    });
+  },
+  
+  connectParticles: function() {
+    for (let a = 0; a < this.particles.length; a++) {
+      for (let b = a + 1; b < this.particles.length; b++) {
+        const dx = this.particles[a].x - this.particles[b].x;
+        const dy = this.particles[a].y - this.particles[b].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 100) {
+          const opacity = 1 - (distance / 100);
+          this.ctx.strokeStyle = `rgba(0, 255, 65, ${opacity * 0.2})`;
+          this.ctx.lineWidth = 1;
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.particles[a].x, this.particles[a].y);
+          this.ctx.lineTo(this.particles[b].x, this.particles[b].y);
+          this.ctx.stroke();
+        }
+      }
+    }
+  },
+  
+  moveParticles: function() {
+    this.particles.forEach(particle => {
+      // Move particle
+      particle.x += particle.speedX;
+      particle.y += particle.speedY;
+      
+      // Bounce off edges
+      if (particle.x > this.canvas.width || particle.x < 0) {
+        particle.speedX *= -1;
+      }
+      if (particle.y > this.canvas.height || particle.y < 0) {
+        particle.speedY *= -1;
+      }
+      
+      // Mouse interaction
+      if (this.mouse.x !== null && this.mouse.y !== null) {
+        const dx = this.mouse.x - particle.x;
+        const dy = this.mouse.y - particle.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < this.mouse.radius) {
+          const forceDirectionX = dx / distance;
+          const forceDirectionY = dy / distance;
+          const maxDistance = this.mouse.radius;
+          const force = (maxDistance - distance) / maxDistance;
+          const directionX = forceDirectionX * force * particle.density * 0.5;
+          const directionY = forceDirectionY * force * particle.density * 0.5;
+          
+          particle.x -= directionX;
+          particle.y -= directionY;
+        }
+      }
+    });
+  },
+  
+  animate: function() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.moveParticles();
+    this.drawParticles();
+    this.connectParticles();
+    
+    requestAnimationFrame(() => this.animate());
+  }
+};
+
+// ====================================
+// 5. Table of Contents Active Section Highlighting
+// ====================================
+
+const TOCHighlight = {
+  sections: [],
+  
+  init: function() {
+    const toc = document.querySelector('.toc');
+    if (!toc) return;
+    
+    // Get all sections
+    const headers = document.querySelectorAll('h2[id], h3[id]');
+    this.sections = Array.from(headers);
+    
+    if (this.sections.length === 0) return;
+    
+    // Create observer
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.getAttribute('id');
+        const tocLink = document.querySelector(`.toc a[href="#${id}"]`);
+        
+        if (entry.isIntersecting) {
+          // Remove active from all
+          document.querySelectorAll('.toc a').forEach(link => {
+            link.classList.remove('active');
+          });
+          
+          // Add active to current
+          if (tocLink) {
+            tocLink.classList.add('active');
+          }
+        }
+      });
+    }, {
+      threshold: 0.5,
+      rootMargin: '-100px 0px -66% 0px'
+    });
+    
+    // Observe all sections
+    this.sections.forEach(section => observer.observe(section));
+    
+    console.log('✅ TOC highlighting initialized for', this.sections.length, 'sections');
+  }
+};
+
+// ====================================
+// 6. Copy to Clipboard for Code Blocks
+// ====================================
+
+const CodeCopy = {
+  init: function() {
+    const codeBlocks = document.querySelectorAll('pre code');
+    
+    codeBlocks.forEach((codeBlock) => {
+      const pre = codeBlock.parentElement;
+      if (!pre || pre.tagName !== 'PRE') return;
+      
+      // Make pre clickable
+      pre.style.cursor = 'pointer';
+      pre.setAttribute('title', 'Click to copy code');
+      
+      pre.addEventListener('click', async () => {
+        const code = codeBlock.textContent;
+        
+        try {
+          await navigator.clipboard.writeText(code);
+          
+          // Visual feedback
+          const originalBefore = window.getComputedStyle(pre, '::before').content;
+          pre.style.setProperty('--copy-text', '"Copied!"');
+          
+          // Change the pseudo-element content
+          pre.classList.add('copied');
+          
+          setTimeout(() => {
+            pre.classList.remove('copied');
+            pre.style.removeProperty('--copy-text');
+          }, 2000);
+          
+          console.log('✅ Code copied to clipboard');
+        } catch (err) {
+          console.error('❌ Failed to copy:', err);
+        }
+      });
+    });
+    
+    // Add CSS for copied state
+    const style = document.createElement('style');
+    style.textContent = `
+      pre.copied::before {
+        content: 'Copied!' !important;
+        background: var(--accent-green) !important;
+        color: var(--bg-primary) !important;
+        border-color: var(--accent-green) !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    console.log('✅ Code copy initialized for', codeBlocks.length, 'blocks');
+  }
+};
+
+// ====================================
+// 7. Image Lightbox
+// ====================================
+
+const ImageLightbox = {
+  lightbox: null,
+  
+  init: function() {
+    // Create lightbox HTML
+    this.lightbox = document.createElement('div');
+    this.lightbox.className = 'lightbox';
+    this.lightbox.innerHTML = `
+      <div class="lightbox-close">×</div>
+      <div class="lightbox-content">
+        <img src="" alt="">
+        <div class="lightbox-caption"></div>
+      </div>
+    `;
+    document.body.appendChild(this.lightbox);
+    
+    // Find all images in articles
+    const images = document.querySelectorAll('article img, .post-content img, .content img');
+    
+    images.forEach(img => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => this.open(img));
+    });
+    
+    // Close handlers
+    const closeBtn = this.lightbox.querySelector('.lightbox-close');
+    closeBtn.addEventListener('click', () => this.close());
+    
+    this.lightbox.addEventListener('click', (e) => {
+      if (e.target === this.lightbox) {
+        this.close();
+      }
+    });
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.lightbox.classList.contains('active')) {
+        this.close();
+      }
+    });
+    
+    console.log('✅ Image lightbox initialized for', images.length, 'images');
+  },
+  
+  open: function(img) {
+    const lightboxImg = this.lightbox.querySelector('img');
+    const caption = this.lightbox.querySelector('.lightbox-caption');
+    
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt || '';
+    caption.textContent = img.alt || '';
+    
+    this.lightbox.classList.add('active');
+    document.body.classList.add('overflow-hidden');
+  },
+  
+  close: function() {
+    this.lightbox.classList.remove('active');
+    document.body.classList.remove('overflow-hidden');
+  }
+};
+
+// ====================================
+// 8. Navbar Scroll Effect
+// ====================================
+
+const NavbarScroll = {
+  init: function() {
+    const navbar = document.querySelector('.navbar');
+    if (!navbar) return;
+    
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.scrollY;
+      
+      if (currentScroll > 100) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+      
+      lastScroll = currentScroll;
+    }, { passive: true });
+    
+    console.log('✅ Navbar scroll effect initialized');
+  }
+};
+
+// ====================================
+// 9. Calculate Reading Time
+// ====================================
+
+const ReadingTime = {
+  init: function() {
+    const content = document.querySelector('article, .post-content, .content');
+    if (!content) return;
+    
+    const text = content.textContent || content.innerText;
+    const wordCount = text.trim().split(/\s+/).length;
+    const readingTime = Math.ceil(wordCount / 200); // 200 words per minute
+    
+    // Find or create metadata bar
+    let metadataBar = document.querySelector('.metadata-bar');
+    
+    if (!metadataBar) {
+      metadataBar = document.createElement('div');
+      metadataBar.className = 'metadata-bar';
+      
+      // Insert after title or at beginning of content
+      const title = document.querySelector('h1');
+      if (title && title.parentElement) {
+        title.parentElement.insertBefore(metadataBar, title.nextSibling);
+      } else {
+        content.insertBefore(metadataBar, content.firstChild);
+      }
+    }
+    
+    // Add reading time
+    const readingTimeHTML = `
+      <div class="metadata-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span><strong>${readingTime}</strong> min read</span>
+      </div>
+    `;
+    
+    metadataBar.insertAdjacentHTML('beforeend', readingTimeHTML);
+    
+    console.log(`✅ Reading time calculated: ${readingTime} minutes (${wordCount} words)`);
+  }
+};
+
+// ====================================
+// Main Initialization
+// ====================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 Initializing Modern Portfolio...');
+  
+  // Core features
+  ReadingProgress.init();
+  ScrollReveal.init();
+  NavbarScroll.init();
+  CodeCopy.init();
+  ImageLightbox.init();
+  TOCHighlight.init();
+  ReadingTime.init();
+  
+  // Optional: Custom cursor (desktop only)
+  if (window.innerWidth > 768) {
+    CustomCursor.init();
   }
   
-  // Add stagger animation to tags
-  document.querySelectorAll('.post-tag').forEach((tag, index) => {
-    tag.style.animationDelay = `${index * 0.05}s`;
-  });
+  // Optional: Particle effect (can be performance-intensive)
+  // Uncomment if you want particles:
+  // ParticleEffect.init();
   
-  console.log('✅ Page enhancements initialized');
+  console.log('✅ All features initialized');
 });
 
 // ====================================
 // Utility Functions
 // ====================================
 
-// Throttle function for scroll events
+// Throttle function
 function throttle(func, limit) {
   let inThrottle;
   return function(...args) {
@@ -491,7 +572,7 @@ function throttle(func, limit) {
   };
 }
 
-// Debounce function for search input
+// Debounce function
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {

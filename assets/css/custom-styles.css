@@ -19,15 +19,15 @@
   --text-muted: #a3a3a3;
   
   /* Accent - Warm Amber */
-  --accent-primary: #d97706;
-  --accent-hover: #b45309;
-  --accent-light: #fef3c7;
-  --accent-subtle: #fef9f3;
+  --accent-primary: #2a9d8f;
+  --accent-hover: #1f776f;
+  --accent-light: #d1f2eb;
+  --accent-subtle: #e6f7f4;
   
   /* Borders & Dividers */
   --border-primary: #e7e5e4;
   --border-secondary: #f5f5f4;
-  --border-focus: #d97706;
+  --border-focus: #2a9d8f;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);

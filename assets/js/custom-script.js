@@ -1,43 +1,35 @@
 // ====================================
-// 1. Reading Progress Bar
+// Modern Minimal Portfolio Scripts
+// Inspired by Anthropic & ThinkingMachines
 // ====================================
 
+// Reading Progress Bar
 const ReadingProgress = {
-  init: function() {
-    // Create progress bar if it doesn't exist
+  init() {
     if (!document.getElementById('reading-progress')) {
-      const progressBar = document.createElement('div');
-      progressBar.id = 'reading-progress';
-      document.body.appendChild(progressBar);
+      const bar = document.createElement('div');
+      bar.id = 'reading-progress';
+      document.body.appendChild(bar);
     }
     
-    this.updateProgress();
-    window.addEventListener('scroll', () => this.updateProgress(), { passive: true });
+    this.update();
+    window.addEventListener('scroll', () => this.update(), { passive: true });
   },
   
-  updateProgress: function() {
-    const progressBar = document.getElementById('reading-progress');
-    if (!progressBar) return;
+  update() {
+    const bar = document.getElementById('reading-progress');
+    if (!bar) return;
     
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight - windowHeight;
-    const scrolled = window.scrollY;
-    const progress = (scrolled / documentHeight) * 100;
-    
-    progressBar.style.width = `${Math.min(progress, 100)}%`;
+    const height = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (window.scrollY / height) * 100;
+    bar.style.width = `${Math.min(progress, 100)}%`;
   }
 };
 
-// ====================================
-// 2. Intersection Observer (Fade-Up Animation)
-// ====================================
-
+// Scroll Reveal Animation
 const ScrollReveal = {
-  init: function() {
-    if (!window.IntersectionObserver) {
-      console.warn('IntersectionObserver not supported');
-      return;
-    }
+  init() {
+    if (!window.IntersectionObserver) return;
     
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -48,304 +40,117 @@ const ScrollReveal = {
       });
     }, {
       threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
+      rootMargin: '0px 0px -50px 0px'
     });
     
-    // Observe elements - fixed selector for post-preview compatibility
-    const elements = document.querySelectorAll('.post-preview, .glass-card, .bento-item, article h2, article h3, main h2, main h3');
+    const elements = document.querySelectorAll('.post-preview, .glass-card, article h2, article h3');
     elements.forEach(el => {
       el.classList.add('reveal');
       observer.observe(el);
     });
-    
-    console.log('✅ Scroll reveal initialized for', elements.length, 'elements');
   }
 };
 
-// ====================================
-// 3. Custom Cursor with Trail (Dot Only)
-// ====================================
-
+// Custom Cursor (Desktop Only)
 const CustomCursor = {
-  dot: null,
-  
-  init: function() {
-    // Only enable on desktop
-    if (window.innerWidth < 768 || 'ontouchstart' in window) {
-      console.log('⚠️ Custom cursor disabled on mobile/touch devices');
-      return;
-    }
+  init() {
+    if (window.innerWidth < 768 || 'ontouchstart' in window) return;
     
-    // Create cursor elements
     this.dot = document.createElement('div');
     this.dot.className = 'custom-cursor-dot';
-    
     document.body.appendChild(this.dot);
     document.body.classList.add('custom-cursor');
     
-    // Track mouse movement
     let mouseX = 0, mouseY = 0;
-    let dotX = 0, dotY = 0;
     
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
     });
     
-    // Smooth animation
-    const animateCursor = () => {
-      dotX = mouseX;
-      dotY = mouseY;
-      
-      this.dot.style.left = `${dotX}px`;
-      this.dot.style.top = `${dotY}px`;
-      
-      requestAnimationFrame(animateCursor);
+    const animate = () => {
+      this.dot.style.left = `${mouseX}px`;
+      this.dot.style.top = `${mouseY}px`;
+      requestAnimationFrame(animate);
     };
+    animate();
     
-    animateCursor();
-    
-    // Scale on hover over links/buttons - fixed selector
-    const interactiveElements = 'a, button, .btn-primary, .btn-glow, .copy-btn, input, textarea, .search-input';
+    const interactive = 'a, button, .btn-primary, .copy-btn, input, textarea';
     
     document.addEventListener('mouseover', (e) => {
-      if (e.target.matches(interactiveElements)) {
+      if (e.target.matches(interactive)) {
         this.dot.style.transform = 'scale(1.5)';
       }
     });
     
     document.addEventListener('mouseout', (e) => {
-      if (e.target.matches(interactiveElements)) {
+      if (e.target.matches(interactive)) {
         this.dot.style.transform = 'scale(1)';
       }
     });
-    
-    console.log('✅ Custom cursor initialized');
   }
 };
 
-// ====================================
-// 4. Particle Canvas Effect
-// ====================================
-
-const ParticleEffect = {
-  canvas: null,
-  ctx: null,
-  particles: [],
-  mouse: { x: null, y: null, radius: 150 },
-  
-  init: function() {
-    // Create canvas
-    this.canvas = document.createElement('canvas');
-    this.canvas.id = 'particle-canvas';
-    document.body.appendChild(this.canvas);
-    
-    this.ctx = this.canvas.getContext('2d');
-    this.resize();
-    
-    // Create particles
-    this.createParticles();
-    
-    // Track mouse
-    window.addEventListener('mousemove', (e) => {
-      this.mouse.x = e.x;
-      this.mouse.y = e.y;
-    });
-    
-    window.addEventListener('resize', () => this.resize());
-    
-    // Start animation
-    this.animate();
-    
-    console.log('✅ Particle effect initialized');
-  },
-  
-  resize: function() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-  },
-  
-  createParticles: function() {
-    const numberOfParticles = Math.floor((this.canvas.width * this.canvas.height) / 15000);
-    
-    for (let i = 0; i < numberOfParticles; i++) {
-      this.particles.push({
-        x: Math.random() * this.canvas.width,
-        y: Math.random() * this.canvas.height,
-        size: Math.random() * 2 + 1,
-        speedX: Math.random() * 0.5 - 0.25,
-        speedY: Math.random() * 0.5 - 0.25,
-        baseX: null,
-        baseY: null,
-        density: Math.random() * 30 + 1
-      });
-    }
-    
-    // Set base positions
-    this.particles.forEach(particle => {
-      particle.baseX = particle.x;
-      particle.baseY = particle.y;
-    });
-  },
-  
-  drawParticles: function() {
-    this.particles.forEach(particle => {
-      // Updated color to match custom-styles.css accent-teal
-      this.ctx.fillStyle = 'rgba(42, 157, 143, 0.3)';
-      this.ctx.beginPath();
-      this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-      this.ctx.closePath();
-      this.ctx.fill();
-    });
-  },
-  
-  connectParticles: function() {
-    for (let a = 0; a < this.particles.length; a++) {
-      for (let b = a + 1; b < this.particles.length; b++) {
-        const dx = this.particles[a].x - this.particles[b].x;
-        const dy = this.particles[a].y - this.particles[b].y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < 100) {
-          const opacity = 1 - (distance / 100);
-          this.ctx.strokeStyle = `rgba(42, 157, 143, ${opacity * 0.15})`;
-          this.ctx.lineWidth = 1;
-          this.ctx.beginPath();
-          this.ctx.moveTo(this.particles[a].x, this.particles[a].y);
-          this.ctx.lineTo(this.particles[b].x, this.particles[b].y);
-          this.ctx.stroke();
-        }
-      }
-    }
-  },
-  
-  moveParticles: function() {
-    this.particles.forEach(particle => {
-      particle.x += particle.speedX;
-      particle.y += particle.speedY;
-      
-      if (particle.x > this.canvas.width || particle.x < 0) {
-        particle.speedX *= -1;
-      }
-      if (particle.y > this.canvas.height || particle.y < 0) {
-        particle.speedY *= -1;
-      }
-      
-      if (this.mouse.x !== null && this.mouse.y !== null) {
-        const dx = this.mouse.x - particle.x;
-        const dy = this.mouse.y - particle.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < this.mouse.radius) {
-          const forceDirectionX = dx / distance;
-          const forceDirectionY = dy / distance;
-          const maxDistance = this.mouse.radius;
-          const force = (maxDistance - distance) / maxDistance;
-          const directionX = forceDirectionX * force * particle.density * 0.5;
-          const directionY = forceDirectionY * force * particle.density * 0.5;
-          
-          particle.x -= directionX;
-          particle.y -= directionY;
-        }
-      }
-    });
-  },
-  
-  animate: function() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    this.moveParticles();
-    this.drawParticles();
-    this.connectParticles();
-    
-    requestAnimationFrame(() => this.animate());
-  }
-};
-
-// ====================================
-// 5. Copy to Clipboard for Code Blocks
-// ====================================
-
+// Code Copy to Clipboard
 const CodeCopy = {
-  init: function() {
-    const codeBlocks = document.querySelectorAll('pre code');
+  init() {
+    const blocks = document.querySelectorAll('pre code');
     
-    codeBlocks.forEach((codeBlock) => {
-      const pre = codeBlock.parentElement;
+    blocks.forEach((block) => {
+      const pre = block.parentElement;
       if (!pre || pre.tagName !== 'PRE') return;
       
-      // Create copy button
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'copy-btn';
-      copyBtn.textContent = 'Copy';
-      copyBtn.setAttribute('title', 'Copy code to clipboard');
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copy';
+      btn.setAttribute('aria-label', 'Copy code to clipboard');
       
       pre.style.position = 'relative';
-      pre.appendChild(copyBtn);
+      pre.appendChild(btn);
       
-      copyBtn.addEventListener('click', async (e) => {
+      btn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        const code = codeBlock.textContent;
         
         try {
-          await navigator.clipboard.writeText(code);
-          
-          copyBtn.textContent = 'Copied!';
-          copyBtn.classList.add('copied');
+          await navigator.clipboard.writeText(block.textContent);
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
           
           setTimeout(() => {
-            copyBtn.textContent = 'Copy';
-            copyBtn.classList.remove('copied');
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
           }, 2000);
-          
-          console.log('✅ Code copied to clipboard');
         } catch (err) {
-          console.error('❌ Failed to copy:', err);
-          copyBtn.textContent = 'Failed';
+          btn.textContent = 'Failed';
+          console.error('Copy failed:', err);
         }
       });
     });
-    
-    console.log('✅ Code copy initialized for', codeBlocks.length, 'blocks');
   }
 };
 
-// ====================================
-// 6. Image Lightbox
-// ====================================
-
+// Image Lightbox
 const ImageLightbox = {
-  lightbox: null,
-  
-  init: function() {
-    // Create lightbox HTML
+  init() {
     this.lightbox = document.createElement('div');
     this.lightbox.className = 'lightbox';
     this.lightbox.innerHTML = `
-      <div class="lightbox-close">×</div>
+      <div class="lightbox-close" aria-label="Close lightbox">×</div>
       <div class="lightbox-content">
         <img src="" alt="">
-        <div class="lightbox-caption"></div>
       </div>
     `;
     document.body.appendChild(this.lightbox);
     
-    // Find all images in articles - improved selector
-    const images = document.querySelectorAll('article img, .post-content img, .content img, main img');
-    
+    const images = document.querySelectorAll('article img, .post-content img, main img');
     images.forEach(img => {
       img.style.cursor = 'pointer';
       img.addEventListener('click', () => this.open(img));
     });
     
-    // Close handlers
-    const closeBtn = this.lightbox.querySelector('.lightbox-close');
-    closeBtn.addEventListener('click', () => this.close());
-    
+    this.lightbox.querySelector('.lightbox-close').addEventListener('click', () => this.close());
     this.lightbox.addEventListener('click', (e) => {
-      if (e.target === this.lightbox) {
-        this.close();
-      }
+      if (e.target === this.lightbox) this.close();
     });
     
     document.addEventListener('keydown', (e) => {
@@ -353,73 +158,50 @@ const ImageLightbox = {
         this.close();
       }
     });
-    
-    console.log('✅ Image lightbox initialized for', images.length, 'images');
   },
   
-  open: function(img) {
+  open(img) {
     const lightboxImg = this.lightbox.querySelector('img');
-    const caption = this.lightbox.querySelector('.lightbox-caption');
-    
     lightboxImg.src = img.src;
     lightboxImg.alt = img.alt || '';
-    caption.textContent = img.alt || '';
-    
     this.lightbox.classList.add('active');
     document.body.classList.add('overflow-hidden');
   },
   
-  close: function() {
+  close() {
     this.lightbox.classList.remove('active');
     document.body.classList.remove('overflow-hidden');
   }
 };
 
-// ====================================
-// 7. Navbar Scroll Effect
-// ====================================
-
+// Navbar Scroll Effect
 const NavbarScroll = {
-  init: function() {
+  init() {
     const navbar = document.querySelector('.navbar');
     if (!navbar) return;
     
-    let lastScroll = 0;
-    
     window.addEventListener('scroll', throttle(() => {
-      const currentScroll = window.scrollY;
-      
-      if (currentScroll > 100) {
+      if (window.scrollY > 50) {
         navbar.classList.add('scrolled');
       } else {
         navbar.classList.remove('scrolled');
       }
-      
-      lastScroll = currentScroll;
-    }, 50), { passive: true });
-    
-    console.log('✅ Navbar scroll effect initialized');
+    }, 100), { passive: true });
   }
 };
 
-// ====================================
-// 8. Post Table of Contents (At Start of Post)
-// ====================================
-
+// Post Table of Contents (Beginning of Content)
 const PostTableOfContents = {
-  init: function() {
-    const content = document.querySelector('article, .post-content, .content, main');
+  init() {
+    const content = document.querySelector('article, .post-content, main');
     if (!content) return;
     
-    // Get all headers
     const headers = content.querySelectorAll('h2[id], h3[id]');
     if (headers.length < 2) return;
     
-    // Build TOC HTML
-    let tocHTML = '<div class="post-toc-box">';
-    tocHTML += '<details open>';
-    tocHTML += '<summary>▼ Table of Contents</summary>';
-    tocHTML += '<ul class="post-toc-list">';
+    let html = '<div class="post-toc-box"><details open>';
+    html += '<summary>Table of Contents</summary>';
+    html += '<ul class="post-toc-list">';
     
     let currentH2 = null;
     
@@ -429,49 +211,36 @@ const PostTableOfContents = {
       const tag = header.tagName;
       
       if (tag === 'H2') {
-        if (currentH2 !== null) {
-          tocHTML += '</ul></li>';
-        }
-        tocHTML += '<li><a href="#' + id + '">' + text + '</a><ul>';
+        if (currentH2 !== null) html += '</ul></li>';
+        html += `<li><a href="#${id}">${text}</a><ul>`;
         currentH2 = id;
       } else if (tag === 'H3') {
-        tocHTML += '<li><a href="#' + id + '">' + text + '</a></li>';
+        html += `<li><a href="#${id}">${text}</a></li>`;
       }
     });
     
-    if (currentH2 !== null) {
-      tocHTML += '</ul></li>';
-    }
-    tocHTML += '</ul>';
-    tocHTML += '</details>';
-    tocHTML += '</div>';
+    if (currentH2 !== null) html += '</ul></li>';
+    html += '</ul></details></div>';
     
-    // Insert TOC at the beginning of content
     const firstHeading = content.querySelector('h2, h3');
     if (firstHeading) {
-      firstHeading.insertAdjacentHTML('beforebegin', tocHTML);
+      firstHeading.insertAdjacentHTML('beforebegin', html);
     } else {
-      content.insertAdjacentHTML('afterbegin', tocHTML);
+      content.insertAdjacentHTML('afterbegin', html);
     }
-    
-    console.log('✅ Post table of contents initialized with', headers.length, 'sections');
   }
 };
 
-// ====================================
-// 9. Calculate Reading Time & Add to Post
-// ====================================
-
+// Reading Time Calculator
 const ReadingTime = {
-  init: function() {
-    const content = document.querySelector('article, .post-content, .content, main');
+  init() {
+    const content = document.querySelector('article, .post-content, main');
     if (!content) return;
     
     const text = content.textContent || content.innerText;
     const wordCount = text.trim().split(/\s+/).length;
     const readingTime = Math.ceil(wordCount / 200);
     
-    // Find or create metadata bar
     let metadataBar = document.querySelector('.metadata-bar');
     
     if (!metadataBar) {
@@ -486,33 +255,26 @@ const ReadingTime = {
       }
     }
     
-    // Check if reading time already exists
-    const existingReadingTime = metadataBar.querySelector('[data-reading-time]');
-    if (!existingReadingTime) {
-      const readingTimeHTML = `
+    const existing = metadataBar.querySelector('[data-reading-time]');
+    if (!existing) {
+      const html = `
         <div class="metadata-item" data-reading-time="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span>Estimated Reading Time: <strong>${readingTime}</strong> min</span>
+          <span><strong>${readingTime}</strong> min read</span>
         </div>
       `;
-      
-      metadataBar.insertAdjacentHTML('afterbegin', readingTimeHTML);
+      metadataBar.insertAdjacentHTML('afterbegin', html);
     }
-    
-    console.log(`✅ Reading time calculated: ${readingTime} minutes (${wordCount} words)`);
   }
 };
 
-// ====================================
-// 10. Auto-Numbering Headers (Post Pages Only)
-// ====================================
-
+// Auto-Number Headers (Add IDs)
 const AutoNumbering = {
-  init: function() {
-    const content = document.querySelector('article, .post-content, .content, main');
+  init() {
+    const content = document.querySelector('article, .post-content, main');
     if (!content) return;
     
     const headers = content.querySelectorAll('h2, h3');
@@ -520,26 +282,49 @@ const AutoNumbering = {
     let h3Count = 0;
     
     headers.forEach(header => {
-      // Skip subtitles
       if (header.classList.contains('subtitle')) return;
       
       if (header.tagName === 'H2') {
         h2Count++;
         h3Count = 0;
-        
-        if (!header.id) {
-          header.id = 'section-' + h2Count;
-        }
+        if (!header.id) header.id = `section-${h2Count}`;
       } else if (header.tagName === 'H3') {
         h3Count++;
-        
-        if (!header.id) {
-          header.id = 'section-' + h2Count + '-' + h3Count;
-        }
+        if (!header.id) header.id = `section-${h2Count}-${h3Count}`;
       }
     });
+  }
+};
+
+// Sidebar TOC Highlight on Scroll
+const SidebarTOC = {
+  init() {
+    const toc = document.querySelector('.inline-toc');
+    if (!toc) return;
     
-    console.log('✅ Auto-numbering initialized for', headers.length, 'headers');
+    const links = toc.querySelectorAll('a');
+    const sections = Array.from(links).map(link => {
+      const id = link.getAttribute('href').slice(1);
+      return document.getElementById(id);
+    }).filter(Boolean);
+    
+    window.addEventListener('scroll', throttle(() => {
+      let current = '';
+      
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 100) {
+          current = section.id;
+        }
+      });
+      
+      links.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    }, 100), { passive: true });
   }
 };
 
@@ -547,10 +332,7 @@ const AutoNumbering = {
 // Main Initialization
 // ====================================
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 Initializing Modern Portfolio...');
-  
-  // Core features
+document.addEventListener('DOMContentLoaded', () => {
   ReadingProgress.init();
   ScrollReveal.init();
   NavbarScroll.init();
@@ -559,17 +341,11 @@ document.addEventListener('DOMContentLoaded', function() {
   ReadingTime.init();
   AutoNumbering.init();
   PostTableOfContents.init();
+  SidebarTOC.init();
   
-  // Custom cursor (desktop only)
   if (window.innerWidth > 768) {
     CustomCursor.init();
   }
-  
-  // Optional: Particle effect
-  // Uncomment if you want particles:
-  // ParticleEffect.init();
-  
-  console.log('✅ All features initialized');
 });
 
 // ====================================
@@ -589,22 +365,8 @@ function throttle(func, limit) {
 
 function debounce(func, wait) {
   let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
+  return function(...args) {
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    timeout = setTimeout(() => func.apply(this, args), wait);
   };
-}
-
-function isInViewport(element) {
-  const rect = element.getBoundingClientRect();
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  );
 }

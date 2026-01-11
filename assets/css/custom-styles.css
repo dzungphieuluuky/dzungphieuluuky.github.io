@@ -19,15 +19,15 @@
   --text-muted: #a3a3a3;
   
   /* Accent - Warm Amber */
-  --accent-primary: #2a9d8f;
-  --accent-hover: #1f776f;
-  --accent-light: #d1f2eb;
-  --accent-subtle: #e6f7f4;
+  --accent-primary: #547792;
+  --accent-hover: #213448;
+  --accent-light: #94B4C1;
+  --accent-subtle: #EAE0CF;
   
   /* Borders & Dividers */
   --border-primary: #e7e5e4;
   --border-secondary: #f5f5f4;
-  --border-focus: #2a9d8f;
+  --border-focus: #2D3C59;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -898,8 +898,8 @@ body.custom-cursor {
 }
 
 .custom-cursor-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: var(--accent-primary);
   border-radius: 50%;
   position: fixed;

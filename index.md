@@ -2,6 +2,7 @@
 layout: page
 title: dzungphieuluuky and his repository
 subtitle: "My vibe coding personal website"
+markdown: kramdown
 ---
 
 # About Me

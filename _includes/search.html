@@ -2,144 +2,20 @@
 
 <meta name="baseurl" content="{{ site.baseurl }}">
 
-<div id="beautifuljekyll-search-overlay" style="display: none;">
-  <!-- Modern search will be injected by JavaScript -->
-  
-  <div class="search-container">
-    <input 
-      type="text" 
-      class="search-input" 
-      placeholder="Search posts..."
-      aria-label="Search"
-    >
-    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="8"></circle>
-      <path d="m21 21-4.35-4.35"></path>
-    </svg>
-    <div class="search-results" id="search-results"></div>
-  </div>
-
-  <!-- Simple Jekyll Search as fallback -->
-  <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize fallback search
-      if (typeof SimpleJekyllSearch !== 'undefined') {
-        SimpleJekyllSearch({
-          searchInput: document.getElementById('nav-search-input'),
-          resultsContainer: document.getElementById('search-results-container'),
-          json: '{{ site.baseurl }}/assets/data/searchcorpus.json',
-          searchResultTemplate: '<li><a href="{url}">{title}</a><br><small>{excerpt}</small></li>',
-          noResultsText: 'No results found',
-          limit: 10,
-          fuzzy: true
-        });
-      }
-      
-      // Close search handler
-      document.getElementById('nav-search-exit').addEventListener('click', function() {
-        document.getElementById('beautifuljekyll-search-overlay').style.display = 'none';
-        document.body.classList.remove('overflow-hidden');
-      });
-      
-      // Hide fallback when modern search loads
-      setTimeout(function() {
-        if (document.querySelector('.modern-search-container')) {
-          const fallback = document.querySelector('.fallback-search');
-          if (fallback) {
-            fallback.style.display = 'none';
-          }
-        }
-      }, 1000);
-    });
-  </script>
+<div class="search-container">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="11" cy="11" r="8"></circle>
+    <path d="m21 21-4.35-4.35"></path>
+  </svg>
+  <input 
+    type="text" 
+    class="search-input" 
+    placeholder="Search posts and articles..."
+    aria-label="Search"
+    autocomplete="off"
+  >
+  <div class="search-results" id="search-results"></div>
+  <div class="search-hint">↑↓ Navigate • ⏎ Select • Esc Close</div>
 </div>
-
-<style>
-/* Scientific Fallback Search Styles */
-.fallback-search {
-  max-width: 600px;
-  margin: 100px auto;
-  background: var(--surface-gradient);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 20px 60px var(--shadow-quantum);
-  border: 1px solid rgba(26, 35, 126, 0.1);
-}
-
-.search-fallback-header {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-#nav-search-input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 2px solid rgba(26, 35, 126, 0.1);
-  border-radius: 8px;
-  font-size: 16px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--text-primary);
-}
-
-#nav-search-input::placeholder {
-  color: var(--text-secondary);
-}
-
-#nav-search-input:focus {
-  outline: none;
-  border-color: var(--quantum-accent);
-  box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
-}
-
-#nav-search-exit {
-  padding: 12px 16px;
-  background: rgba(26, 35, 126, 0.05);
-  border: 1px solid rgba(26, 35, 126, 0.1);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--text-secondary);
-  transition: all 0.3s ease;
-}
-
-#nav-search-exit:hover {
-  background: rgba(26, 35, 126, 0.1);
-}
-
-#search-results-container {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#search-results-container li {
-  padding: 12px;
-  border-bottom: 1px solid rgba(26, 35, 126, 0.1);
-  border-radius: 6px;
-  margin-bottom: 4px;
-  transition: all 0.2s ease;
-}
-
-#search-results-container li:hover {
-  background: rgba(0, 230, 118, 0.05);
-}
-
-#search-results-container li a {
-  color: var(--quantum-primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-#search-results-container li small {
-  color: var(--text-secondary);
-  display: block;
-  margin-top: 5px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85em;
-}
-</style>
 
 {% endif %}

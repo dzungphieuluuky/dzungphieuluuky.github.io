@@ -405,7 +405,186 @@ const AutoNumbering = {
 };
 
 // ====================================
-// Main Initialization
+// 10. Enhanced Search with Keyboard Navigation
+// ====================================
+
+const EnhancedSearch = {
+  searchInput: null,
+  searchResults: null,
+  allResults: [],
+  selectedIndex: -1,
+  
+  init: function() {
+    this.searchInput = document.querySelector('.search-input');
+    this.searchResults = document.querySelector('.search-results');
+    
+    if (!this.searchInput || !this.searchResults) {
+      console.log('⚠️ Search elements not found');
+      return;
+    }
+    
+    // Event listeners
+    this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+    this.searchInput.addEventListener('keydown', (e) => this.handleKeyboard(e));
+    document.addEventListener('click', (e) => this.handleClickOutside(e));
+    
+    console.log('✅ Enhanced search initialized');
+  },
+  
+  handleSearch: async function(e) {
+    const query = e.target.value.trim().toLowerCase();
+    
+    if (query.length < 2) {
+      this.searchResults.classList.remove('active');
+      this.allResults = [];
+      this.selectedIndex = -1;
+      return;
+    }
+    
+    try {
+      const baseurl = document.querySelector('meta[name="baseurl"]')?.content || '';
+      const response = await fetch(baseurl + '/assets/data/searchcorpus.json');
+      
+      if (!response.ok) {
+        console.warn('⚠️ Search corpus not found');
+        return;
+      }
+      
+      const data = await response.json();
+      
+      // Updated filter to match your JSON structure
+      this.allResults = data.filter(item => 
+        item.title.toLowerCase().includes(query) ||
+        item.excerpt.toLowerCase().includes(query) ||
+        item.content.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query)
+      ).slice(0, 10);
+      
+      this.selectedIndex = -1;
+      this.renderResults();
+      this.searchResults.classList.add('active');
+    } catch (err) {
+      console.error('❌ Search error:', err);
+      this.searchResults.innerHTML = '<div class="search-no-results">Search unavailable</div>';
+    }
+  },
+
+  renderResults: function() {
+    if (this.allResults.length === 0) {
+      this.searchResults.innerHTML = '<div class="search-no-results">No results found</div>';
+      return;
+    }
+    
+    let html = '';
+    this.allResults.forEach((result, index) => {
+      const isSelected = index === this.selectedIndex ? 'selected' : '';
+      html += `
+        <div class="search-result-item ${isSelected}" data-index="${index}">
+          <div class="search-result-title">${this.escapeHtml(result.title)}</div>
+          <div class="search-result-excerpt">${this.escapeHtml(result.excerpt)}</div>
+          ${result.tags && result.tags.length > 0 ? `
+            <div class="search-result-tags">
+              ${result.tags.slice(0, 2).map(tag => `
+                <span class="search-result-category">${this.escapeHtml(tag)}</span>
+              `).join('')}
+            </div>
+          ` : ''}
+          <a href="${result.url}" class="search-result-link" style="display: none;"></a>
+        </div>
+      `;
+    });
+    
+    this.searchResults.innerHTML = html;
+    this.attachResultClickListeners();
+  },
+  
+  attachResultClickListeners: function() {
+    const items = this.searchResults.querySelectorAll('.search-result-item');
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        const index = parseInt(item.dataset.index);
+        this.selectResult(index);
+      });
+      
+      item.addEventListener('mouseenter', () => {
+        this.selectedIndex = parseInt(item.dataset.index);
+        this.updateSelection();
+      });
+    });
+  },
+  
+  handleKeyboard: function(e) {
+    if (this.allResults.length === 0) return;
+    
+    switch(e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        this.selectedIndex = Math.min(this.selectedIndex + 1, this.allResults.length - 1);
+        this.updateSelection();
+        break;
+        
+      case 'ArrowUp':
+        e.preventDefault();
+        this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+        this.updateSelection();
+        break;
+        
+      case 'Enter':
+        e.preventDefault();
+        if (this.selectedIndex >= 0) {
+          this.selectResult(this.selectedIndex);
+        }
+        break;
+        
+      case 'Escape':
+        e.preventDefault();
+        this.searchResults.classList.remove('active');
+        this.allResults = [];
+        this.selectedIndex = -1;
+        this.searchInput.value = '';
+        break;
+    }
+  },
+  
+  updateSelection: function() {
+    const items = this.searchResults.querySelectorAll('.search-result-item');
+    items.forEach((item, index) => {
+      if (index === this.selectedIndex) {
+        item.classList.add('selected');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('selected');
+      }
+    });
+  },
+  
+  selectResult: function(index) {
+    if (index >= 0 && index < this.allResults.length) {
+      const result = this.allResults[index];
+      window.location.href = result.url;
+    }
+  },
+  
+  handleClickOutside: function(e) {
+    if (!e.target.closest('.search-container')) {
+      this.searchResults.classList.remove('active');
+    }
+  },
+  
+  escapeHtml: function(text) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  }
+};
+
+// ====================================
+// Main Initialization (Updated)
 // ====================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -417,8 +596,9 @@ document.addEventListener('DOMContentLoaded', function() {
   NavbarScroll.init();
   CodeCopy.init();
   ImageLightbox.init();
+  EnhancedSearch.init();
   
-  // Post-only features (only run if <article> tag exists)
+  // Post-only features
   ReadingTime.init();
   AutoNumbering.init();
   PostTableOfContents.init();

@@ -66,6 +66,7 @@ Basically, the credit assignment problem actually has 2 forms: one spatial (spac
 Another thing I find quite exciting is the **Exploration-Exploitation trade-off**. In SL, the model just tries to fit the data you give it. But in RL, the agent faces a dilemma: should it stick with the best action it knows so far to get a guaranteed reward (Exploitation), or should it try something completely random and potentially stupid to see if there is a better path it hasn't discovered yet (Exploration)? 
 
 We often use a simple strategy like $\epsilon$-greedy to handle this:
+
 $$\pi(a|s) = \begin{cases} \text{random action} & \text{with probability } \epsilon \\ \arg\max_a Q(s,a) & \text{with probability } 1-\epsilon \end{cases}$$
 
 This reminds me of thermal noise in physics—sometimes you need a bit of heat or randomness in the system to jump out of a local trap and find the true global optimum. For someone who likes the smooth shape and continuous representations of physics, watching an agent navigate these high-dimensional policy spaces and solve these hurdles is much more satisfying than just fitting a curve to a static cloud of points.

@@ -24,7 +24,7 @@
   --text-primary: var(--palette-dark);
   --text-secondary: #2B2B30;
   --text-tertiary: #6B6577;
-  --text-muted: #9A93A6;
+  --text-muted: #574578;
 
   /* Accent (mapped to palette) */
   --accent-primary: var(--palette-violet);
@@ -54,15 +54,18 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* Code token colors (purple wisdom theme) */
-  --code-keyword: #6A4C93;     /* violet */
-  --code-fn: #9C7CE0;          /* amethyst */
-  --code-string: #BFA3FF;      /* soft lilac */
-  --code-number: #2E1A47;      /* deep indigo */
-  --code-comment: #8B8899;     /* muted */
-  --code-bg: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(246,241,255,0.99));
-  --code-border: rgba(46,26,71,0.08);
-
+  /* Code token colors (purple wisdom theme) — ENHANCED CONTRAST */
+  --code-keyword: #2D0F4D;      /* darker keyword violet */
+  --code-fn: #5A1F8F;           /* darker function/method purple */
+  --code-class: #4A1F7A;        /* class name dark purple */
+  --code-module: #3D1F5C;       /* module name deep indigo */
+  --code-argument: #260638;     /* argument/parameter purple */
+  --code-string: #C2185B;       /* strong magenta-pink */
+  --code-number: #0D0415;       /* nearly pure black */
+  --code-comment: #120b16;      /* dark muted gray */
+  --code-operator: #1F0F2E;     /* deep indigo */
+  --code-builtin: #7B1FA2;      /* strong deep purple */
+  --code-border: rgba(46, 26, 71, 0.1); /* code block border */
 }
 
 /* ====================================
@@ -166,6 +169,7 @@ pre {
   border-radius: var(--radius-lg);
   overflow-x: auto;
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--code-border);
 }
 
 pre code {
@@ -1007,10 +1011,6 @@ pre code {
   background: var(--accent-primary); /* violet from palette */
   color: #ffffff;
 }
-::-moz-selection {
-  background: var(--accent-primary);
-  color: #ffffff;
-}
 
 /* Inline code selection */
 code::selection,
@@ -1019,11 +1019,18 @@ code *::selection {
   color: var(--text-primary);
 }
 
-/* Pre/code block selection (keeps whitespace readable) */
+/* enhanced selection for code blocks */
 pre::selection,
-pre code::selection {
-  background: rgba(106,76,147,0.18);
-  color: var(--text-secondary);
+pre code::selection,
+pre .token::selection {
+  background: rgba(46, 26, 71, 0.25);
+  color: var(--code-keyword);
+  text-shadow: none;
+}
+
+::-moz-selection {
+  background: rgba(46, 26, 71, 0.25);
+  color: var(--code-keyword);
 }
 
 /* code block base */
@@ -1040,55 +1047,139 @@ pre[class*="language-"]{
   font-size: 0.95rem;
   line-height: 1.6;
   color: var(--text-secondary);
+  letter-spacing: 0.5px;
 }
 
 /* optional line numbers */
 pre.line-numbers {
   padding-left: 3.5rem;
 }
-.line-numbers-rows { color: #9A93A6; }
 
-/* Token colors (Prism tokens) */
+.line-numbers-rows { 
+  color: #6B5B77;
+  font-weight: 500;
+}
+
+/* Token colors (Prism tokens) — HIGH CONTRAST ENHANCED */
 .token.comment,
 .token.prolog,
 .token.cdata,
 .comment {
   color: var(--code-comment);
   font-style: italic;
+  font-weight: 500;
+  opacity: 0.95;
 }
 
+/* Keywords (if, def, class, return, etc.) */
 .token.keyword,
 .token.boolean,
 .token.selector,
-.token.tag,
-.token.operator {
+.token.tag {
   color: var(--code-keyword);
-  font-weight: 600;
+  font-weight: 900;
+  letter-spacing: 0.4px;
 }
 
+/* Function & Method Names */
 .token.function,
-.token.class-name,
 .token.method,
-.token.property {
+.token.function-variable,
+.token.method-variable,
+.token.attr-name,
+.token.parameter,
+.toke {
   color: var(--code-fn);
-  font-weight: 600;
+  font-weight: 900;
+  letter-spacing: 0.3px;
 }
 
+/* Class Names */
+.token.class-name {
+  color: var(--code-class);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+/* Module Names (imports, namespaces) */
+.token.module {
+  color: var(--code-module);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+/* Property Names & Attributes */
+.token.property,
+.token.attr-name {
+  color: var(--code-argument);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* Function/Method Parameters & Arguments */
+.token.parameter {
+  color: var(--code-argument);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* Variables (if recognized by Prism) */
+.token.variable {
+  color: var(--code-argument);
+  font-weight: 700;
+}
+
+/* String Literals */
 .token.string,
 .token.attr-value,
 .token.char {
   color: var(--code-string);
+  font-weight: 600;
 }
 
+/* Numbers */
 .token.number,
 .token.constant,
 .token.symbol {
   color: var(--code-number);
-  font-weight: 600;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+/* Operators & Punctuation */
+.token.operator {
+  color: var(--code-operator);
+  font-weight: 700;
 }
 
 .token.punctuation {
-  color: rgba(46,26,71,0.6);
+  color: var(--code-operator);
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* Built-in Functions/Methods */
+.token.builtin {
+  color: var(--code-builtin);
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+/* Comments */
+.token.comment,
+.token.prolog,
+.token.cdata {
+  color: var(--code-comment);
+  font-style: italic;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* Important/Bold Tokens */
+.token.important,
+.token.bold {
+  font-weight: 900;
+  color: var(--code-keyword);
 }
 
 .copy-btn:hover { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }

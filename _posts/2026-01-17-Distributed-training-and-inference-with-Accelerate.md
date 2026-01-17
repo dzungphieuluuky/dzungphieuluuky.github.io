@@ -34,7 +34,7 @@ Each platform has different quirks:
 
 Without Accelerate, I was writing this monstrosity:
 
-<pre><code class="python">
+```python
 # The Dark Ages: Platform-specific code everywhere
 import torch
 import os
@@ -65,7 +65,7 @@ model = model.to(device)
 # And gradient accumulation!
 # And distributed samplers!
 # And... (you get the point)
-</code></pre>
+```
 
 This code was:
 1. **Brittle**: Broke when moving between platforms
@@ -77,14 +77,14 @@ This code was:
 
 Then I discovered Hugging Face Accelerate. The change was revolutionary:
 
-<pre><code class="python">
+```python
 # The Enlightenment: One line to rule them all
 from accelerate import Accelerator
 
 # That's literally it
 accelerator = Accelerator()
 model, optimizer, dataloader = accelerator.prepare(model, optimizer, dataloader)
-</code></pre>
+```
 
 Suddenly my code:
 - **Worked everywhere**: Colab, Kaggle, my laptop and maybe other GPUs platforms.
@@ -117,7 +117,7 @@ The magic happens in `accelerator.prepare()`:
 
 **All processes must execute the same code path.** This caused my first deadlock:
 
-<pre><code class="python">
+```python
 # ❌ My first deadlock (2 hours of debugging)
 if accelerator.is_main_process:
     data = load_dataset()  # Only main process loads
@@ -134,13 +134,13 @@ if accelerator.is_main_process:
 else:
     all_data = None
 all_data = accelerator.broadcast(all_data, from_process=0)
-</code></pre>
+```
 
 ## Training Template
 
 After several projects, this is my go-to template that works everywhere:
 
-<pre><code class="python">
+```python
 def train_student_edition():
     """
     My battle-tested training template that works on:
@@ -210,13 +210,13 @@ def train_student_edition():
     
     # Return final model (unwrapped for single-GPU use)
     return accelerator.unwrap_model(model)
-</code></pre>
+```
 
 ## Useful Patterns
 
 ### Pattern 1: Platform-Aware Setup
 
-<pre><code class="python">
+```python
 def setup_for_platform():
     """Detect platform and configure accordingly."""
     import os
@@ -254,11 +254,11 @@ def setup_for_platform():
         accelerator = Accelerator(mixed_precision="fp16")
     
     return accelerator, platform
-</code></pre>
+```
 
 ### Pattern 2: Checkpoint system
 
-<pre><code class="python">
+```python
 def student_checkpoint_system(accelerator, model, platform):
     """
     Save checkpoints that work with:
@@ -299,11 +299,11 @@ def student_checkpoint_system(accelerator, model, platform):
         print(f"   Platform: {platform}, Epoch: {current_epoch}")
     
     accelerator.wait_for_everyone()
-</code></pre>
+```
 
 ### Pattern 3: Logging everything for sanity check
 
-<pre><code class="python">
+```python
 def debug_like_a_student(accelerator):
     """
     When things go wrong (they will), print everything!
@@ -337,13 +337,13 @@ def debug_like_a_student(accelerator):
     
     # Sync before continuing
     accelerator.wait_for_everyone()
-</code></pre>
+```
 
 ## Kaggle Notebook setup with Accelerate
 
 When I'm competing on Kaggle (usually for the GPU time, not the glory), here's my setup:
 
-<pre><code class="bash">
+```bash
 # kaggle_accelerate.sh - My competition script
 #!/bin/bash
 
@@ -368,9 +368,9 @@ echo "Saving final model..."
 python save_final_model.py --output /kaggle/working/final_model
 
 echo "✅ Done! Check /kaggle/working for outputs"
-</code></pre>
+```
 
-<pre><code class="python">
+```python
 # train.py - My competition training script
 import argparse
 from accelerate import Accelerator
@@ -403,7 +403,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-</code></pre>
+```
 
 ## Common Student Pitfalls and How I Fixed Them
 
@@ -413,7 +413,7 @@ if __name__ == "__main__":
 
 **The Solution**: I wasn't using `accelerator.prepare()` on my dataloader!
 
-<pre><code class="python">
+```python
 # ❌ Wrong: Only model is prepared
 model, optimizer = accelerator.prepare(model, optimizer)
 # Dataloader still single-process!
@@ -423,7 +423,7 @@ model, optimizer, train_loader = accelerator.prepare(
     model, optimizer, train_loader
 )
 # Now DistributedSampler is used!
-</code></pre>
+```
 
 We should use ```prepare()``` method for all of our model, optimizers, data loaders for both training and validation so that Accelerate can carry them all and utilize the most potential from the platforms.
 ### Pitfall 2: "My Colab session crashed and I lost everything!"
@@ -432,7 +432,7 @@ We should use ```prepare()``` method for all of our model, optimizers, data load
 
 **The Solution**: Frequent checkpointing + cloud saving.
 
-<pre><code class="python">
+```python
 def save_checkpoint_often(accelerator, model, epoch, platform):
     """Save checkpoints frequently because sessions can end."""
     if epoch % 5 == 0:  # Every 5 epochs
@@ -454,7 +454,7 @@ def save_checkpoint_often(accelerator, model, epoch, platform):
             print(f"📁 Checkpoint saved at epoch {epoch}")
         
         accelerator.wait_for_everyone()
-</code></pre>
+```
 
 ### Pitfall 3: "Different results on Colab vs Kaggle"
 
@@ -462,7 +462,7 @@ def save_checkpoint_often(accelerator, model, epoch, platform):
 
 **The Solution**: Set seeds properly and log them.
 
-<pre><code class="python">
+```python
 def set_seeds_properly(seed=42):
     """Set all random seeds for reproducibility."""
     import random
@@ -479,7 +479,7 @@ def set_seeds_properly(seed=42):
     set_seed(seed + accelerator.process_index)  # Different per process!
     
     print(f"🌱 Seeds set: base={seed}, process_offset={accelerator.process_index}")
-</code></pre>
+```
 
 Sidewalk note: Setting manually for all kinds of seeds sometimes feel boring and there are potential some seeds that are not set yet, of course we can't be sure whether we have set all running seeds already. For this problem, I recommend we should integrate PyTorch Lightning with our current project from the start because they have a method called ```seed_everything()``` that actually performs manual seeding on every seeds available including:
 - NumPy seeds.
@@ -518,7 +518,7 @@ COMMANDS:
 - accelerate config    # Setup
 - accelerate test      # Test config
 - accelerate launch    # Run training
-</code></pre>
+```
 
 ## What I Wish I Knew Earlier
 
@@ -552,7 +552,7 @@ project/
 │   ├── run_kaggle.sh       # Kaggle submission script
 │   └── run_local.sh        # Local testing
 └── README.md               # With Accelerate setup instructions
-</code></pre>
+```
 
 ## Final talks
 

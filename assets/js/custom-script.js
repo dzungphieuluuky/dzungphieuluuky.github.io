@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function() {
     CustomCursor.init();
   }
 
-  // Convert <pre><code class="language-mermaid">...</code></pre> to <div class="mermaid">...</div>
+  // Convert <pre><code class="language-mermaid">...``` to <div class="mermaid">...</div>
   document.querySelectorAll('pre > code.language-mermaid').forEach(function(codeBlock) {
     const pre = codeBlock.parentElement;
     const mermaidCode = codeBlock.textContent;

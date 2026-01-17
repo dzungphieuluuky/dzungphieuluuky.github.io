@@ -485,17 +485,22 @@ pre code {
   margin-bottom: 0.5rem;
 }
 
-.post-toc-list a {
+/* H2 entries (top-level / higher headers) — BIGGER & BOLDER */
+.post-toc-list > li > a {
   color: var(--accent-primary);
-  font-size: 0.9375rem;
+  font-size: 1.0625rem;        /* increased from 0.9375rem */
+  font-weight: 800;            /* increased from 600 */
   transition: all var(--transition-base);
+  display: block;
+  padding: 0.5rem 0;
 }
 
-.post-toc-list a:hover {
+.post-toc-list > li > a:hover {
   color: var(--accent-hover);
-  padding-left: 0.5rem;
+  padding-left: 0.75rem;
 }
 
+/* H3 entries (nested / lower headers) — smaller, less bold */
 .post-toc-list ul {
   list-style: none;
   padding-left: 1.5rem;
@@ -503,8 +508,15 @@ pre code {
 }
 
 .post-toc-list ul a {
-  font-size: 0.875rem;
+  font-size: 0.875rem;         /* smaller than H2 */
   color: var(--text-tertiary);
+  font-weight: 500;            /* less bold than H2 */
+  transition: all var(--transition-base);
+}
+
+.post-toc-list ul a:hover {
+  color: var(--accent-primary);
+  padding-left: 0.5rem;
 }
 
 /* ====================================

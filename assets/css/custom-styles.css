@@ -3,6 +3,7 @@
    Inspired by Anthropic & ThinkingMachines
    ==================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 :root {
@@ -52,6 +53,16 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+
+  /* Code token colors (purple wisdom theme) */
+  --code-keyword: #6A4C93;     /* violet */
+  --code-fn: #9C7CE0;          /* amethyst */
+  --code-string: #BFA3FF;      /* soft lilac */
+  --code-number: #2E1A47;      /* deep indigo */
+  --code-comment: #8B8899;     /* muted */
+  --code-bg: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(246,241,255,0.99));
+  --code-border: rgba(46,26,71,0.08);
+
 }
 
 /* ====================================
@@ -144,16 +155,6 @@ a:hover {
   color: var(--accent-hover);
 }
 
-/* Code */
-code {
-  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-  font-size: 0.875em;
-  background: var(--bg-tertiary);
-  color: var(--accent-primary);
-  padding: 0.2em 0.4em;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-}
 
 pre {
   position: relative;
@@ -179,16 +180,18 @@ pre code {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  padding: 0.5rem 0.875rem;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.8rem;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(46,26,71,0.06);
   color: var(--text-secondary);
-  font-size: 0.8125rem;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
+  border-radius: 8px;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all var(--transition-base);
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(6px);
 }
 
 .copy-btn:hover {
@@ -1017,10 +1020,90 @@ code *::selection {
 }
 
 /* Pre/code block selection (keeps whitespace readable) */
-pre ::selection,
-pre code::selection,
-pre *::selection {
-  background: rgba(106,76,147,0.18); /* subtle purple wash */
+pre::selection,
+pre code::selection {
+  background: rgba(106,76,147,0.18);
   color: var(--text-secondary);
 }
 
+/* code block base */
+pre[class*="language-"]{
+  background: var(--bg-secondary);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  padding-top: 3rem;
+  position: relative;
+  overflow: auto;
+  box-shadow: var(--shadow-sm);
+  font-family: 'JetBrains Mono','SF Mono',Consolas,monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* optional line numbers */
+pre.line-numbers {
+  padding-left: 3.5rem;
+}
+.line-numbers-rows { color: #9A93A6; }
+
+/* Token colors (Prism tokens) */
+.token.comment,
+.token.prolog,
+.token.cdata,
+.comment {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.token.keyword,
+.token.boolean,
+.token.selector,
+.token.tag,
+.token.operator {
+  color: var(--code-keyword);
+  font-weight: 600;
+}
+
+.token.function,
+.token.class-name,
+.token.method,
+.token.property {
+  color: var(--code-fn);
+  font-weight: 600;
+}
+
+.token.string,
+.token.attr-value,
+.token.char {
+  color: var(--code-string);
+}
+
+.token.number,
+.token.constant,
+.token.symbol {
+  color: var(--code-number);
+  font-weight: 600;
+}
+
+.token.punctuation {
+  color: rgba(46,26,71,0.6);
+}
+
+.copy-btn:hover { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
+.copy-btn.copied { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+
+/* small label area (top-left inside pre) for language or title */
+pre .code-meta {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.9rem;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  background: transparent;
+  padding: 0.125rem 0.4rem;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+}

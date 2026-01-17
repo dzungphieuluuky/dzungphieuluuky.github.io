@@ -684,3 +684,47 @@ function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
+
+(function(){
+  // attach copy buttons to code blocks
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('pre > code').forEach(function(codeEl){
+      var pre = codeEl.parentNode;
+      if (pre.querySelector('.copy-btn')) return;
+      // add meta label from language class (language-python => Python)
+      var meta = document.createElement('div');
+      meta.className = 'code-meta';
+      var lang = (codeEl.className.match(/language-([^\s]+)/)||[])[1] || '';
+      meta.textContent = lang ? lang.replace(/(^\w)/, function(m){return m.toUpperCase();}) : '';
+      pre.appendChild(meta);
+      // add button
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.type = 'button';
+      btn.innerHTML = 'Copy';
+      pre.appendChild(btn);
+      btn.addEventListener('click', function(){
+        var text = codeEl.innerText.replace(/\u00A0/g,' ');
+        navigator.clipboard?.writeText(text).then(function(){
+          btn.classList.add('copied');
+          btn.innerHTML = 'Copied';
+          setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML = 'Copy'; }, 1800);
+        }).catch(function(){
+          // fallback: select + execCommand
+          var range = document.createRange();
+          range.selectNodeContents(codeEl);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          try { document.execCommand('copy'); btn.innerHTML = 'Copied'; setTimeout(()=>btn.innerHTML='Copy',1500); } catch(e){ btn.innerHTML='Copy'; }
+          sel.removeAllRanges();
+        });
+      });
+    });
+    // Prism highlight (if Prism loaded)
+    if (window.Prism) Prism.highlightAll();
+  });
+})();
+
+
+

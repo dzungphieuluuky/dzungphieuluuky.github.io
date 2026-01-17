@@ -6,41 +6,48 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Neutral Palette - Soft & Professional */
-  --bg-primary: #fafaf9;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f5f5f4;
-  --bg-elevated: #ffffff;
-  
+  /* Purple — Wisdom / Creativity / Knowledge theme */
+  --palette-dark: #2E1A47;    /* deep indigo (anchors text) */
+  --palette-violet: #6A4C93;  /* primary violet (actions / links) */
+  --palette-amethyst: #9C7CE0;/* warm amethyst (highlights) */
+  --palette-lilac: #ffffff;   /* soft lilac (subtle accents) */
+  --palette-rose: #F6F1FF;    /* airy rose/lavender (surfaces) */
+
+  /* Neutral / Background */
+  --bg-primary: #FBF9FF;      /* page background, very light lavender */
+  --bg-secondary: #FFFFFF;    /* cards / elevated surfaces */
+  --bg-tertiary: #F8F6FB;     /* inline code / subtle fills */
+  --bg-elevated: #FFFFFF;     
+
   /* Text Hierarchy */
-  --text-primary: #1a1a1a;
-  --text-secondary: #525252;
-  --text-tertiary: #737373;
-  --text-muted: #a3a3a3;
-  
-  /* Accent - Warm Amber */
-  --accent-primary: #547792;
-  --accent-hover: #213448;
-  --accent-light: #94B4C1;
-  --accent-subtle: #EAE0CF;
-  
-  /* Borders & Dividers */
-  --border-primary: #e7e5e4;
-  --border-secondary: #f5f5f4;
-  --border-focus: #2D3C59;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-  
+  --text-primary: var(--palette-dark);
+  --text-secondary: #2B2B30;
+  --text-tertiary: #6B6577;
+  --text-muted: #9A93A6;
+
+  /* Accent (mapped to palette) */
+  --accent-primary: var(--palette-violet);
+  --accent-hover: #3C2355;    /* darker violet for hover */
+  --accent-light: var(--palette-amethyst);
+  --accent-subtle: var(--palette-lilac);
+
+  /* Borders & Dividers (use deep indigo with low alpha) */
+  --border-primary: rgba(46, 26, 71, 0.06);
+  --border-secondary: rgba(46, 26, 71, 0.03);
+  --border-focus: var(--palette-violet);
+
+  /* Shadows (tinted slightly purple) */
+  --shadow-sm: 0 1px 2px rgba(46, 26, 71, 0.04);
+  --shadow-md: 0 6px 18px rgba(46, 26, 71, 0.06);
+  --shadow-lg: 0 12px 30px rgba(46, 26, 71, 0.08);
+  --shadow-xl: 0 24px 50px rgba(46, 26, 71, 0.12);
+
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Spacing */
+
+  /* Spacing / Radii */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -137,58 +144,117 @@ a:hover {
   color: var(--accent-hover);
 }
 
-/* Code */
-code {
-  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-  font-size: 0.875em;
-  background: var(--bg-tertiary);
-  color: var(--accent-primary);
-  padding: 0.2em 0.4em;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-}
-
-pre {
-  position: relative;
-  margin: 2rem 0;
-  padding: 1.5rem;
-  padding-top: 3rem;
-  background: var(--bg-secondary);
+pre[class*="language-"],
+code[class*="language-"] {
+  background: linear-gradient(180deg, rgba(250,250,249,0.98), rgba(245,247,248,0.98));
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  overflow-x: auto;
+  padding: 1.25rem;
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  overflow: auto;
+  tab-size: 2;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
   box-shadow: var(--shadow-sm);
 }
 
-pre code {
-  background: transparent;
-  color: var(--text-secondary);
-  padding: 0;
-  font-weight: 400;
-}
-
-/* Copy Button */
-.copy-btn {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  padding: 0.5rem 0.875rem;
+/* inline code */
+:not(pre) > code {
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  font-size: 0.8125rem;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-base);
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  color: var(--accent-primary);
 }
 
-.copy-btn:hover {
-  background: var(--accent-primary);
-  color: white;
-  border-color: var(--accent-primary);
+/* Prism / Rouge / Highlight.js token names */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata,
+.comment {
+  color: #8b9496;
+  font-style: italic;
 }
+
+.token.keyword,
+.token.boolean,
+.token.tag,
+.token.selector,
+.token.attr-name,
+.k {
+  color: var(--palette-dark);
+  font-weight: 600;
+}
+
+.token.function,
+.token.class-name,
+.token.method,
+.token.property {
+  color: var(--palette-teal);
+  font-weight: 600;
+}
+
+.token.string,
+.token.attr-value,
+.token.char {
+  color: var(--palette-amber);
+}
+
+.token.number,
+.token.constant {
+  color: var(--palette-coral);
+  font-weight: 600;
+}
+
+.token.operator,
+.token.punctuation {
+  color: #4b5560;
+}
+
+.token.regex,
+.token.symbol {
+  color: #b45309;
+}
+
+/* selected / highlighted line (Prism plugin) */
+pre .line-highlight,
+pre .highlight-line {
+  background: linear-gradient(90deg, rgba(42,157,143,0.06), rgba(38,70,83,0.03));
+  display: block;
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+/* line numbers (Prism line-numbers plugin) */
+pre.line-numbers {
+  padding-left: 3rem;
+  position: relative;
+}
+
+pre.line-numbers .line-numbers-rows {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  font-size: 0.9em;
+  left: 0;
+  width: 3rem;
+  text-align: right;
+  padding: 1.25rem 0.75rem;
+  border-right: 1px solid rgba(38,70,83,0.03);
+  color: #9aa8aa;
+}
+
+/* copy button override (uses existing .copy-btn) */
+.copy-btn {
+  background: transparent;
+  border: 1px solid rgba(38,70,83,0.06);
+  color: var(--text-tertiary);
+}
+.copy-btn:hover { background: var(--accent-primary); color: white; }
 
 .copy-btn.copied {
   background: var(--text-primary);
@@ -1005,3 +1071,4 @@ body.custom-cursor {
   padding: 1rem;
   overflow-x: auto;
 }
+

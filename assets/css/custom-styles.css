@@ -144,123 +144,65 @@ a:hover {
   color: var(--accent-hover);
 }
 
-pre[class*="language-"],
-code[class*="language-"] {
-  background: linear-gradient(180deg, rgba(250,250,249,0.98), rgba(245,247,248,0.98));
-  border: 1px solid var(--border-primary);
-  padding: 1.25rem;
-  border-radius: 12px;
+/* Code */
+code {
   font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  overflow: auto;
-  tab-size: 2;
-  -webkit-font-smoothing: antialiased;
-  line-height: 1.6;
+  font-size: 0.875em;
+  background: var(--bg-tertiary);
+  color: var(--accent-primary);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+pre {
+  position: relative;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  padding-top: 3rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
   box-shadow: var(--shadow-sm);
 }
 
-/* inline code */
-:not(pre) > code {
-  background: var(--bg-tertiary);
-  padding: 0.15rem 0.4rem;
-  border-radius: 6px;
-  color: var(--accent-primary);
-}
-
-/* Prism / Rouge / Highlight.js token names */
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata,
-.comment {
-  color: #8b9496;
-  font-style: italic;
-}
-
-.token.keyword,
-.token.boolean,
-.token.tag,
-.token.selector,
-.token.attr-name,
-.k {
-  color: var(--palette-dark);
-  font-weight: 600;
-}
-
-.token.function,
-.token.class-name,
-.token.method,
-.token.property {
-  color: var(--palette-teal);
-  font-weight: 600;
-}
-
-.token.string,
-.token.attr-value,
-.token.char {
-  color: var(--palette-amber);
-}
-
-.token.number,
-.token.constant {
-  color: var(--palette-coral);
-  font-weight: 600;
-}
-
-.token.operator,
-.token.punctuation {
-  color: #4b5560;
-}
-
-.token.regex,
-.token.symbol {
-  color: #b45309;
-}
-
-/* selected / highlighted line (Prism plugin) */
-pre .line-highlight,
-pre .highlight-line {
-  background: linear-gradient(90deg, rgba(42,157,143,0.06), rgba(38,70,83,0.03));
-  display: block;
-  margin-left: -1.25rem;
-  margin-right: -1.25rem;
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-}
-
-/* line numbers (Prism line-numbers plugin) */
-pre.line-numbers {
-  padding-left: 3rem;
-  position: relative;
-}
-
-pre.line-numbers .line-numbers-rows {
-  position: absolute;
-  pointer-events: none;
-  top: 0;
-  font-size: 0.9em;
-  left: 0;
-  width: 3rem;
-  text-align: right;
-  padding: 1.25rem 0.75rem;
-  border-right: 1px solid rgba(38,70,83,0.03);
-  color: #9aa8aa;
-}
-
-/* copy button override (uses existing .copy-btn) */
-.copy-btn {
+pre code {
   background: transparent;
-  border: 1px solid rgba(38,70,83,0.06);
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
+  padding: 0;
+  font-weight: 400;
 }
-.copy-btn:hover { background: var(--accent-primary); color: white; }
+
+/* Copy Button */
+.copy-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.copy-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
 
 .copy-btn.copied {
   background: var(--text-primary);
   color: white;
   border-color: var(--text-primary);
 }
+
 
 /* ====================================
    Cards & Components
@@ -959,21 +901,6 @@ pre.line-numbers .line-numbers-rows {
    Custom Cursor
    ==================================== */
 
-body.custom-cursor {
-  cursor: none;
-}
-
-.custom-cursor-dot {
-  width: 10px;
-  height: 10px;
-  background: var(--accent-primary);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform var(--transition-fast);
-  box-shadow: 0 0 8px rgba(217, 119, 6, 0.4);
-}
 
 /* ====================================
    Utility
@@ -1070,5 +997,30 @@ body.custom-cursor {
   margin: 2rem 0;
   padding: 1rem;
   overflow-x: auto;
+}
+
+/* Selection colors (global + element-specific for better contrast) */
+::selection {
+  background: var(--accent-primary); /* violet from palette */
+  color: #ffffff;
+}
+::-moz-selection {
+  background: var(--accent-primary);
+  color: #ffffff;
+}
+
+/* Inline code selection */
+code::selection,
+code *::selection {
+  background: rgba(156,124,224,0.28); /* softer amethyst */
+  color: var(--text-primary);
+}
+
+/* Pre/code block selection (keeps whitespace readable) */
+pre ::selection,
+pre code::selection,
+pre *::selection {
+  background: rgba(106,76,147,0.18); /* subtle purple wash */
+  color: var(--text-secondary);
 }
 

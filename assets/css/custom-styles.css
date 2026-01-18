@@ -8,17 +8,17 @@
 
 :root {
   /* Purple — Wisdom / Creativity / Knowledge theme */
-  --palette-dark: #2E1A47;    /* deep indigo (anchors text) */
-  --palette-violet: #6A4C93;  /* primary violet (actions / links) */
-  --palette-amethyst: #9C7CE0;/* warm amethyst (highlights) */
-  --palette-lilac: #ffffff;   /* soft lilac (subtle accents) */
-  --palette-rose: #F6F1FF;    /* airy rose/lavender (surfaces) */
+  --palette-dark: #2E1A47;
+  --palette-violet: #6A4C93;
+  --palette-amethyst: #9C7CE0;
+  --palette-lilac: #ffffff;
+  --palette-rose: #F6F1FF;
 
   /* Neutral / Background */
-  --bg-primary: #FBF9FF;      /* page background, very light lavender */
-  --bg-secondary: #FFFFFF;    /* cards / elevated surfaces */
-  --bg-tertiary: #F8F6FB;     /* inline code / subtle fills */
-  --bg-elevated: #FFFFFF;     
+  --bg-primary: #FBF9FF;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F8F6FB;
+  --bg-elevated: #FFFFFF;
 
   /* Text Hierarchy */
   --text-primary: var(--palette-dark);
@@ -26,18 +26,18 @@
   --text-tertiary: #6B6577;
   --text-muted: #574578;
 
-  /* Accent (mapped to palette) */
+  /* Accent */
   --accent-primary: var(--palette-violet);
-  --accent-hover: #3C2355;    /* darker violet for hover */
+  --accent-hover: #3C2355;
   --accent-light: var(--palette-amethyst);
   --accent-subtle: var(--palette-lilac);
 
-  /* Borders & Dividers (use deep indigo with low alpha) */
+  /* Borders & Dividers */
   --border-primary: rgba(46, 26, 71, 0.06);
   --border-secondary: rgba(46, 26, 71, 0.03);
   --border-focus: var(--palette-violet);
 
-  /* Shadows (tinted slightly purple) */
+  /* Shadows */
   --shadow-sm: 0 1px 2px rgba(46, 26, 71, 0.04);
   --shadow-md: 0 6px 18px rgba(46, 26, 71, 0.06);
   --shadow-lg: 0 12px 30px rgba(46, 26, 71, 0.08);
@@ -54,18 +54,22 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* Code token colors (purple wisdom theme) — ENHANCED CONTRAST */
-  --code-keyword: #2D0F4D;      /* darker keyword violet */
-  --code-fn: #5A1F8F;           /* darker function/method purple */
-  --code-class: #4A1F7A;        /* class name dark purple */
-  --code-module: #3D1F5C;       /* module name deep indigo */
-  --code-argument: #260638;     /* argument/parameter purple */
-  --code-string: #C2185B;       /* strong magenta-pink */
-  --code-number: #0D0415;       /* nearly pure black */
-  --code-comment: #120b16;      /* dark muted gray */
-  --code-operator: #1F0F2E;     /* deep indigo */
-  --code-builtin: #7B1FA2;      /* strong deep purple */
-  --code-border: rgba(46, 26, 71, 0.1); /* code block border */
+  /* Code token colors — ENHANCED CONTRAST */
+  --code-keyword: #2D0F4D;
+  --code-fn: #5A1F8F;
+  --code-class: #4A1F7A;
+  --code-module: #3D1F5C;
+  --code-argument: #260638;
+  --code-string: #C2185B;
+  --code-number: #0D0415;
+  --code-comment: #120b16;
+  --code-operator: #1F0F2E;
+  --code-builtin: #7B1FA2;
+  --code-border: rgba(56, 2, 122, 0.737);
+  --code-module-contrast: #2a0038;
+  --code-argument-contrast: #2e0538;
+  --code-fn-contrast: #430a6a;
+  --code-class-contrast: #37084f;
 }
 
 /* ====================================
@@ -158,6 +162,20 @@ a:hover {
   color: var(--accent-hover);
 }
 
+/* Selection */
+::selection {
+  background: var(--accent-primary);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: rgba(46, 26, 71, 0.25);
+  color: var(--code-keyword);
+}
+
+/* ====================================
+   Code Blocks
+   ==================================== */
 
 pre {
   position: relative;
@@ -165,11 +183,15 @@ pre {
   padding: 1.5rem;
   padding-top: 3rem;
   background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--code-border);
   border-radius: var(--radius-lg);
   overflow-x: auto;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--code-border);
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
 }
 
 pre code {
@@ -185,8 +207,8 @@ pre code {
   top: 0.75rem;
   right: 0.75rem;
   padding: 0.45rem 0.8rem;
-  background: rgba(255,255,255,0.9);
-  border: 1px solid rgba(46,26,71,0.06);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(46, 26, 71, 0.06);
   color: var(--text-secondary);
   border-radius: 8px;
   font-size: 0.85rem;
@@ -210,6 +232,212 @@ pre code {
   border-color: var(--text-primary);
 }
 
+/* Code Metadata Label */
+pre .code-meta {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.9rem;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  background: transparent;
+  padding: 0.125rem 0.4rem;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+}
+
+/* Line Numbers */
+pre.line-numbers {
+  padding-left: 3.5rem;
+}
+
+.line-numbers-rows {
+  color: #6B5B77;
+  font-weight: 500;
+}
+
+/* Token Colors (Prism) — HIGH CONTRAST */
+.token.comment,
+.token.prolog,
+.token.cdata {
+  color: var(--code-comment);
+  font-style: italic;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+.token.keyword,
+.token.boolean,
+.token.selector,
+.token.tag {
+  color: var(--code-keyword);
+  font-weight: 900;
+  letter-spacing: 0.4px;
+}
+
+.token.function,
+.token.method,
+.token.function-variable,
+.token.method-variable,
+.token.attr-name,
+.token.parameter {
+  color: var(--code-fn);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.token.class-name {
+  color: var(--code-class);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.token.module {
+  color: var(--code-module);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.token.property,
+.token.attr-name {
+  color: var(--code-argument);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.token.parameter {
+  color: var(--code-argument);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.token.variable {
+  color: var(--code-argument);
+  font-weight: 700;
+}
+
+.token.string,
+.token.attr-value,
+.token.char {
+  color: var(--code-string);
+  font-weight: 600;
+}
+
+.token.number,
+.token.constant,
+.token.symbol {
+  color: var(--code-number);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.token.operator,
+.token.punctuation {
+  color: var(--code-operator);
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.token.builtin {
+  color: var(--code-builtin);
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.token.important,
+.token.bold {
+  font-weight: 900;
+  color: var(--code-keyword);
+}
+
+/* Inline Code */
+code::selection,
+code *::selection {
+  background: rgba(156, 124, 224, 0.28);
+  color: var(--text-primary);
+}
+
+pre::selection,
+pre code::selection,
+pre .token::selection {
+  background: rgba(46, 26, 71, 0.25);
+  color: var(--code-keyword);
+  text-shadow: none;
+}
+
+/* ====================================
+   Tables (Browser Default)
+   ==================================== */
+
+table {
+  display: table !important;
+  width: auto !important;
+  background: transparent !important;
+  border: none !important;
+  margin: 2rem 0 !important;
+  border-collapse: collapse;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+table tr {
+  display: table-row !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+table th,
+table td {
+  display: table-cell !important;
+  padding: 0.875rem 1.25rem !important;
+  background: transparent !important;
+  border: 1.5px solid var(--palette-violet) !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  color: var(--text-secondary) !important;
+  font-weight: 400 !important;
+  margin: 0 !important;
+}
+
+table th {
+  background: linear-gradient(135deg, rgba(106, 76, 147, 0.08), rgba(156, 124, 224, 0.06)) !important;
+  border: 2px solid var(--palette-violet) !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--palette-dark) !important;
+  text-transform: none !important;
+  letter-spacing: 0.3px !important;
+}
+
+table tr:first-child th {
+  border-top: 2px solid var(--palette-violet) !important;
+  border-bottom: 2px solid var(--palette-violet) !important;
+}
+
+table tr:last-child td {
+  border-bottom: 2px solid var(--palette-violet) !important;
+}
+
+table tr:nth-child(2n),
+.highlight tr:nth-child(2n) {
+  background: transparent !important;
+}
+
+table tr:hover td {
+  background: rgba(156, 124, 224, 0.04) !important;
+  transition: background-color var(--transition-base) !important;
+}
+
+.highlight table,
+.highlight tr,
+.highlight th,
+.highlight td {
+  display: table !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
 
 /* ====================================
    Cards & Components
@@ -377,7 +605,7 @@ pre code {
 }
 
 /* ====================================
-   Table of Contents (Sidebar)
+   Table of Contents
    ==================================== */
 
 .inline-toc {
@@ -449,10 +677,7 @@ pre code {
   padding: 0.375rem 0.75rem;
 }
 
-/* ====================================
-   Post TOC Box
-   ==================================== */
-
+/* Post TOC Box */
 .post-toc-box {
   background: var(--accent-subtle);
   border: 1px solid var(--accent-light);
@@ -485,11 +710,10 @@ pre code {
   margin-bottom: 0.5rem;
 }
 
-/* H2 entries (top-level / higher headers) — BIGGER & BOLDER */
 .post-toc-list > li > a {
   color: var(--accent-primary);
-  font-size: 1.0625rem;        /* increased from 0.9375rem */
-  font-weight: 800;            /* increased from 600 */
+  font-size: 1.0625rem;
+  font-weight: 800;
   transition: all var(--transition-base);
   display: block;
   padding: 0.5rem 0;
@@ -500,7 +724,6 @@ pre code {
   padding-left: 0.75rem;
 }
 
-/* H3 entries (nested / lower headers) — smaller, less bold */
 .post-toc-list ul {
   list-style: none;
   padding-left: 1.5rem;
@@ -508,9 +731,9 @@ pre code {
 }
 
 .post-toc-list ul a {
-  font-size: 0.875rem;         /* smaller than H2 */
+  font-size: 0.875rem;
   color: var(--text-tertiary);
-  font-weight: 500;            /* less bold than H2 */
+  font-weight: 500;
   transition: all var(--transition-base);
 }
 
@@ -578,7 +801,7 @@ pre code {
 }
 
 /* ====================================
-   Search Trigger Button (Navbar Icon)
+   Search Modal
    ==================================== */
 
 .search-trigger {
@@ -603,7 +826,6 @@ pre code {
   height: 20px;
 }
 
-/* Search Modal Overlay */
 .search-modal {
   position: fixed;
   top: 0;
@@ -634,7 +856,6 @@ pre code {
   }
 }
 
-/* Search Modal Content */
 .search-modal-content {
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
@@ -659,7 +880,6 @@ pre code {
   }
 }
 
-/* Close Button */
 .search-modal-close {
   position: absolute;
   top: 1rem;
@@ -683,7 +903,6 @@ pre code {
   color: var(--accent-primary);
 }
 
-/* Search Container Inside Modal */
 .search-modal .search-container {
   position: relative;
   width: 100%;
@@ -716,7 +935,6 @@ pre code {
   box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.1);
 }
 
-/* Search Icon in Modal */
 .search-modal .search-icon {
   position: absolute;
   left: 2.5rem;
@@ -732,7 +950,6 @@ pre code {
   color: var(--accent-primary);
 }
 
-/* Search Results Container (Modal) */
 .search-modal .search-results {
   position: static;
   background: transparent;
@@ -752,7 +969,6 @@ pre code {
   display: block;
 }
 
-/* Individual Result Item (Modal) */
 .search-modal .search-result-item {
   padding: 1.25rem;
   border-bottom: 1px solid var(--border-secondary);
@@ -776,7 +992,6 @@ pre code {
   padding-left: 1.25rem;
 }
 
-/* Result Title (Modal) */
 .search-modal .search-result-title {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
@@ -792,20 +1007,18 @@ pre code {
   color: var(--accent-primary);
 }
 
-/* Result Excerpt (Modal) */
 .search-modal .search-result-excerpt {
   font-size: 0.8125rem;
   color: var(--text-tertiary);
   line-height: 1.5;
   margin-bottom: 0.5rem;
   display: -webkit-box;
-  -line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   font-family: 'Lora', sans-serif;
 }
 
-/* Result Tags (Modal) */
 .search-modal .search-result-tags {
   display: flex;
   gap: 0.5rem;
@@ -834,7 +1047,6 @@ pre code {
   border-color: var(--accent-primary);
 }
 
-/* No Results Message (Modal) */
 .search-modal .search-no-results {
   padding: 3rem 2rem;
   text-align: center;
@@ -844,7 +1056,6 @@ pre code {
   font-family: 'Lora', sans-serif;
 }
 
-/* Search Hint Text (Modal) */
 .search-modal .search-hint {
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -855,7 +1066,6 @@ pre code {
   text-align: center;
 }
 
-/* Scrollbar Styling (Modal) */
 .search-modal .search-results::-webkit-scrollbar {
   width: 6px;
 }
@@ -874,67 +1084,8 @@ pre code {
 }
 
 /* ====================================
-   Responsive
+   Tags
    ==================================== */
-
-@media (max-width: 768px) {
-  .search-modal-content {
-    width: 95%;
-    max-height: 70vh;
-  }
-
-  .search-modal {
-    padding-top: 2rem;
-  }
-
-  .search-modal .search-container {
-    padding: 1.5rem;
-  }
-
-  .search-modal .search-icon {
-    left: 2rem;
-    top: 2.25rem;
-  }
-
-  .search-trigger {
-    padding: 0.5rem 0.75rem !important;
-  }
-}
-
-/* ====================================
-   Animations
-   ==================================== */
-
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ====================================
-   Custom Cursor
-   ==================================== */
-
-
-/* ====================================
-   Utility
-   ==================================== */
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
-.blog-post {
-  max-width: 900px;
-  margin: 0 auto;
-  padding-right: 0;
-  padding-left: 0;
-}
 
 .blog-tags {
   display: flex;
@@ -964,6 +1115,40 @@ pre code {
 }
 
 /* ====================================
+   Utilities
+   ==================================== */
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.blog-post {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.mermaid {
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ====================================
    Responsive
    ==================================== */
 
@@ -972,7 +1157,7 @@ pre code {
     width: 200px;
     right: 1rem;
   }
-  
+
   .blog-post {
     padding-right: 240px;
   }
@@ -998,7 +1183,7 @@ pre code {
   .inline-toc {
     display: none;
   }
-  
+
   .blog-post {
     padding-right: 0;
   }
@@ -1008,205 +1193,26 @@ pre code {
     align-items: flex-start;
     gap: 0.75rem;
   }
-}
 
-.mermaid {
-  background: var(--bg-secondary, #fff);
-  border-radius: 0.5rem;
-  margin: 2rem 0;
-  padding: 1rem;
-  overflow-x: auto;
-}
+  .search-modal-content {
+    width: 95%;
+    max-height: 70vh;
+  }
 
-/* Selection colors (global + element-specific for better contrast) */
-::selection {
-  background: var(--accent-primary); /* violet from palette */
-  color: #ffffff;
-}
+  .search-modal {
+    padding-top: 2rem;
+  }
 
-/* Inline code selection */
-code::selection,
-code *::selection {
-  background: rgba(156,124,224,0.28); /* softer amethyst */
-  color: var(--text-primary);
-}
+  .search-modal .search-container {
+    padding: 1.5rem;
+  }
 
-/* enhanced selection for code blocks */
-pre::selection,
-pre code::selection,
-pre .token::selection {
-  background: rgba(46, 26, 71, 0.25);
-  color: var(--code-keyword);
-  text-shadow: none;
-}
+  .search-modal .search-icon {
+    left: 2rem;
+    top: 2.25rem;
+  }
 
-::-moz-selection {
-  background: rgba(46, 26, 71, 0.25);
-  color: var(--code-keyword);
-}
-
-/* code block base */
-pre[class*="language-"]{
-  background: var(--bg-secondary);
-  border: 1px solid var(--code-border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  padding-top: 3rem;
-  position: relative;
-  overflow: auto;
-  box-shadow: var(--shadow-sm);
-  font-family: 'JetBrains Mono','SF Mono',Consolas,monospace;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  letter-spacing: 0.5px;
-}
-
-/* optional line numbers */
-pre.line-numbers {
-  padding-left: 3.5rem;
-}
-
-.line-numbers-rows { 
-  color: #6B5B77;
-  font-weight: 500;
-}
-
-/* Token colors (Prism tokens) — HIGH CONTRAST ENHANCED */
-.token.comment,
-.token.prolog,
-.token.cdata,
-.comment {
-  color: var(--code-comment);
-  font-style: italic;
-  font-weight: 500;
-  opacity: 0.95;
-}
-
-/* Keywords (if, def, class, return, etc.) */
-.token.keyword,
-.token.boolean,
-.token.selector,
-.token.tag {
-  color: var(--code-keyword);
-  font-weight: 900;
-  letter-spacing: 0.4px;
-}
-
-/* Function & Method Names */
-.token.function,
-.token.method,
-.token.function-variable,
-.token.method-variable,
-.token.attr-name,
-.token.parameter,
-.toke {
-  color: var(--code-fn);
-  font-weight: 900;
-  letter-spacing: 0.3px;
-}
-
-/* Class Names */
-.token.class-name {
-  color: var(--code-class);
-  font-weight: 900;
-  letter-spacing: 0.3px;
-}
-
-/* Module Names (imports, namespaces) */
-.token.module {
-  color: var(--code-module);
-  font-weight: 900;
-  letter-spacing: 0.3px;
-}
-
-/* Property Names & Attributes */
-.token.property,
-.token.attr-name {
-  color: var(--code-argument);
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-
-/* Function/Method Parameters & Arguments */
-.token.parameter {
-  color: var(--code-argument);
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-
-/* Variables (if recognized by Prism) */
-.token.variable {
-  color: var(--code-argument);
-  font-weight: 700;
-}
-
-/* String Literals */
-.token.string,
-.token.attr-value,
-.token.char {
-  color: var(--code-string);
-  font-weight: 600;
-}
-
-/* Numbers */
-.token.number,
-.token.constant,
-.token.symbol {
-  color: var(--code-number);
-  font-weight: 900;
-  letter-spacing: 0.3px;
-}
-
-/* Operators & Punctuation */
-.token.operator {
-  color: var(--code-operator);
-  font-weight: 700;
-}
-
-.token.punctuation {
-  color: var(--code-operator);
-  font-weight: 700;
-  opacity: 0.9;
-}
-
-/* Built-in Functions/Methods */
-.token.builtin {
-  color: var(--code-builtin);
-  font-weight: 900;
-  letter-spacing: 0.2px;
-}
-
-/* Comments */
-.token.comment,
-.token.prolog,
-.token.cdata {
-  color: var(--code-comment);
-  font-style: italic;
-  font-weight: 500;
-  opacity: 0.95;
-}
-
-/* Important/Bold Tokens */
-.token.important,
-.token.bold {
-  font-weight: 900;
-  color: var(--code-keyword);
-}
-
-.copy-btn:hover { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
-.copy-btn.copied { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
-
-/* small label area (top-left inside pre) for language or title */
-pre .code-meta {
-  position: absolute;
-  top: 0.6rem;
-  left: 0.9rem;
-  font-size: 0.75rem;
-  color: var(--text-tertiary);
-  background: transparent;
-  padding: 0.125rem 0.4rem;
-  border-radius: 6px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
+  .search-trigger {
+    padding: 0.5rem 0.75rem !important;
+  }
 }

@@ -143,19 +143,6 @@ post_search: true
 search_placeholder: "Something is coming..."
 search_results_limit: 15
 
-# Modern dark theme with vibrant accents
-# page-col: "#ffffff"
-# text-col: "#2c3e50"
-# link-col: "#3498db"
-# hover-col: "#e74c3c"
-# navbar-col: "#2c3e50"
-# navbar-text-col: "#ecf0f1"
-# navbar-border-col: "#34495e"
-# footer-col: "#34495e"
-# footer-text-col: "#bdc3c7"
-# footer-link-col: "#3498db"
-# footer-hover-col: "#e74c3c"
-
 page-col: "#0f1419"                    # Dark navy background
 text-col: "#e6f1ff"                    # Light blue-white text
 link-col: "#64b5f6"                    # Bright blue links

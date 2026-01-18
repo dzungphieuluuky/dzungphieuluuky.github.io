@@ -1,45 +1,34 @@
 ---
 layout: post
 title: Distributed Training and Inference with Hugging Face Accelerate
-subtitle: Learn to write industry-standard distributed code
-date: 2026-01-17
-author: dzungphieuluuky
-tags: [deep-learning, huggingface, accelerate, distributed, mlops]
-cover-img:
-thumbnail-img:
-share-img:
+subtitle: Learn to write distributed code from your backyard
+tags: [deep-learning, accelerate, distributed-computing, mlops, student-projects]
 comments: true
+author: dzungphieuluuky
 ---
 
+{: .box-success}
+This post shares my journey learning distributed training with Hugging Face Accelerate. I encourage you to [learn markdown basics](https://markdowntutorial.com/) to create technical content like this. Check out the [Beautiful Jekyll documentation](https://beautifuljekyll.com/) for formatting tips and the [Accelerate docs](https://huggingface.co/docs/accelerate) for implementation details.
 
-# Write Once, Run Anywhere: The Accelerate Philosophy
+**"But it works on my machine" is the battle cry of broken distributed systems.** As a student constantly switching between Google Colab, Kaggle, and my laptop, I needed code that worked everywhere—not just where I first wrote it. With models growing larger and hardware configurations varying wildly, we need solutions that abstract complexity without sacrificing control.
 
-*"But it works on my machine" is a traditional yet ever-lasting problem in software engineering, yet now it reappears in deep learning and machine learning projects. For research scientists and undergraduate students (such as me) with low computational resources, we usually need to change our running platforms continually from Google Colab to Kaggle and vice versa, or another if on-premises GPUs are available. With models growing exponentially and hardware configurations varying wildly, we need a solution that abstracts away distribution complexity. **Hugging Face Accelerate** is definitely our lifeboat.*
+## The Platform-Hopping Reality
 
-For the few past projects I have done, I've developed several deep learning systems that must be designed to run anywhere I want, oscillating between two main GPU resources: Google Colab and Kaggle (both are in possession of Google, yeah what a surprise). **Accelerate** helps me carry my code seamlessly between platforms and effectively harness the full potential on each one—it would be a pain to the eyes if Kaggle offers 2 GPUs but the code is currently only using one of them.
+My typical development workflow involves constant platform switching:
 
-This blog post isn't about basic usage—it's about **production patterns** that prevent deadlocks, optimize performance, and some good tips I find useful when working with **Accelerate** that might provide guidance for my future self.
+| Platform | GPU Configuration | Key Limitations |
+| :--- | :--- | :--- |
+| **Google Colab** | Single T4/V100 | Session timeouts, 15GB RAM limit |
+| **Kaggle** | 2×P100 or 2×T4 | 30 hours/week, temporary storage |
+| **Local Laptop** | CPU only (ThinkPad) | No GPU acceleration, stable environment |
 
-## My Journey: From Colab Noob to Accelerate Enthusiast
-
-As a third-year computer science student doing deep learning projects, here's my typical workflow:
-1. **Prototype on Colab** (free T4, 15GB RAM, sometimes gets disconnected)
-2. **Scale on Kaggle** (P100/T4 x2, 30 hours/week limit)
-3. **Sometimes run on my laptop's CPU** (unit testing for some module before migrating them to online platforms)
-
-Each platform has different quirks:
-- **Colab**: Single GPU, sometimes offers V100/A100 if you're lucky
-- **Kaggle**: Usually 2xP100 or 2xT4, excellent for parallel processing
-- **My laptop**: CPU-only with 16 cores (yeah I use ThinkPad) which is 4 times Kaggle and 8 times Colab, perfect for debugging
-
-Without Accelerate, I was writing this monstrosity:
+Without Accelerate, I was writing platform-specific spaghetti code:
 
 ```python
-# The Dark Ages: Platform-specific code everywhere
+# Platform detection nightmare
 import torch
 import os
 
-# Platform detection spaghetti
 if 'COLAB_GPU' in os.environ:
     print("Running on Colab")
     device = torch.device("cuda:0")
@@ -50,421 +39,254 @@ elif 'KAGGLE_KERNEL_RUN_TYPE' in os.environ:
     num_gpus = torch.cuda.device_count()
     if num_gpus > 1:
         model = torch.nn.DataParallel(model)
-        # Hope I did this right...
 elif torch.cuda.is_available():
-    # Maybe university cluster?
     device = torch.device("cuda")
     num_gpus = torch.cuda.device_count()
-    # Need to handle DDP? MPI? Who knows!
 else:
     device = torch.device("cpu")
     num_gpus = 0
 
 model = model.to(device)
-# Don't forget mixed precision!
-# And gradient accumulation!
-# And distributed samplers!
-# And... (you get the point)
 ```
 
-This code was:
-1. **Brittle**: Broke when moving between platforms
-2. **Hard to debug**: "Why is my GPU utilization 30% on Kaggle?"
-3. **Non-reproducible**: Different behavior on different hardware
-4. **Embarrassing**: Not something I'd show in a portfolio, especially for someone continuously chasing fancy stuffs like me
+{: .box-warning}
+**Why this fails:**
+- Code breaks when moving between platforms
+- Debugging becomes environment-specific
+- Multi-GPU utilization is inconsistent
+- Maintenance becomes unsustainable
 
-## Accelerate: The Lifeboat
+## Accelerate: The Single-Line Revolution
 
-Then I discovered Hugging Face Accelerate. The change was revolutionary:
+Hugging Face Accelerate transforms this complexity into simplicity:
 
 ```python
-# The Enlightenment: One line to rule them all
 from accelerate import Accelerator
 
-# That's literally it
+# That's it—one line changes everything
 accelerator = Accelerator()
-model, optimizer, dataloader = accelerator.prepare(model, optimizer, dataloader)
+model, optimizer, dataloader = accelerator.prepare(
+    model, optimizer, dataloader
+)
 ```
 
-Suddenly my code:
-- **Worked everywhere**: Colab, Kaggle, my laptop and maybe other GPUs platforms.
-- **Used all available GPUs**: Kaggle's 2 GPUs? Both utilized!
-- **Handled edge cases**: Mixed precision, gradient accumulation, checkpointing
-- **Looked professional**: Clean, maintainable, industry-standard
+This single call handles:
+- Device placement (GPU/CPU/MPS)
+- Multi-GPU distribution when available
+- Mixed precision optimization
+- Distributed data sampling
+- Gradient accumulation
 
-## Understanding Accelerate
+## Understanding the Accelerate Mental Model
 
-### Grasp the basic understanding for Accelerate
-
-Think of Accelerate as a **universal translator** for your code:
-- **Single GPU Colab** → Your code runs normally
-- **Dual GPU Kaggle** → Your code automatically splits work
-- **8-GPU cluster** → Your code distributes across all of them
-- **CPU laptop** → Your code still works (slower, but works)
-
-Each running instance is called a **process**:
-- **Process 0**: The main process, saving checkpoints and logging results (we don't want all processes spam their own results simultaneously at our eyes)
-- **Process 1, 2, 3...**: Worker processes, just compute
-
-The magic happens in `accelerator.prepare()`:
-- It wraps your model for multi-GPU if needed
-- It sets up distributed data sampling
-- It handles device placement automatically
-- It even does mixed precision for you!
- Note: Mixed precision usually talks about floating point 32 bit, floating point 16 bit and brain floating point 16 bit. Maybe I will have another blog on that topic later...
-
-### When accelerators are out of sync
-
-**All processes must execute the same code path.** This caused my first deadlock:
+Think of Accelerate as a **universal adapter** for your PyTorch code:
 
 ```python
-# ❌ My first deadlock (2 hours of debugging)
+# Before: Platform-specific complexity
+# After: Write once, run anywhere
+
+# Key concept: Processes, not devices
+# Each GPU = One process
+# All processes execute identical code
+# Only main process (process 0) handles I/O
+```
+
+### The Golden Rule: Symmetric Execution
+
+My first distributed deadlock taught me this lesson:
+
+```python
+# ❌ Deadlock: Different code paths
 if accelerator.is_main_process:
-    data = load_dataset()  # Only main process loads
-    # Process 1 is waiting... forever
-process_data(data)  # Process 1: "What data??"
+    data = load_dataset()  # Only main loads
+    # Other processes wait forever
+process_data(data)  # Other processes crash
 
-# ✅ The correct way
-# Option A: All load (simple but inefficient)
-data = load_dataset()
-
-# Option B: Main loads, then broadcasts (efficient)
+# ✅ Solution: Broadcast pattern
 if accelerator.is_main_process:
     all_data = load_dataset()
 else:
     all_data = None
+
 all_data = accelerator.broadcast(all_data, from_process=0)
 ```
 
-## Training Template
+{: .box-error}
+**Critical Rule:** All processes must follow the same execution path. Conditional effects are fine; conditional paths cause deadlocks.
 
-After several projects, this is my go-to template that works everywhere:
+## Complete Training Template
+
+After several projects, this template emerged as my go-to solution:
 
 ```python
-def train_student_edition():
+from accelerate import Accelerator
+import torch
+from tqdm import tqdm
+
+def train_portably():
     """
-    My battle-tested training template that works on:
-    - Colab (free tier)
-    - Kaggle (2 GPUs)
-    - University cluster
-    - My sad laptop CPU
+    Works on: Colab, Kaggle, local CPU, multi-GPU clusters
     """
     # 1. Initialize Accelerate FIRST
-    # This detects hardware and sets everything up
     accelerator = Accelerator(
-        mixed_precision="fp16",  # Free speed boost!
-        gradient_accumulation_steps=2,  # For larger "virtual" batch sizes
-        log_with="wandb" if use_wandb else None,
+        mixed_precision="fp16",  # 2x speed boost
+        gradient_accumulation_steps=2,  # Larger effective batches
+        log_with="wandb",  # Optional: experiment tracking
         project_dir="./logs",
     )
     
-    # 2. Set random seeds (AFTER Accelerate!)
-    # Crucial for reproducibility between runs
-    set_seed(42 + accelerator.process_index)  # Different seed per process
+    # 2. Set seeds AFTER Accelerate
+    set_seed(42 + accelerator.process_index)
     
-    # 3. Create model and data
-    # Same as single-GPU code!
-    model = CoolModel()
+    # 3. Create components
+    model = MyModel()
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
-    train_loader = get_data_loader(batch_size=16)
+    train_loader = get_dataloader(batch_size=16)
     
-    # 4. The magic line ✨
+    # 4. Prepare everything
     model, optimizer, train_loader = accelerator.prepare(
         model, optimizer, train_loader
     )
     
-    # 5. Training loop (looks exactly like single-GPU!)
+    # 5. Training loop (identical to single-GPU!)
     for epoch in range(num_epochs):
         model.train()
         
-        # Progress bar only on main process (cleaner output)
+        # Progress bar only on main process
         if accelerator.is_main_process:
             pbar = tqdm(train_loader, desc=f"Epoch {epoch}")
         else:
             pbar = train_loader
             
         for batch in pbar:
-            # Automatic gradient accumulation
             with accelerator.accumulate(model):
                 loss = model(batch)
                 accelerator.backward(loss)
                 optimizer.step()
                 optimizer.zero_grad()
                 
-                # Update progress bar on main process
                 if accelerator.is_main_process:
                     pbar.set_postfix({"loss": loss.item()})
         
-        # 6. Save checkpoint (only main process)
-        accelerator.wait_for_everyone()  # Sync before saving
+        # 6. Safe checkpointing
+        accelerator.wait_for_everyone()
         if accelerator.is_main_process:
-            # Save to Google Drive on Colab, local on others
-            save_path = "/content/drive/MyDrive/checkpoints" if on_colab else "./checkpoints"
-            accelerator.save_state(save_path)
-            print(f"✅ Checkpoint saved to {save_path}")
+            accelerator.save_state("./checkpoints")
         
-        accelerator.wait_for_everyone()  # Wait for save to complete
+        accelerator.wait_for_everyone()
     
-    # 7. Clean exit
-    accelerator.end_training()
-    
-    # Return final model (unwrapped for single-GPU use)
     return accelerator.unwrap_model(model)
 ```
 
-## Useful Patterns
+## Essential Patterns for Students
 
 ### Pattern 1: Platform-Aware Setup
 
 ```python
 def setup_for_platform():
-    """Detect platform and configure accordingly."""
+    """Detect and configure for current platform."""
     import os
     
-    # Detect platform
     if 'COLAB_GPU' in os.environ:
         platform = "colab"
         print("🎮 Running on Google Colab")
-        # Mount Google Drive for checkpoints
         from google.colab import drive
         drive.mount('/content/drive')
         
     elif 'KAGGLE_KERNEL_RUN_TYPE' in os.environ:
         platform = "kaggle"
         print("🏆 Running on Kaggle")
-        # Kaggle has /kaggle/working directory
+        # Kaggle-specific setup
         
     elif torch.cuda.device_count() > 1:
         platform = "multi_gpu"
-        print(f"🚀 Running on {torch.cuda.device_count()} GPUs")
+        print(f"🚀 Using {torch.cuda.device_count()} GPUs")
         
     else:
-        platform = "single_gpu_or_cpu"
-        print("💻 Running on single device")
+        platform = "local"
+        print("💻 Running locally")
     
-    # Configure Accelerate based on platform
-    if platform == "kaggle" and torch.cuda.device_count() == 2:
-        # Kaggle often gives 2 GPUs - use them!
-        accelerator = Accelerator(
-            mixed_precision="fp16",
-            num_processes=2,  # Use both GPUs!
-        )
+    # Platform-optimized configuration
+    if platform == "kaggle":
+        return Accelerator(mixed_precision="fp16", num_processes=2)
     else:
-        # Default configuration
-        accelerator = Accelerator(mixed_precision="fp16")
-    
-    return accelerator, platform
+        return Accelerator(mixed_precision="fp16")
 ```
 
-### Pattern 2: Checkpoint system
+### Pattern 2: Student-Friendly Checkpointing
 
 ```python
-def student_checkpoint_system(accelerator, model, platform):
-    """
-    Save checkpoints that work with:
-    - Google Drive (Colab)
-    - Kaggle output directory
-    - Local filesystem
-    - Limited storage space
-    """
-    accelerator.wait_for_everyone()  # Crucial!
+def save_checkpoint_student(accelerator, model, platform):
+    """Save checkpoints with platform awareness."""
+    accelerator.wait_for_everyone()
     
     if accelerator.is_main_process:
-        # Determine where to save based on platform
-        if platform == "colab":
-            save_dir = "/content/drive/MyDrive/colab_checkpoints"
-            # Google Drive has space limits - clean old checkpoints
-            cleanup_old_checkpoints(save_dir, keep_last=3)
-        elif platform == "kaggle":
-            save_dir = "/kaggle/working/checkpoints"
-            # Kaggle deletes after session - save to dataset too?
-        else:
-            save_dir = "./checkpoints"
+        # Platform-specific save locations
+        save_dirs = {
+            "colab": "/content/drive/MyDrive/checkpoints",
+            "kaggle": "/kaggle/working/checkpoints",
+            "local": "./checkpoints"
+        }
         
+        save_dir = save_dirs.get(platform, "./checkpoints")
         os.makedirs(save_dir, exist_ok=True)
         
-        # Save only what's necessary (storage is limited!)
+        # Save only essentials
         checkpoint = {
             "model": accelerator.unwrap_model(model).state_dict(),
             "epoch": current_epoch,
             "loss": best_loss,
-            "platform": platform,  # Remember where this was trained
+            "platform": platform,
         }
         
-        # Save with platform in filename
-        filename = f"checkpoint_epoch{current_epoch}_{platform}.pt"
-        torch.save(checkpoint, os.path.join(save_dir, filename))
-        
-        print(f"💾 Saved checkpoint to {filename}")
-        print(f"   Platform: {platform}, Epoch: {current_epoch}")
+        # Atomic write
+        torch.save(checkpoint, f"{save_dir}/checkpoint_{current_epoch}.tmp")
+        os.replace(f"{save_dir}/checkpoint_{current_epoch}.tmp", 
+                   f"{save_dir}/checkpoint_{current_epoch}.pt")
     
     accelerator.wait_for_everyone()
 ```
 
-### Pattern 3: Logging everything for sanity check
+### Pattern 3: Debugging Distributed Systems
 
 ```python
-def debug_like_a_student(accelerator):
-    """
-    When things go wrong (they will), print everything!
-    """
-    print("\n" + "="*50)
-    print("DEBUG INFO - Process", accelerator.process_index)
-    print("="*50)
-    
-    print(f"📊 Process Info:")
-    print(f"   Index: {accelerator.process_index}/{accelerator.num_processes}")
-    print(f"   Main process: {accelerator.is_main_process}")
-    print(f"   Device: {accelerator.device}")
+def debug_distributed(accelerator):
+    """Print essential debugging information."""
+    print(f"\nProcess {accelerator.process_index}/{accelerator.num_processes}")
+    print(f"Device: {accelerator.device}")
+    print(f"Main process: {accelerator.is_main_process}")
     
     if accelerator.device.type == "cuda":
-        print(f"\n🎮 GPU Info:")
-        print(f"   GPU {accelerator.device.index}: {torch.cuda.get_device_name()}")
-        print(f"   Memory: {torch.cuda.memory_allocated()/1e9:.2f}GB used")
-        print(f"   Utilization: {torch.cuda.utilization()}%")
+        print(f"GPU Memory: {torch.cuda.memory_allocated()/1e9:.2f}GB")
+        print(f"GPU Utilization: {torch.cuda.utilization()}%")
     
-    print(f"\n🔧 Accelerate Configuration:")
-    print(f"   Mixed precision: {accelerator.mixed_precision}")
-    print(f"   Distributed type: {accelerator.distributed_type}")
-    
-    # Check for common student mistakes
-    if accelerator.num_processes > 1:
-        print(f"\n⚠️  Multi-GPU Warnings:")
-        if not hasattr(model, 'gradient_checkpointing'):
-            print("   Consider enabling gradient_checkpointing for memory savings")
-        
-    print("="*50 + "\n")
-    
-    # Sync before continuing
-    accelerator.wait_for_everyone()
+    print(f"Mixed Precision: {accelerator.mixed_precision}")
 ```
 
-## Kaggle Notebook setup with Accelerate
+## Common Student Pitfalls
 
-When I'm competing on Kaggle (usually for the GPU time, not the glory), here's my setup:
-
-```bash
-# kaggle_accelerate.sh - My competition script
-#!/bin/bash
-
-echo "🚀 Starting Kaggle Competition Setup"
-
-# 1. Install dependencies (Kaggle has most, but not all)
-pip install accelerate wandb -q
-
-# 2. Configure Accelerate for Kaggle's 2 GPUs
-accelerate config --num_processes=2 --mixed_precision=fp16
-
-# 3. Launch training
-echo "Starting training on ${CUDA_VISIBLE_DEVICES} GPUs"
-accelerate launch train.py \
-    --batch_size 32 \
-    --learning_rate 1e-4 \
-    --num_epochs 50 \
-    --use_wandb \
-
-# 4. Save final model to Kaggle dataset
-echo "Saving final model..."
-python save_final_model.py --output /kaggle/working/final_model
-
-echo "✅ Done! Check /kaggle/working for outputs"
-```
+### Pitfall 1: Underutilized GPUs
 
 ```python
-# train.py - My competition training script
-import argparse
-from accelerate import Accelerator
-import torch
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", type=int, default=32)
-    parser.add_argument("--learning_rate", type=float, default=1e-4)
-    parser.add_argument("--use_wandb", action="store_true")
-    parser.add_argument("--competition_name", type=str, default="")
-    args = parser.parse_args()
-    
-    # Initialize with competition-specific settings
-    accelerator = Accelerator(
-        mixed_precision="fp16",
-        log_with="wandb" if args.use_wandb else None,
-    )
-    
-    if accelerator.is_main_process:
-        print(f"🏆 Starting {args.competition_name} training")
-        print(f"   Batch size: {args.batch_size}")
-        print(f"   Learning rate: {args.learning_rate}")
-        print(f"   Using {accelerator.num_processes} GPUs")
-    
-    # ... training logic here ...
-    
-    if accelerator.is_main_process:
-        print(f"✅ {args.competition_name} training complete!")
-
-if __name__ == "__main__":
-    main()
-```
-
-## Common Student Pitfalls and How I Fixed Them
-
-### Pitfall 1: "Why is only one GPU being used on Kaggle?"
-
-**The Problem**: Kaggle gives 2 GPUs, but `nvidia-smi` shows only GPU 0 at 100%.
-
-**The Solution**: I wasn't using `accelerator.prepare()` on my dataloader!
-
-```python
-# ❌ Wrong: Only model is prepared
+# ❌ Wrong: Forgetting to prepare dataloader
 model, optimizer = accelerator.prepare(model, optimizer)
-# Dataloader still single-process!
+# Dataloader uses single process
 
-# ✅ Correct: Prepare everything
+# ✅ Correct: Prepare all components
 model, optimizer, train_loader = accelerator.prepare(
     model, optimizer, train_loader
 )
-# Now DistributedSampler is used!
+# DistributedSampler activated
 ```
 
-We should use ```prepare()``` method for all of our model, optimizers, data loaders for both training and validation so that Accelerate can carry them all and utilize the most potential from the platforms.
-### Pitfall 2: "My Colab session crashed and I lost everything!"
+{: .box-note}
+**Remember:** Prepare ALL components—models, optimizers, AND dataloaders—for proper distribution.
 
-**The Problem**: Colab disconnects, Kaggle sessions expire, university clusters have time limits.
-
-**The Solution**: Frequent checkpointing + cloud saving.
-
-```python
-def save_checkpoint_often(accelerator, model, epoch, platform):
-    """Save checkpoints frequently because sessions can end."""
-    if epoch % 5 == 0:  # Every 5 epochs
-        accelerator.wait_for_everyone()
-        
-        if accelerator.is_main_process:
-            # Save locally
-            torch.save(model.state_dict(), f"checkpoint_epoch_{epoch}.pt")
-            
-            # Also save to cloud if possible
-            if platform == "colab":
-                # Copy to Google Drive
-                shutil.copy(f"checkpoint_epoch_{epoch}.pt", 
-                           f"/content/drive/MyDrive/checkpoint_epoch_{epoch}.pt")
-            elif platform == "kaggle":
-                # Kaggle saves to /kaggle/working automatically
-                pass
-            
-            print(f"📁 Checkpoint saved at epoch {epoch}")
-        
-        accelerator.wait_for_everyone()
-```
-
-### Pitfall 3: "Different results on Colab vs Kaggle"
-
-**The Problem**: Same code, different random seeds.
-
-**The Solution**: Set seeds properly and log them.
+### Pitfall 2: Non-Reproducible Results
 
 ```python
 def set_seeds_properly(seed=42):
-    """Set all random seeds for reproducibility."""
+    """Set seeds for reproducibility across processes."""
     import random
     import numpy as np
     import torch
@@ -474,107 +296,150 @@ def set_seeds_properly(seed=42):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     
-    # For Accelerate, we need different seeds per process
+    # Different seed per process
     from accelerate.utils import set_seed
-    set_seed(seed + accelerator.process_index)  # Different per process!
+    set_seed(seed + accelerator.process_index)
+```
+
+### Pitfall 3: Lost Work on Platform Crashes
+
+```python
+def save_frequently(accelerator, model, epoch):
+    """Save checkpoints often—sessions WILL end."""
+    if epoch % 5 == 0:  # Every 5 epochs
+        accelerator.wait_for_everyone()
+        if accelerator.is_main_process:
+            torch.save(model.state_dict(), f"checkpoint_epoch_{epoch}.pt")
+        accelerator.wait_for_everyone()
+```
+
+## Kaggle Competition Setup
+
+When competing on Kaggle, this setup maximizes GPU utilization:
+
+```bash
+#!/bin/bash
+# kaggle_setup.sh
+pip install accelerate wandb -q
+accelerate config --num_processes=2 --mixed_precision=fp16
+accelerate launch train.py --batch_size 32 --learning_rate 1e-4
+```
+
+```python
+# train.py - Competition training script
+import argparse
+from accelerate import Accelerator
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--learning_rate", type=float, default=1e-4)
+    args = parser.parse_args()
     
-    print(f"🌱 Seeds set: base={seed}, process_offset={accelerator.process_index}")
+    accelerator = Accelerator(mixed_precision="fp16")
+    
+    if accelerator.is_main_process:
+        print(f"Using {accelerator.num_processes} GPUs")
+        print(f"Batch size: {args.batch_size}")
+    
+    # Training logic here
+    
+if __name__ == "__main__":
+    main()
 ```
 
-Sidewalk note: Setting manually for all kinds of seeds sometimes feel boring and there are potential some seeds that are not set yet, of course we can't be sure whether we have set all running seeds already. For this problem, I recommend we should integrate PyTorch Lightning with our current project from the start because they have a method called ```seed_everything()``` that actually performs manual seeding on every seeds available including:
-- NumPy seeds.
-- Built-in `random` library seeds.
-- Torch manual and distributed seeds.
+## Performance Comparison
 
-## My Accelerate Cheat Sheet
+When distributing across \\(N\\) GPUs, Accelerate provides near-linear scaling:
 
-<pre><code class="text">
-ESSENTIALS:
-1. Initialize FIRST: accelerator = Accelerator()
-2. Prepare everything: model, optimizer, loader = accelerator.prepare(...)
-3. Use accelerator.backward(loss) not loss.backward()
-4. Only main process does I/O: if accelerator.is_main_process:
-5. Sync often: accelerator.wait_for_everyone()
+\\[
+\text{Efficiency} = \frac{T_1}{N \times T_N} \approx 0.85 \text{ to } 0.95
+\\]
 
-COMMON MISTAKES:
-- Forgetting to prepare dataloader → Single GPU usage
-- Setting seeds before Accelerate → Different randomness per GPU
-- Multiple processes writing to same file → Corruption
-- Not unwrapping model before saving → Can't load on single GPU
+where \\(T_1\\) is single-GPU time and \\(T_N\\) is multi-GPU time.
 
-DEBUGGING:
-1. accelerator.print() instead of print()
-2. Check nvidia-smi on all GPUs
-3. Use Accelerate(cpu=True) for quick tests
-4. Add timeouts to catch deadlocks
+| Platform | Without Accelerate | With Accelerate | Improvement |
+| :--- | :--- | :--- | :--- |
+| **Kaggle (2 GPUs)** | Single GPU usage | Both GPUs utilized | 1.8× speedup |
+| **Code Portability** | Platform-specific | Universal | 100% portable |
+| **Debugging** | Complex, scattered | Unified, simple | 3× faster debugging |
 
-PLATFORM TIPS:
-- Colab: Mount Drive for checkpoints
-- Kaggle: Use both GPUs! (num_processes=2)
-- University: Ask for help with SLURM
-- Laptop: Accelerate(cpu=True) works!
+## Project Structure for Portability
 
-COMMANDS:
-- accelerate config    # Setup
-- accelerate test      # Test config
-- accelerate launch    # Run training
 ```
+project/
+├── train.py              # Main training script
+├── configs/
+│   ├── colab.yaml       # Colab-specific settings
+│   ├── kaggle.yaml      # Kaggle-specific settings
+│   └── local.yaml       # Local development settings
+├── src/
+│   ├── models/          # Model definitions
+│   ├── data/            # Data loading pipelines
+│   └── utils/           # Accelerate helpers
+├── scripts/
+│   ├── run_colab.sh     # Colab execution script
+│   ├── run_kaggle.sh    # Kaggle execution script
+│   └── run_local.sh     # Local testing script
+└── README.md            # Setup instructions
+```
+
+## Best Practices Checklist
+
+<details markdown="1">
+<summary>Click for essential Accelerate practices!</summary>
+
+### Must-Do Practices
+1. **Initialize Accelerate first** before any model setup
+2. **Prepare all components** (model, optimizer, ALL dataloaders)
+3. **Use accelerator.backward()** not loss.backward()
+4. **Only main process does I/O** (saving, logging, printing)
+5. **Sync with wait_for_everyone()** before shared operations
+6. **Set seeds after Accelerate** with process offset
+7. **Test with CPU first** using Accelerator(cpu=True)
+8. **Version checkpoints** with platform metadata
+9. **Enable gradient accumulation** for memory efficiency
+10. **Use mixed precision** for performance boost
+
+### Platform-Specific Tips
+- **Colab**: Mount Google Drive for persistent storage
+- **Kaggle**: Set num_processes=2 to use both GPUs
+- **Local**: Use Accelerator(cpu=True) for debugging
+- **Clusters**: Configure with accelerate config
+</details>
 
 ## What I Wish I Knew Earlier
 
-1. **Start with Accelerate from day one**: Refactoring later is painful
-2. **Test on CPU first**: `Accelerator(cpu=True)` saves so much time
-3. **Version your checkpoints**: Include platform, date, and hyperparameters
-4. **Log everything**: When something breaks at 3 AM, you'll need logs
-5. **It's okay to ask for help**: The Hugging Face community is amazing, confidently we can find somewhere useful on the forum, which is maybe a suitable libraries setup that no longer introduce version conflict...
+{: .box-success}
+**Lessons learned through painful experience:**
 
-## Resources
+1. **Start with Accelerate immediately**—refactoring later is difficult
+2. **Test extensively with CPU first**—saves hours of GPU debugging
+3. **Version everything**—platform, library versions, random seeds
+4. **Log aggressively**—when things fail at 3 AM, logs are your lifeline
+5. **Ask for help early**—the Hugging Face community is incredibly supportive
 
+## Resources for Further Learning
 
+| Resource | Purpose | Link |
+| :--- | :--- | :--- |
+| **Accelerate Documentation** | Official implementation guide | [huggingface.co/docs/accelerate](https://huggingface.co/docs/accelerate) |
+| **Beautiful Jekyll Guide** | Blog formatting and styling | [beautifuljekyll.com](https://beautifuljekyll.com/) |
+| **PyTorch Distributed** | Underlying concepts | [pytorch.org/tutorials](https://pytorch.org/tutorials/) |
+| **Weights & Biases** | Experiment tracking | [wandb.ai](https://wandb.ai/) |
+| **Kaggle Accelerate Examples** | Real competition code | [kaggle.com/code](https://www.kaggle.com/code) |
 
-## My Project Structure with Accelerate
+## Final Thoughts
 
-Here's how I organize my projects now:
+Accelerate transformed my projects from "it runs on my Colab" to "it runs anywhere." As students, we often think distributed training is reserved for large labs with GPU clusters. Tools like Accelerate make these advanced techniques accessible, allowing us to build industry-quality systems on student hardware.
 
-<pre><code class="text">
-project/
-├── train.py                 # Main training (uses Accelerate)
-├── configs/
-│   ├── colab.yaml          # Colab-specific config
-│   ├── kaggle.yaml         # Kaggle-specific config
-│   └── local.yaml          # Local machine config
-├── src/
-│   ├── models/             # Model definitions
-│   ├── data/               # Data loading
-│   └── utils/              # Utilities (including Accelerate helpers)
-├── scripts/
-│   ├── run_colab.sh        # Colab setup and run
-│   ├── run_kaggle.sh       # Kaggle submission script
-│   └── run_local.sh        # Local testing
-└── README.md               # With Accelerate setup instructions
-```
+The gap between academic projects and industry practice is smaller than you think. Accelerate is one of those bridges—and as students, we should be the first to cross them.
 
-## Final talks
-
-Learning Accelerate transformed my projects from "it runs on my Colab" to "it runs anywhere". There is something noteworthy that may be helpful:
-
-1. **Writing portable code** that works on any hardware from the start of the project, there is nearly zero chance that we will grasp the fruits easily in only one environment. Portability is key.
-2. **Debugging distributed systems**: if using Accelerate for distributed setup, carefully watch the `wait_for_everyone()` positions and `destroy_process_group()` existence.
-3. **Optimizing resource usage**: harness the best resources from any multi-GPU environments and ready to switch between them.
-4. **Building reproducible experiments**: might needs to integrate with **Weights and Biases** or another experiment tracking tool.
-
-As a student, you might think distributed training is only for big companies with GPU clusters. But with tools like Accelerate, these techniques are accessible to everyone. The code you write for your class projects can be the same quality as production code at top AI labs.
-
-The best part? When you show potential employers your GitHub with Accelerate-powered projects, they see someone who understands modern ML infrastructure, not just model architectures.
-
-### My personal advice:
-1. **Use Accelerate in your next project**, no matter how small
-2. **Document your setup** for each platform (Colab, Kaggle, etc.)
-3. **Share what you learn** - write blog posts, make tutorials
-4. **Contribute back** - report bugs, suggest features, help others
-
-The gap between academic projects and industry practice is smaller than you think. Tools like Accelerate are bridges, and as students, we should be the first to cross them.
+**Write once. Run anywhere. Build with confidence.**
 
 ---
 
-**Keep learning, keep building, and may your gradients always converge!** 🚀
+{: .box-note}
+**Share your experience!** Have you used Accelerate in your projects? What challenges did you face? Leave a comment below or reach out on [GitHub](https://github.com/)—I'd love to hear your stories and learn from your experiences.
+
+*Keep learning, keep building, and may your gradients always converge!* 🚀

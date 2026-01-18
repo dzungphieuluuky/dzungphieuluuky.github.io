@@ -7,41 +7,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Purple — Wisdom / Creativity / Knowledge theme */
-  --palette-dark: #2E1A47;
-  --palette-violet: #6A4C93;
-  --palette-amethyst: #9C7CE0;
-  --palette-lilac: #ffffff;
-  --palette-rose: #F6F1FF;
+  /* Palette: orange, indigo, dark blue, dark purple, teal, turquoise */
+  --palette-orange: #FF7A00;     /* Orange */
+  --palette-indigo: #3F51B5;     /* Indigo */
+  --palette-dark-blue: #0B2545;  /* Dark Blue */
+  --palette-dark-purple: #4B0076;/* Dark Purple */
+  --palette-teal: #008080;       /* Teal */
+  --palette-turquoise: #30D5C8;  /* Turquoise */
 
-  /* Neutral / Background */
-  --bg-primary: #FBF9FF;
+  /* Neutral / Background (kept light but tuned to palette) */
+  --bg-primary: #FBFBFF;
   --bg-secondary: #FFFFFF;
-  --bg-tertiary: #F8F6FB;
+  --bg-tertiary: #F6F8FB;
   --bg-elevated: #FFFFFF;
 
   /* Text Hierarchy */
-  --text-primary: var(--palette-dark);
-  --text-secondary: #2B2B30;
-  --text-tertiary: #6B6577;
-  --text-muted: #574578;
+  --text-primary: var(--palette-dark-blue);
+  --text-secondary: #1F2A38;
+  --text-tertiary: #53636F;
+  --text-muted: #6A7480;
 
   /* Accent */
-  --accent-primary: var(--palette-violet);
-  --accent-hover: #3C2355;
-  --accent-light: var(--palette-amethyst);
-  --accent-subtle: var(--palette-lilac);
+  --accent-primary: var(--palette-indigo);
+  --accent-hover: var(--palette-dark-purple);
+  --accent-light: var(--palette-teal);
+  --accent-subtle: rgba(48,213,200,0.06); /* subtle turquoise wash */
 
   /* Borders & Dividers */
-  --border-primary: rgba(46, 26, 71, 0.06);
-  --border-secondary: rgba(46, 26, 71, 0.03);
-  --border-focus: var(--palette-violet);
+  --border-primary: rgba(75, 0, 118, 0.06); /* dark-purple */
+  --border-secondary: rgba(75, 0, 118, 0.03);
+  --border-focus: var(--palette-indigo);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(46, 26, 71, 0.04);
-  --shadow-md: 0 6px 18px rgba(46, 26, 71, 0.06);
-  --shadow-lg: 0 12px 30px rgba(46, 26, 71, 0.08);
-  --shadow-xl: 0 24px 50px rgba(46, 26, 71, 0.12);
+  /* Shadows (tinted with dark-blue) */
+  --shadow-sm: 0 1px 2px rgba(11, 37, 69, 0.04);
+  --shadow-md: 0 6px 18px rgba(11, 37, 69, 0.06);
+  --shadow-lg: 0 12px 30px rgba(11, 37, 69, 0.08);
+  --shadow-xl: 0 24px 50px rgba(11, 37, 69, 0.12);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -54,22 +55,30 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* Code token colors — ENHANCED CONTRAST */
-  --code-keyword: #2D0F4D;
-  --code-fn: #5A1F8F;
-  --code-class: #4A1F7A;
-  --code-module: #3D1F5C;
-  --code-argument: #260638;
-  --code-string: #C2185B;
-  --code-number: #0D0415;
-  --code-comment: #120b16;
-  --code-operator: #1F0F2E;
-  --code-builtin: #7B1FA2;
-  --code-border: rgba(56, 2, 122, 0.737);
-  --code-module-contrast: #2a0038;
-  --code-argument-contrast: #2e0538;
-  --code-fn-contrast: #430a6a;
-  --code-class-contrast: #37084f;
+  /* Code token colors — mapped to new palette */
+  --code-keyword: var(--palette-indigo);
+  --code-fn: var(--palette-orange);
+  --code-class: var(--palette-dark-purple);
+  --code-module: var(--palette-dark-blue);
+  --code-argument: var(--palette-teal);
+  --code-string: var(--palette-turquoise);
+  --code-number: var(--palette-dark-blue);
+  --code-comment: rgba(11,37,69,0.55);
+  --code-operator: #14304a;
+  --code-builtin: var(--palette-indigo);
+  --code-border: rgba(75, 0, 118, 0.74);
+  --code-module-contrast: #071629;
+  --code-argument-contrast: #004f4f;
+  --code-fn-contrast: #993f00;
+  --code-class-contrast: #310048;
+
+  --table-border: rgba(11, 37, 69, 0.12);        /* subtle cool divider */
+  --table-border-strong: rgba(11, 37, 69, 0.20); /* stronger separator for headers */
+  --table-header-bg: linear-gradient(135deg, rgba(63,81,181,0.06), rgba(11,37,69,0.03));
+  --table-row-hover: rgba(48,213,200,0.045);     /* faint turquoise hover */
+  --table-radius: 10px;
+  --table-cell-bg: var(--bg-secondary);
+
 }
 
 /* ====================================
@@ -366,18 +375,26 @@ pre .token::selection {
 }
 
 /* ====================================
-   Tables (Browser Default)
+   Tables (Modern high-contrast)
    ==================================== */
 
 table {
   display: table !important;
-  width: auto !important;
+  width: 100% !important;
   background: transparent !important;
-  border: none !important;
+  border-collapse: separate !important;
+  border-spacing: 0 10px;
   margin: 2rem 0 !important;
-  border-collapse: collapse;
   font-size: 1rem;
   line-height: 1.5;
+}
+
+table thead {
+  display: table-header-group !important;
+}
+
+table tbody {
+  display: table-row-group !important;
 }
 
 table tr {
@@ -390,44 +407,47 @@ table th,
 table td {
   display: table-cell !important;
   padding: 0.875rem 1.25rem !important;
-  background: transparent !important;
-  border: 1.5px solid var(--palette-violet) !important;
+  background: var(--table-cell-bg) !important;
+  border: none !important;
   text-align: left !important;
   vertical-align: middle !important;
   color: var(--text-secondary) !important;
   font-weight: 400 !important;
   margin: 0 !important;
+  border-radius: var(--table-radius);
+  box-shadow: 0 1px 0 var(--table-border);
 }
 
+/* Header styling */
 table th {
-  background: linear-gradient(135deg, rgba(106, 76, 147, 0.08), rgba(156, 124, 224, 0.06)) !important;
-  border: 2px solid var(--palette-violet) !important;
+  background: var(--table-header-bg) !important;
+  color: var(--text-primary) !important;
   font-family: 'Montserrat', sans-serif !important;
   font-weight: 700 !important;
-  color: var(--palette-dark) !important;
-  text-transform: none !important;
-  letter-spacing: 0.3px !important;
+  letter-spacing: 0.02em !important;
+  border-bottom: 2px solid var(--table-border-strong) !important;
+  box-shadow: none;
 }
 
-table tr:first-child th {
-  border-top: 2px solid var(--palette-violet) !important;
-  border-bottom: 2px solid var(--palette-violet) !important;
+/* Rounded corners for first/last cells in each row */
+table tbody tr td:first-child {
+  border-top-left-radius: var(--table-radius);
+  border-bottom-left-radius: var(--table-radius);
 }
 
-table tr:last-child td {
-  border-bottom: 2px solid var(--palette-violet) !important;
+table tbody tr td:last-child {
+  border-top-right-radius: var(--table-radius);
+  border-bottom-right-radius: var(--table-radius);
 }
 
-table tr:nth-child(2n),
-.highlight tr:nth-child(2n) {
-  background: transparent !important;
-}
-
+/* Hover effect */
 table tr:hover td {
-  background: rgba(156, 124, 224, 0.04) !important;
-  transition: background-color var(--transition-base) !important;
+  background: var(--table-row-hover) !important;
+  transform: translateY(-2px);
+  transition: background-color var(--transition-base), transform var(--transition-base);
 }
 
+/* Fallback for code-highlight tables */
 .highlight table,
 .highlight tr,
 .highlight th,

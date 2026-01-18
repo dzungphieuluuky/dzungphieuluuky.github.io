@@ -33,30 +33,13 @@ const ReadingProgress = {
 
 const ScrollReveal = {
   init: function() {
-    if (!window.IntersectionObserver) {
-      console.warn('IntersectionObserver not supported');
-      return;
-    }
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
-    });
-    
+    // make target elements visible immediately (disable floating-up animation)
     const elements = document.querySelectorAll('.post-preview, .glass-card, .bento-item, article h2, article h3, main h2, main h3');
     elements.forEach(el => {
-      el.classList.add('reveal');
-      observer.observe(el);
+      el.classList.add('active');
+      el.classList.remove('reveal');
     });
-    
-    console.log('✅ Scroll reveal initialized for', elements.length, 'elements');
+    console.log('⚠️ Scroll reveal disabled — elements shown statically for', elements.length, 'elements');
   }
 };
 

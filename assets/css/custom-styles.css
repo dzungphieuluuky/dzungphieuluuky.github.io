@@ -492,20 +492,20 @@ table tr:hover td {
 }
 
 .post-preview h3 {
-  font-size: 1.1rem;          /* ← reduced from 1.25rem */
+  font-size: 0.9rem;          /* ← reduced from 1.25rem */
   margin: 0 0 0.35rem 0;      /* ← reduced margins */
   color: var(--text-primary);
 }
 
 .post-preview .post-meta {
-  font-size: 0.8125rem;       /* ← reduced from 0.875rem */
+  font-size: 0.6125rem;       /* ← reduced from 0.875rem */
   color: var(--text-tertiary);
   margin-bottom: 0.5rem;      /* ← reduced from 0.75rem */
   font-family: 'Montserrat', sans-serif;
 }
 
 .post-preview p {
-  font-size: 0.9375rem;       /* ← reduced from 1rem */
+  font-size: 0.7375rem;       /* ← reduced from 1rem */
   margin-bottom: 0;
   color: var(--text-secondary);
 }
@@ -513,7 +513,7 @@ table tr:hover td {
 .post-preview:hover {
   box-shadow: var(--shadow-md);
   border-color: var(--border-focus);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 /* Also reduce post-preview-inner padding if it exists */

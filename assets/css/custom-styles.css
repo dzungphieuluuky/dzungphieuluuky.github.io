@@ -102,12 +102,13 @@ html {
 
 body {
   font-family: 'Source Serif 4', 'Lora', serif;
-  font-size: 1.2rem;
-  line-height: 1.85;
+  font-size: 1.1rem;
+  line-height: 1.9;
   color: var(--text-secondary);
   background: var(--bg-primary);
   font-weight: 400;
   overflow-x: hidden;
+  word-spacing: 0.085em; /* Increased word spacing */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -1150,7 +1151,7 @@ table tr:hover td {
 }
 
 .blog-post {
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
   padding-right: 0;
   padding-left: 0;

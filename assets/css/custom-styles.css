@@ -112,7 +112,7 @@ body {
   background: var(--bg-primary);
   font-weight: 400;
   overflow-x: hidden;
-  word-spacing: 0.085em;
+  word-spacing: 0.09em;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -476,33 +476,46 @@ table tr:hover td {
 /* Post Previews */
 .post-preview {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
+  border: 1.5px solid var(--border-primary);  /* Increased from 1px, made border clearer */
   border-radius: var(--radius-lg);
-  padding: 0.5rem;           /* Decreased from 1rem */
-  margin-bottom: 0.5rem;     /* Decreased from 1rem */
-  transition: all var(--transition-slow);
+  padding: 0.35rem;
+  margin-bottom: 0.75rem;
+  transition: none;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
 }
 
 .post-preview h3 {
-  font-size: 0.8rem;         /* Decreased from 0.9rem */
-  margin: 0 0 0.25rem 0;     /* Decreased margin */
+  font-size: 1.25rem;         /* Increased from 0.75rem */
+  margin: 0 0 0.2rem 0;       /* Adjusted margin */
+  border-bottom: 2px solid transparent;
+  transition: border-color 150ms ease-out;
+  font-weight: 700;
 }
 
 .post-preview .post-meta {
-  font-size: 0.55rem;        /* Decreased from 0.6125rem */
-  margin-bottom: 0.25rem;    /* Decreased margin */
+  font-size: 0.9rem;         /* Increased from 0.5rem */
+  margin-bottom: 0.2rem;      /* Adjusted margin */
+  color: var(--text-tertiary);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
 }
 
 .post-preview p {
-  font-size: 0.65rem;        /* Decreased from 0.7375rem */
+  font-size: 0.45rem;         /* Increased from 0.6rem */
   margin-bottom: 0;
+  line-height: 1.0;
+  color: var(--text-secondary);
 }
 
 .post-preview:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-focus);
-  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--accent-primary);  /* Border highlights on hover */
+  transform: none;
+}
+
+.post-preview:hover h3 {
+  border-bottom-color: var(--accent-primary);
 }
 
 .post-preview-inner {
@@ -547,12 +560,31 @@ table tr:hover td {
   color: var(--text-secondary) !important;
   transition: color var(--transition-base);
   padding: 0.5rem 1rem !important;
+  position: relative;
+  overflow: hidden;
 }
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
   color: var(--accent-primary) !important;
 }
+.navbar-nav .nav-link::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0.15em;
+  width: 0;
+  height: 2px;
+  background: var(--accent-primary);
+  transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+  width: 100%;
+}
+
 
 /* ====================================
    Buttons

@@ -499,6 +499,24 @@ const EnhancedSearch = {
   }
 };
 
+const PostPreviewClick = {
+  init: function() {
+    const previews = document.querySelectorAll('.post-preview');
+    if (previews.length === 0) return;
+    
+    previews.forEach(preview => {
+      const link = preview.querySelector('a');
+      if (link) {
+        preview.addEventListener('click', () => {
+          window.location.href = link.href;
+        });
+      }
+    });
+    
+    console.log('✅ Post preview click handler initialized');
+  }
+};
+
 // ====================================
 // Main Initialization
 // ====================================
@@ -511,6 +529,7 @@ document.addEventListener('DOMContentLoaded', function() {
   CodeCopy.init();
   ImageLightbox.init();
   EnhancedSearch.init();
+  PostPreviewClick.init();
   
   // Post-only features
   ReadingTime.init();

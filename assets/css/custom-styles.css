@@ -1240,3 +1240,125 @@ table tr:hover td {
     padding: 0.5rem 0.75rem !important;
   }
 }
+
+/* ====================================
+   LessWrong-style Professional Enhancements
+   ==================================== */
+
+/* Content Width & Centering */
+.blog-post, .glass-card, .scientific-card {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+}
+
+/* Headings: More Distinct, Less Margin */
+h1, h2, h3 {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 700;
+  color: var(--palette-dark-blue);
+  margin-bottom: 1.2rem;
+  margin-top: 2.2rem;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 2.5rem;
+  border-bottom: 2px solid var(--accent-light);
+  padding-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+  border-bottom: 1px solid var(--accent-subtle);
+  padding-bottom: 0.3rem;
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+/* Paragraphs: Increased Readability */
+p {
+  font-size: 1.08rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+  margin-bottom: 1.2rem;
+  max-width: 60ch;
+}
+
+/* Links: Subtle Underline */
+a {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-light);
+  text-underline-offset: 2px;
+  color: var(--accent-primary);
+  transition: color var(--transition-base);
+}
+a:hover {
+  color: var(--accent-hover);
+  text-decoration-color: var(--accent-hover);
+}
+
+/* Cards: More Glassmorphism */
+.glass-card, .scientific-card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 8px 32px rgba(11,37,69,0.08);
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+}
+.glass-card:hover, .scientific-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-primary);
+}
+
+/* Post Preview: List Style */
+.post-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.2rem;
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+}
+.post-preview:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* Metadata Bar: More Subtle */
+.metadata-bar {
+  background: rgba(48,213,200,0.03);
+  border: none;
+  font-size: 0.95rem;
+  color: var(--text-tertiary);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+}
+
+/* Table of Contents: Card Style */
+.post-toc-box {
+  background: rgba(63,81,181,0.04);
+  border: 1px solid var(--accent-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Responsive: Content Padding */
+@media (max-width: 900px) {
+  .blog-post, .glass-card, .scientific-card {
+    padding: 1.5rem 0.5rem;
+    max-width: 98vw;
+  }
+}

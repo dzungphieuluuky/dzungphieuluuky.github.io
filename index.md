@@ -1,7 +1,7 @@
 ---
 layout: page
-title: dzungphieuluuky and his repository
-subtitle: "My vibe coding personal website"
+title: MoreRight, LessWrong
+subtitle: "Made with Beautiful Jekyll"
 markdown: kramdown
 ---
 

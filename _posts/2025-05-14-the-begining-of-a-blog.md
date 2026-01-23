@@ -1,7 +1,7 @@
 ---
 layout: post
-title: The Beginning of a Blog
-subtitle: The Name Inspired by *The Beginning After The End*
+title: The beginning of a blog
+subtitle: The blog of the beginning
 cover-img:
 thumbnail-img:
 share-img:

@@ -7,111 +7,92 @@ comments: true
 author: dzungphieuluuky
 ---
 
-{: .box-success}
-**Quick Notes:**  
-This post examines the interplay between discrete and continuous concepts in mathematics and physics, tracing their historical development and applications across multiple fields.  
+Ever since my high school days wrestling with physics, I’ve been fascinated by a quiet tension running underneath everything we learn. On the surface, physics feels beautifully continuous—smooth curves, flowing time, differential equations describing how planets glide and pendulums swing. Calculus, with its infinitely small steps, seemed to be the native language of the universe. From the perspectives of a high school student that possesses great amount of passion for physics, I thought that every process in the world could be described by the smooth and continuous functions under the framework of physics, as the scientists in Newton era once thought. 
 
-**The tension between discrete and continuous representations lies at the heart of our understanding of reality, evolving from Newton's smooth, continuous universe to the quantized world of modern physics, while mathematics traces the opposite path from discrete foundations to continuous abstractions. Personally, I find this phenomneon somehow myteriously interesting and catchy. My interpretation on the development of mathematics might be wrong but I just want to show some thoughts on this topic.**
+Then came quantum mechanics, and the floor fell out. Suddenly, at the subatomic level, things *jumped*. Energy came in chunks, electrons occupied specific orbits, and the smooth, predictable world of Newton fractured into something discrete and probabilistic. It felt like the universe had two different sets of rules, and I couldn’t stop wondering: which one is more *real*? Or,maybe we can have another question, which one will be the main orchestrator for a given phenomenon, does quantum physics also manifest itself elsewhere besides the subatomic scale of particles like electrons? And the most seemingly popular question in general physics whether we can unify these two ideas into one single framework that can perfectly describe every phenomenon from microscale to the universal scale?
 
-## The Historical Divergence in Mathematics and Physics
+In my free time, I kept circling back to this idea. Discrete and continuous aren’t just math concepts or physics tools—they feel like two fundamental, almost philosophical, lenses for understanding reality itself. One is granular, countable, digital. The other is fluid, seamless, analog. Our entire body of knowledge seems to rest on this duality.
 
-In mathematics, discrete structures emerged first, rooted in ancient counting and number theory. Integers and finite sets formed the basis of early arithmetic, leading gradually to the development of continuous concepts through limits and infinitesimals.  
-Conversely, physics began with Isaac Newton's classical mechanics, which modeled the world as infinitely divisible and continuous — position, velocity, and time flowing smoothly without sudden jumps. Nearly all the motion concepts we are talking about at this stage is differentiable and easy for us to track their changes across time.
+## A seemingly divergence between mathematics and physics
 
-As time progressed into the 20th century, physics underwent a paradigm shift with quantum mechanics, introducing discrete energy levels and quantized states in electrons and subatomic particles, which brought up huge confusion and misunderstanding for people of the time. This reversal highlights a profound philosophical question: Is reality fundamentally discrete or continuous, or a synthesis of both, just like how wave-particle duality of light works?
+It’s funny how their stories unfolded in opposite directions. This is only my own observations according to my own knowledge, so perhaps not everything said here is right.
 
-## Discrete and Continuous in Mathematics: Three Key Fields
+Mathematics started with the discrete. Ancient humans counted stones, tracked moons, and carved tallies. Numbers were whole things. The idea of a smooth, continuous line—a number line where you could point to a value between any two others—came much later, a triumph of abstraction through limits and infinitesimals.
 
-Mathematics provides rigorous frameworks for both paradigms, often intertwining them.
+Physics took the opposite path. Isaac Newton gave us a powerful framework to analyze continuous functions and changes, along with Leibniz, gave us a len that we can observe and dissect how the  continuous universe works mathematically. Time flowed, space was infinitely divisible, and motion was described by smooth, differentiable functions. For centuries, this continuous view worked astonishingly well. It built our engineering, powered the Industrial Revolution, and sent us to the moon.
 
-### 1. Number Theory (Primarily Discrete)
+Then the 20th century arrived, and quantum mechanics turned everything on its head. Energy, angular momentum, even light itself became quantized—discrete. The very foundation of physical reality seemed to shift from a flowing river to a series of precise, tiny steps. In that strange world, micro things such as particles, electrons or even light themselves are not a continuous flow of energy anymore but rather a discrete stream of separate quanta - a single unit that contains a fixed amount of energy.
 
-Number theory focuses on integers and their properties, embodying discreteness through primes, divisibility, and modular arithmetic.
+This reversal has always struck me as deeply meaningful. It’s as if mathematics built upward from the discrete to imagine the continuous, while physics, probing deeper into nature, discovered the discrete hiding within what it thought was continuous. It makes you ask: is reality built from a digital substrate, with continuity just a convenient illusion at our scale? Or is continuity fundamental, with discreteness being a limitation of how we measure? Regardless of which perspectives we choose to view, they seems to be two face of the same coin and will coexist with each other in any phenomenon, the final problem is which face we are allowed to see in the given phenomenon.
 
-For example, the fundamental theorem of arithmetic states that every integer greater than 1 is a unique product of primes.
+## In mathematics
+
+Math doesn’t pick a side—it gives us full, rigorous toolkits for both, and often blends them.
+
+### 1. Number Theory
+
+Here, we live in the world of integers. Primes, divisibility, modular arithmetic—it’s all about distinct, separate objects. There’s no “half a prime number.”
+
+Take the fundamental theorem of arithmetic: every integer greater than 1 is a unique product of primes.
 
 $$ n = p_1^{a_1} p_2^{a_2} \dots p_k^{a_k} $$
 
-**Application:** Cryptography relies on discrete structures like RSA, where security stems from the difficulty of factoring large integers. Another applications is Diffie-Hellman algorithm, which also relies on discrete structures of numbers, specifically the difficulty of Discrete Logarithm Problem (DLP).
+It’s a statement of pure discreteness. This isn’t just academic; it’s the bedrock of modern cryptography. The security of RSA encryption leans entirely on the discrete difficulty of factoring large integers back into their prime pieces.
 
-### 2. Calculus (Primarily Continuous)
+### 2. Calculus
 
-Calculus deals with continuous change, using limits, derivatives, and integrals to model smooth functions over real numbers. This field provides a comprehensive framework to track and monitor the changes of nearly every smooth functions and operations, usually across time. Therefore, it is a compulsory subject/course for those interested or majored in physics or engineering.
-
-The derivative represents instantaneous rate of change:
+This is where change becomes smooth. Calculus is the mathematics of flows, slopes, and accumulated quantities. It asks questions like, “What is the *instantaneous* rate of change?” and answers them with the limit:
 
 $$ f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} $$
 
-**Application:** Optimization in machine learning, such as gradient descent, treating objective functions (often loss functions) as some continuous function to minimize/maximize based on the problem definition at hand. They also introduce topology related concepts into the field of deep learning optimization, treating meaningful embeddings or representations of variables as they are part of some manifolds that needs to be found to create intelligent systems.
+That tiny $h$ approaching zero embodies the ideal of continuity. I find that the concept of approaching quite interesting and hard to grasp especially for those who has just encountered this guy for the first time. Today, this isn’t just for physicists. It’s the engine of optimization in machine learning. Gradient descent treats a complex loss function as a continuous landscape, rolling downhill to find the lowest point. In some books and papers I have read, there is a very interesting view on datasets when training large machine learning models. In that view, the whole data that we can theoretically gather in the universe is lying on some mysterious distribution that is considered to be intractable because there are infinitely possible combinations of sample and their features respectively to create that dataset. In the dataset, our desired data, those we want the deep learning models especially the generative ones, to be able to generate for us, say, an image of a dog or a cat or perhaps some strange creatures based on our description in text, seems to lie on some manifolds, which can be intuitively viewed as a subset of the space that the whole dataset represent. And our lifelong mission when training a model is to teach them how to find that manifolds to do something meaningful for us, because only those meaningful and truly useful lie on that manifolds.
 
-### 3. Probability Theory (Bridging Discrete and Continuous)
+### 3. Probability Theory
 
-Probability encompasses discrete distributions (e.g., binomial, Bernoulli, hypergeometric) and continuous ones (e.g., Guassian, Chi-square, Cauchy).
-
-A discrete binomial mass probability function:
+Probability gracefully straddles the divide. Some things are inherently discrete: you can flip a coin 3 times, and get 0, 1, 2, or 3 heads—no in-between.
 
 $$ P(k) = \binom{n}{k} p^k (1-p)^{n-k} $$
 
-Versus continuous Gaussian density probability function:
+Other things are continuous: the exact height of a person, the time until a radioactive atom decays. These are modeled by smooth curves like the Gaussian:
 
 $$ f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}} $$
 
-**Application:** Statistical inference in data science, where discrete events (coin flips) transition to continuous approximations for large samples via the central limit theorem. Continuous distributions are also used in modeling statistical thermodynamics. They facilitate our research by encompassing a large number of particles into one single block to provide macro view for what is happening, specifically transforming air particles' kinetic energy into temperature of the air being examined).
+And the magic is, they talk to each other. The central limit theorem uses a *discrete* event (like a coin flip) to build a *continuous* distribution (the normal curve) when you repeat it enough, of course `enough` here means something very large, very diverse so that the convergence may happen. It’s the same trick statistical mechanics pulls: using the discrete motion and kinetic energy  of countless particles to explain the continuous pressure and temperature of a gas as a whole without suffering the pain of dissecting and analyzing each particles separately because it would be impossible to do such things. In a small amount of gas, there are already billions of air particles or even more, which makes us think that the contribution of each particles to the whole is so small that we can easily neglect them without any drawbacks, but that would be wrong if we neglect them all, then the gas would be completely nothing, no different from a vacuum. This topic actually give me some ideas on philosophy where tiny elements of a whole would make seemingly no significant contribution, but ignore all of them would end up in zero gains, zero observation of the whole. Then perhaps there would be some critical point in the middle which would tells us whether we have crossed the line yet?
 
-## Discrete and Continuous in Physics: Three Key Fields
+## In physics
 
-Physics mirrors this duality, with classical theories favoring continuity and quantum theories introducing discreteness.
+Physics mirrors this dance, with each paradigm dominating its own domain.
 
-### 1. Classical Mechanics (Continuous Paradigm)
+### 1. Classical Mechanics
 
-Newton's laws describe motion as continuous trajectories in space and time.
+This is Newton’s world, and it feels intuitive. Forces cause smooth acceleration ($F = m \frac{d^2x}{dt^2}$). Planets trace out elegant, continuous ellipses. We model satellite trajectories and the swing of a bridge in this language of differential equations, trusting that space and time are infinitely divisible. Since classical mechanics covers a lot of fields in physics, such as motion and dynamics of point of matter to the dynamics of rigid bodies and planets of the universe. This field in physics is considered to be the most intuitive, say, nearest to our daily lives. My teacher once told me that he even come up with new problems on classical mechanics while he was attending to a political training course of the Party, just because he felt the course, the lecture, so boring and he needs to find something else to do to bring up his emotions, and creating new problems that he find interesting is definitely the choice. That's why when I was preparing for the national physics olympiad, we had so many problems to work with, ranging from one to many rigid bodies in motion together.
 
-The second law: 
-\\( F = m \frac{d^{2}x}{dt^2} \\) (as known as, the famous \\(F = ma\\)) solved via differential equations to describe the motion and trajectories of objects at normal scale and very slow speed in comparison with the speed of light.
+### 2. Quantum Mechanics
 
-**Application:** Orbital mechanics in aerospace engineering, modeling satellite trajectories as continuous curves. Research on motions of normal and day-to-day objects to provide comprehensive of how the world works and interacts with our daily lives.
+Then you peer inward, and the rules change. In an atom, an electron can’t have just any energy. It’s restricted to specific, discrete levels:
 
-### 2. Quantum Mechanics (Discrete Energy Levels)
+$$ E_n = -\frac{13.6}{n^2} \text{ eV} $$
 
-Quantum theory quantizes energy, as in the hydrogen atom where electrons occupy discrete orbits and energy levels rather than possessing a continuous spectrum of energy.
+That $n$ is an integer—1, 2, 3, no 2.5 allowed. This discreteness wasn’t just surprising; it was revolutionary. It’s why we have semiconductors, lasers, and the entire digital age. It also gave us mind-bending thought experiments like Schrödinger’s cat, forcing us to grapple with a reality that is fundamentally probabilistic and granular at its core. Quantum mechanics somehow the embodiment of a popular quote I have read somewhere, says, "The universe is under no obligation to make sense to you", which makes our natural understanding about the world seems to be embarrasingly naive and unreliable to a certain degree
 
-Energy levels: \\( E_n = -\frac{13.6}{n^2} \\) eV, with \\( n \\) integer.
+### 3. Thermodynamics
 
-This discreteness emerged in the early 20th century and raise an undeniable amount of skepticisim and confusion especially for those who believed that Newtonian mechanics is enough to describe everything around us, even at subatomic scale.
+Macroscopically, a gas is a continuous fluid obeying smooth laws like $PV = nRT$. But we know it’s really a chaos of discrete particles. Statistical mechanics is the brilliant translator, connecting the discrete micro-world (billions of particles with Boltzmann distributions) to the continuous macro-world we measure (temperature, pressure). It’s a perfect example of how discrete parts can create a continuous whole.
 
-**Application:** Semiconductor physics in electronics, where discrete band gaps enable transistors and LEDs. The discreteness of quantum mechanics introduce lots of interesting phenomenon and thoughts experiments, one of which is the Schrodinger's cat experiment, which tells us that there is some cat around the world that can live or die both at the same time before a ticking bomb ignites (you can find more about this on the Internet, surely its popularity has not decreased a bit).
+## Towards a Unified Reality
 
-### 3. Thermodynamics (From Continuous Macro to Discrete Micro)
+The most interesting places aren’t where one paradigm wins, but where they blur and collaborate.
 
-Macroscopic thermodynamics treats gases as continuous fluids with properties like pressure and temperature.
+*   **Numerical Methods:** To solve a continuous physics problem on a computer, we *discretize* it—chop space and time into a finite grid. We use the discrete to understand the continuous.
+*   **Quantum Field Theory:** This marries the two concepts elegantly. It starts with continuous fields permeating all of space, and the particles we see (like electrons or photons) are discrete excitations *of* those fields.
+*   **Fractal Geometry:** A coastline is a continuous curve, but its length depends on how finely you measure it. Fractals have a fractional dimension, $D = \frac{\log N}{\log (1/s)}$, existing in a strange, beautiful zone between dimensions. They look continuous from afar but reveal self-similar, discrete-like patterns upon zooming in.
 
-Ideal gas law: 
-
-\\( PV = nRT \\)
-
-Microscopically, statistical mechanics reveals discrete particles following Boltzmann distribution.
-
-**Application:** Computational fluid dynamics in engineering, simulating continuous flows, versus molecular dynamics simulations tracking discrete particle interactions.
-
-## Synthesizing Discrete and Continuous: Toward a Unified Reality
-
-In both disciplines, the discrete-continuous divide often blurs.  
-Mathematics uses discrete approximations (finite differences) to solve continuous PDEs numerically.  
-Physics employs wave-particle duality, where light behaves continuously (waves) or discretely (photons) based on different experiments setup, such as wave behaviour presenting in diffraction but particles properties are caught during Compton collision or photoelectric phenomenon.
-
-Some signs of synthesis between the two:
-
-1. **Numerical Methods (Math/Physics):** Finite element analysis discretizes continuous structures for engineering simulations.
-2. **Quantum Field Theory (Physics):** Combines continuous fields with discrete particle excitations.
-3. **Fractal Geometry (Math):** Self-similar structures that appear continuous at macro scales but reveal discrete patterns upon zooming.
-
-$$ D = \frac{\log N}{\log (1/s)} $$ (Hausdorff dimension for fractals)
-
-This interplay suggests reality may be neither purely discrete nor continuous but emergent from their interaction.
+This interplay tells me that asking “discrete *or* continuous?” might be the wrong question. Reality seems to use both, in layers. The continuous emerges from the discrete, and the discrete is often best described by continuous mathematics.
 
 ## Conclusion
 
-The evolution from Newton's continuous universe to quantum discreteness reflects physics' adaptation to empirical evidence, while mathematics' path from discrete integers to continuous reals demonstrates conceptual expansion.  
-By examining applications in number theory, calculus, probability (math) and classical mechanics, quantum mechanics, thermodynamics (physics), we see how these paradigms not only coexist but enrich each other, offering a more nuanced view of reality. The combination of discrete and continuous properties is increasingly becoming the new standard for us human race to understand how the world works and facilitates our mindset to have a more open interpretation on nearly everything, especially those interdisciplinary fields.
+Looking back, the journey is telling. Math built from the discrete to imagine the continuous. Physics discovered the continuous, then, by looking closer, found the discrete waiting underneath.
 
-**Ultimately, the discrete-continuous dichotomy is not a division but a spectrum along the way with each one of them is at the extreme, where synthesis drives scientific progress and provide a more unified framework to see the world.**
+By exploring their roles—in number theory, calculus, and probability, or in classical mechanics, quantum theory, and thermodynamics—we don’t just learn tools. We see a deeper pattern: our understanding of reality expands not by choosing a side, but by learning to translate between these two fundamental languages.
+
+The discrete-continuous divide isn’t a battlefield; it’s a conversation. And it’s in that dialogue—the synthesis of the granular and the smooth—that we find a richer, more complete picture of the world, and perhaps, of knowledge itself.

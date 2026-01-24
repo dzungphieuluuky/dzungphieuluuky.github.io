@@ -29,7 +29,7 @@ I’m not sure who will read this, and that’s okay. This space is for me—to 
 
 A blog, it turns out, can begin with being late, a conversation, and a friend who wouldn’t let a good idea stay quiet.
 
-...Two years later...
+$...$Two years later$...$
 
 A lot has changed since that conversation. I’m no longer a freshman in my first year—I’m now a third-year undergraduate, with a clearer mind and a stronger mental model, and, most importantly, I’ve figured out what I want to do and research.
 

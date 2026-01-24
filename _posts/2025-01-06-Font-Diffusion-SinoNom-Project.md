@@ -23,7 +23,7 @@ Dự án này bao gồm 4 module chính:
 ### 1.2. Module Font Diffusion
 Module Font Diffusion này sử dụng các thư viện hỗ trợ sau:
 - **PyTorch**: thư viện Deep Learning của Meta dùng để tạo kiến trúc mô hình.
-- **Hugging Face Diffusers (HF Diffusers)**: thư viện dành cho Diffusion Models của Huggging Face để xây dựng và cài đặt các Module quan trọng cho Diffusion như Scheduler (quản lý lập lịch trong quá trình khử nhiễu), DPM Solver (thuật toán giải phương trình vi phân ngẫu nhiên SDE cho quá trình khử nhiễu)...
+- **Hugging Face Diffusers (HF Diffusers)**: thư viện dành cho Diffusion Models của Huggging Face để xây dựng và cài đặt các Module quan trọng cho Diffusion như Scheduler (quản lý lập lịch trong quá trình khử nhiễu), DPM Solver (thuật toán giải phương trình vi phân ngẫu nhiên SDE cho quá trình khử nhiễu)$...$
 - **Accelerate**: thư viện hỗ trợ huấn luyện (training) và suy luận (inference) phân tán trên nhiều GPU giúp tăng tốc độ lên nhiều lần, nhằm tận dụng tối đa dung lượng sử dụng GPU từ nền tảng Kaggle.
 
 Hệ thống bao gồm các tính năng từ tạo hình ảnh song song theo lô (batch generation), đánh giá chất lượng, quản lý dữ liệu, đến tích hợp với Hugging Face Hub (HF Hub) để tối ưu hóa lưu trữ bằng Cloud của Huggingface.

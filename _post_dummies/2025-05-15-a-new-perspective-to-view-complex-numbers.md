@@ -11,7 +11,7 @@ author: Dung Pham
 # Introduction
 Complex numbers are indeed one of the most useful ideas in mathematics, yet so terrifying to see for the first time. Like any other high school students, the first time I saw it in the solution of a polynomial equation that apparently has no solution, I was frustrated and felt a little sense of existential crisis.
 
-After a long time battling with hundreds of physics problems that use complex numbers as a tool (electrical circuit, oscillation, wave equation,...), I began to appreciate their beauty and magical properties to handle some of the problems that would cause lots of headaches if we used real numbers to represent them. Inspired by 3Blue1Brown's mathematical intuition, that one guy who built a whole animation library just to animate his dark magic maths, now I can somehow confidently said that I've gained some useful perspective about complex numbers. In this blog, I'll show you another way to view it, rather than boring calculations and typical definitions you would encounter somewhere in textbooks.
+After a long time battling with hundreds of physics problems that use complex numbers as a tool (electrical circuit, oscillation, wave equation,$...$), I began to appreciate their beauty and magical properties to handle some of the problems that would cause lots of headaches if we used real numbers to represent them. Inspired by 3Blue1Brown's mathematical intuition, that one guy who built a whole animation library just to animate his dark magic maths, now I can somehow confidently said that I've gained some useful perspective about complex numbers. In this blog, I'll show you another way to view it, rather than boring calculations and typical definitions you would encounter somewhere in textbooks.
 
 # Polynomial equations
 When it comes to polynomial equations, they usually tell us that there are 3 cases for solutions of this type of equation:
@@ -21,7 +21,7 @@ When it comes to polynomial equations, they usually tell us that there are 3 cas
 
 If the equation has real solutions, that could be any real numbers you can think of: \\( 1, 3, -9, \sqrt2,... \\). This solution can be either humble numbers like integers, fractions, or more fancy numbers like rational numbers, or maybe even more fancy numbers like irrational numbers, but not transcendental one like \\( \pi \\) and \\( e \\). This is likely the most popular case, so it is easy to understand. But something strange and hard to articulate if the solution is a complex number. 
 
-Regularly, when a solution of a polynomial equation is a complex number, students usually find it strange and hard to understand. There are so many reasons why this may cause such trauma: what in the world can have that kind of number as a solution, what is the \\( i \\) doing over there, how can I interpret this solution in a meaningful way...
+Regularly, when a solution of a polynomial equation is a complex number, students usually find it strange and hard to understand. There are so many reasons why this may cause such trauma: what in the world can have that kind of number as a solution, what is the \\( i \\) doing over there, how can I interpret this solution in a meaningful way$...$
 
 # Solutions as tranformations
 Actually, we can view the complex solution as a transformation on something rather than just a number as real numbers. Imagine that someone has just given us something to toy with, it could be a sphere, a cube or any object we can imagine (just think of it as some 3D object to avoid headache), and our task is to apply some kind of transformation on that object to make it into something new.
@@ -29,7 +29,7 @@ Actually, we can view the complex solution as a transformation on something rath
 Now, if our equation yields real solutions, we can interpret that the necessary transformation is just a scalar operator. There are three cases with the solution:
 - If it is positive, the object gets larger.
 - If it is negative, the object gets smaller.
-- Otherwise, the object gets truncated into lower dimensional shape: a sphere becomes a plane, a plane becomes a line, a line becomes a dot,.... But things seem much more complicated in the case of complex solutions.
+- Otherwise, the object gets truncated into lower dimensional shape: a sphere becomes a plane, a plane becomes a line, a line becomes a dot,$...$. But things seem much more complicated in the case of complex solutions.
 
 In a complex number written in algebraic form:
 

@@ -311,7 +311,7 @@ After processing, `state.gather()` (or `state.gather_for_metrics()`) collects re
 
 **Important:**  
 - Works with any iterable (lists, tuples, datasets…). Reference Accelerate documentation for more information.  
-- Automatically applies padding if lengths are uneven (controlled by `apply_padding=True`). Some optimization techniques about batch processing tries to group nearly equal length samples together into a batch to prevent massive padding. More on that later...  
+- Automatically applies padding if lengths are uneven (controlled by `apply_padding=True`). Some optimization techniques about batch processing tries to group nearly equal length samples together into a batch to prevent massive padding. More on that later$...$  
 - Ideal when the same model runs independently on different data portions (data parallelism for inference/evaluation).
 
 **Example Use Case — Distributed batch inference on large number of prompts**

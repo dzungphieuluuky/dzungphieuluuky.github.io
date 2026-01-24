@@ -6,7 +6,7 @@ markdown: kramdown
 ---
 
 # About Me
-Hi there I'm dzungphieuluuky. I'm currently an undergraduate student and an enthusiast in physics and deep learning.
+Hi there I'm dzungphieuluuky. I'm currently an undergraduate student and an enthusiast in physics and deep learning. This is my personal website and blogs where I use to write some of my blogs.
 
 I'm fascinated by the intersection of mathematics, computer science, and physics. 
 
@@ -37,8 +37,8 @@ Watching YouTube is one of my ways of burning time when I'm free, some of my fav
 - **This website:** A beautiful template from [**Beautiful Jekyll**](https://github.com/daattali/beautiful-jekyll).
 
 # Fun Facts About Me
-- I'm most productive during nighttime hours
-- I read anime character wikis instead of watching series (patience level: 0)
+- I'm most productive during night time, when the darkness gives me power.
+- I enjoy reading anime character wikipedias rather than actually watching series.
 - I enjoy best anime fight scenes (with 60fps if possible to please my eyes)
 - My learning fuel: curiosity and probably too much coffee everyday intake
 - I'm still deciding if I like discrete mathematics or not

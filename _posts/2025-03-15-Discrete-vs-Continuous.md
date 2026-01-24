@@ -73,17 +73,17 @@ Then you peer inward, and the rules change. In an atom, an electron can’t have
 
 $$ E_n = -\frac{13.6}{n^2} \text{ eV} $$
 
-That $n$ is an integer—1, 2, 3, no 2.5 allowed. This discreteness wasn’t just surprising; it was revolutionary. It’s why we have semiconductors, lasers, and the entire digital age. It also gave us mind-bending thought experiments like Schrödinger’s cat, forcing us to grapple with a reality that is fundamentally probabilistic and granular at its core. Quantum mechanics somehow the embodiment of a popular quote I have read somewhere, says, "The universe is under no obligation to make sense to you", which makes our natural understanding about the world seems to be embarrasingly naive and unreliable to a certain degree
+That $n$ is an integer—1, 2, 3, no 2.5 allowed. This discreteness wasn’t just surprising; it was revolutionary. It’s why we have semiconductors, lasers, and the entire digital age. It also gave us mind-bending thought experiments like Schrödinger’s cat, forcing us to grapple with a reality that is fundamentally probabilistic and granular at its core. Quantum mechanics in some ways, can be considered to be the embodiment of a popular quote I have read somewhere, says, "The universe is under no obligation to make sense to you", which makes our natural understanding about the world seems to be embarrasingly naive and unreliable to a certain degree.
 
 ### 3. Thermodynamics
 
-Macroscopically, a gas is a continuous fluid obeying smooth laws like $PV = nRT$. But we know it’s really a chaos of discrete particles. Statistical mechanics is the brilliant translator, connecting the discrete micro-world (billions of particles with Boltzmann distributions) to the continuous macro-world we measure (temperature, pressure). It’s a perfect example of how discrete parts can create a continuous whole.
+Macroscopically, ideal gas which is hythepotical kind of gas that is assumed to have no volume for each particles and neglect the collision between particles following the Clapeyron-Mendeleev equation $PV = nRT$. Statistical mechanics is the brilliant translator, connecting the discrete micro-world (billions of particles with Boltzmann distributions) to the continuous macro-world we measure (temperature, pressure). It’s a perfect example of how discrete parts can create a continuous whole.
 
 ## Towards a Unified Reality
 
 The most interesting places aren’t where one paradigm wins, but where they blur and collaborate.
 
-*   **Numerical Methods:** To solve a continuous physics problem on a computer, we *discretize* it—chop space and time into a finite grid. We use the discrete to understand the continuous.
+*   **Numerical Methods:** To solve a continuous physics problem on a computer, we *discretize* it—chop space and time into a finite grid and separate time steps so that they are so small that we can use them to approximate the infinitesimals properties. Since computing something continuous is probably intractable and impossible for digital machines, we have to borrow the power from discretization to simplify our problem and make the computation possible and can adequately approximate the true results as close as possible.
 *   **Quantum Field Theory:** This marries the two concepts elegantly. It starts with continuous fields permeating all of space, and the particles we see (like electrons or photons) are discrete excitations *of* those fields.
 *   **Fractal Geometry:** A coastline is a continuous curve, but its length depends on how finely you measure it. Fractals have a fractional dimension, $D = \frac{\log N}{\log (1/s)}$, existing in a strange, beautiful zone between dimensions. They look continuous from afar but reveal self-similar, discrete-like patterns upon zooming in.
 
@@ -93,6 +93,6 @@ This interplay tells me that asking “discrete *or* continuous?” might be the
 
 Looking back, the journey is telling. Math built from the discrete to imagine the continuous. Physics discovered the continuous, then, by looking closer, found the discrete waiting underneath.
 
-By exploring their roles—in number theory, calculus, and probability, or in classical mechanics, quantum theory, and thermodynamics—we don’t just learn tools. We see a deeper pattern: our understanding of reality expands not by choosing a side, but by learning to translate between these two fundamental languages.
+By exploring their roles—in number theory, calculus, and probability, or in classical mechanics, quantum theory, and thermodynamics—we don’t just learn tools. We see a deeper pattern: our understanding of reality expands not by choosing a side, but by learning to translate between these two fundamental languages. This tranlation between two sides of the same coin also manifest itself in the wave-particle duality of light, where in some experiments, light has wave properties with reflection, refraction and diffraction, while in other experiments, light represents as a particle interacting with other particles through photoelectric phenomenon and Compton collision.
 
 The discrete-continuous divide isn’t a battlefield; it’s a conversation. And it’s in that dialogue—the synthesis of the granular and the smooth—that we find a richer, more complete picture of the world, and perhaps, of knowledge itself.

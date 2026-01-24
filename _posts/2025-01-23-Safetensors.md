@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Model weights storing in many formats
-subtitle: Introduction to Safetensors format
+subtitle: Hands on Safetensors format for model weights storage
 cover-img:
 thumbnail-img:
 share-img: 

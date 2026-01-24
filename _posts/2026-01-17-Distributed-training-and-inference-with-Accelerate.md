@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Distributed Training and Inference with Hugging Face Accelerate
-subtitle: From single-device prototypes to multi-GPU production
+title: Brief introduction to Hugging Face Accelerate
+subtitle: Hands on distributed training and inference
 tags: [deep-learning, accelerate, distributed-training, distributed-inference, pytorch, mlops, pytorch-lightning]
 comments: true
 author: dzungphieuluuky

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Some reasons I like reinforcement learning
-subtitle: Rationale behind my RL bias
+title: Why learning reinforcement learning?
+subtitle: The magic of reinforcement learning
 cover-img:
 thumbnail-img:
 share-img:

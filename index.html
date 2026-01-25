@@ -1,6 +1,6 @@
 ---
 layout: page
-title: MoreRight, LessWrong
+title: Synaptheos
 subtitle: "Made with Beautiful Jekyll"
 markdown: kramdown
 ---

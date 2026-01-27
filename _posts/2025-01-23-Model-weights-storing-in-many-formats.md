@@ -13,7 +13,7 @@ A few months back, while downloading a new model from Hugging Face to experiment
 
 That small difference sparked my curiosity. Why do we have so many ways to save model weights? And why is everyone suddenly pushing safetensors as the new standard? At first, in my earlier days of working with Huggingface Models repository, I found that the suffix **.safetensors** is somwwhat strange but captivating due to its expressive fashion. Then, of course, there’s **ONNX**—the format that promises to let your model run almost anywhere. So let’s add it to the conversation.
 
-### The Classic Way: Pickle and PyTorch .pt / .pth
+### Pickle vs PyTorch
 
 For years, PyTorch has used Python's **pickle** module to serialize models. You save a model's state_dict (or even the entire model) with `torch.save()`, and load it back with `torch.load()`. The files usually end in **.pt** or **.pth**—the extension doesn't matter; it's just convention. Or if you are working with traditional machine learning models that created and trained with scikit-learn library, you might have encountered the basic format .pkl which is the original suffix for pickle format for weights storage of the model.
 
@@ -21,7 +21,7 @@ This approach is incredibly flexible. You can store not only weights but also op
 
 But flexibility comes with a cost: security. Pickle is not safe when loading files from untrusted sources. A malicious file can execute arbitrary code during loading. PyTorch has added a `weights_only=True` flag in recent versions, you will definitely meet this warnings when working with pytorch. I have met it myself no less than 10 times and still remember the familiar warnings any time I save or load my models after training. Saving models with suffix **.pth** is still fine for already safe and well-verified model weights but the risk remains when dealing with models shared online.
 
-### Enter Safetensors: The Safer, Faster Alternative
+### Enter Safetensors
 
 Hugging Face created **safetensors** to solve exactly these problems. It’s a simple binary format designed to store only tensors state dictionaries (weights) and basic metadata—no arbitrary code, no Python objects. To make things simpler, **.safetensors** only store the dictionary that contains keys as the parameters name in the model and values are their respective numerical value after training or finetuning.
 
@@ -43,7 +43,7 @@ We can see that the format contains three parts:
 - The second part is the metadata format where we store the dictionary to denote the data type, shape and offets of each tensors in the model.
 - And the final part is of course the part that contains the actual data for each tensors in the model.
 
-### Keras and .h5: The TensorFlow/Keras World
+### Keras and TensorFlow world
 
 On the other side, Keras (and TensorFlow) traditionally uses **.h5** (HDF5) files. These are hierarchical, like a file system inside a file, and can store the full model—architecture, weights, optimizer state, and training config—in one convenient package.
 
@@ -105,7 +105,7 @@ Here’s how they stack up:
   - Portability: Excellent (runs on many runtimes and hardware)  
   - Best for: Deployment across frameworks, edge devices, production inference
 
-### When to Choose What
+### When to choose what
 
 If you’re sharing a model on Hugging Face or downloading from the internet, prefer **safetensors** when available. It’s safer and usually faster.
 
@@ -115,7 +115,7 @@ If you’re in the TensorFlow/Keras world, stick with **.h5** (or **.keras**) un
 
 And if you want to deploy your model on diverse hardware, export to **ONNX**—it’s the closest thing we have to a universal model format today.
 
-### Final Thoughts
+### Final thoughts
 
 Model formats might seem like a minor detail, but they sit right at the boundary between research and real-world deployment. The shift to safetensors made sharing safer and faster. ONNX made deployment more flexible. Together, they’re quietly changing how we think about open-source AI. With the interconnection nature between research groups and community interaction, public models are everywhere on HuggingFace, if you can come up with some ideas, perhaps there are already some models with pretrained weights sit on HF and wait for us to discover them. In this open research world like this, our main focus is no longer only on the performance of the model or the storage size but also the security when loading and using public models, that is the main reason safetensors format shine in this era.
 

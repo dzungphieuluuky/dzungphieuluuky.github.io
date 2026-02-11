@@ -1,5 +1,31 @@
 // ====================================
-// 1. Reading Progress Bar
+// 0. Enable Transitions on First Interaction
+// ====================================
+
+const InteractionManager = {
+  initialized: false,
+  
+  init: function() {
+    if (this.initialized) return;
+    
+    // Enable transitions on first user interaction
+    const enableInteractiveMode = () => {
+      if (!document.body.classList.contains('user-interactive')) {
+        document.body.classList.add('user-interactive');
+        this.initialized = true;
+      }
+    };
+    
+    // Listen for interactions
+    document.addEventListener('click', enableInteractiveMode, { once: true, passive: true });
+    document.addEventListener('mousemove', enableInteractiveMode, { once: true, passive: true });
+    document.addEventListener('scroll', enableInteractiveMode, { once: true, passive: true });
+    document.addEventListener('keydown', enableInteractiveMode, { once: true, passive: true });
+  }
+};
+
+// ====================================
+// 1. Reading Progress Bar (NO ANIMATION)
 // ====================================
 
 const ReadingProgress = {
@@ -28,7 +54,7 @@ const ReadingProgress = {
 };
 
 // ====================================
-// 2. Code Copy to Clipboard (UNIFIED - REMOVED DUPLICATE)
+// 2. Code Copy to Clipboard
 // ====================================
 
 const CodeCopy = {
@@ -40,17 +66,14 @@ const CodeCopy = {
       const pre = codeBlock.parentElement;
       if (!pre || pre.tagName !== 'PRE') return;
       
-      // Skip if already has copy button
       if (pre.querySelector('.copy-btn')) return;
       
-      // Add language meta
       const meta = document.createElement('div');
       meta.className = 'code-meta';
       const lang = (codeBlock.className.match(/language-([^\s]+)/) || [])[1];
       meta.textContent = lang ? lang.charAt(0).toUpperCase() + lang.slice(1) : '';
       pre.appendChild(meta);
       
-      // Add copy button
       const copyBtn = document.createElement('button');
       copyBtn.className = 'copy-btn';
       copyBtn.textContent = 'Copy';
@@ -69,26 +92,23 @@ const CodeCopy = {
           setTimeout(() => {
             copyBtn.textContent = 'Copy';
             copyBtn.classList.remove('copied');
-          }, 2000);
+          }, 1500);
         } catch (err) {
-          console.error('❌ Failed to copy:', err);
+          console.error('Failed to copy:', err);
         }
       });
     });
-    
-    console.log('✅ Code copy initialized');
   }
 };
 
 // ====================================
-// 3. Image Lightbox (OPTIMIZED - Lazy Init)
+// 3. Image Lightbox (Lazy Init)
 // ====================================
 
 const ImageLightbox = {
   lightbox: null,
   
   init: function() {
-    // Only init lightbox if there are clickable images
     const images = document.querySelectorAll('article img, .post-content img, main img');
     if (images.length === 0) return;
     
@@ -98,8 +118,6 @@ const ImageLightbox = {
       img.style.cursor = 'pointer';
       img.addEventListener('click', () => this.open(img), { once: false });
     });
-    
-    console.log('✅ Image lightbox initialized');
   },
   
   createLightbox: function() {
@@ -147,10 +165,12 @@ const ImageLightbox = {
 };
 
 // ====================================
-// 4. Navbar Scroll Effect
+// 4. Navbar Scroll Effect (Optimized)
 // ====================================
 
 const NavbarScroll = {
+  lastScrollY: 0,
+  
   init: function() {
     const navbar = document.querySelector('.navbar');
     if (!navbar) return;
@@ -167,8 +187,6 @@ const NavbarScroll = {
         ticking = true;
       }
     }, { passive: true });
-    
-    console.log('✅ Navbar scroll effect initialized');
   }
 };
 
@@ -205,7 +223,6 @@ const PostTableOfContents = {
     tocHTML += '</ul></details></div>';
     
     article.insertAdjacentHTML('afterbegin', tocHTML);
-    console.log('✅ Table of contents initialized');
   }
 };
 
@@ -249,8 +266,6 @@ const ReadingTime = {
       `;
       metadataBar.insertAdjacentHTML('afterbegin', readingTimeHTML);
     }
-    
-    console.log(`✅ Reading time: ${readingTime} min (${wordCount} words)`);
   }
 };
 
@@ -281,13 +296,11 @@ const AutoNumbering = {
         if (!header.id) header.id = 'section-' + h2Count + '-' + h3Count;
       }
     });
-    
-    console.log('✅ Auto-numbering initialized');
   }
 };
 
 // ====================================
-// 8. Enhanced Search Modal (OPTIMIZED - Cached Corpus)
+// 8. Enhanced Search Modal
 // ====================================
 
 const EnhancedSearch = {
@@ -306,11 +319,9 @@ const EnhancedSearch = {
     this.searchTrigger = document.getElementById('search-trigger');
     
     if (!this.searchInput || !this.searchResults || !this.searchModal || !this.searchTrigger) {
-      console.log('⚠️ Search elements not found');
       return;
     }
     
-    // Pre-load search corpus on init
     this.preloadCorpus();
     
     this.searchTrigger.addEventListener('click', (e) => {
@@ -324,15 +335,12 @@ const EnhancedSearch = {
     document.addEventListener('click', (e) => this.handleClickOutside(e));
     document.querySelector('.search-modal-close')?.addEventListener('click', () => this.closeModal());
     
-    // Keyboard shortcut (Ctrl/Cmd + K)
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         this.openModal();
       }
     });
-    
-    console.log('✅ Enhanced search initialized');
   },
   
   preloadCorpus: async function() {
@@ -343,7 +351,7 @@ const EnhancedSearch = {
         this.corpusCache = await response.json();
       }
     } catch (err) {
-      console.warn('⚠️ Could not preload search corpus:', err);
+      console.warn('Could not preload search corpus:', err);
     }
   },
   
@@ -512,8 +520,6 @@ const PostPreviewClick = {
         });
       }
     });
-    
-    console.log('✅ Post preview click handler initialized');
   }
 };
 
@@ -522,8 +528,10 @@ const PostPreviewClick = {
 // ====================================
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 Initializing site...');
+  // Enable transitions on interaction
+  InteractionManager.init();
   
+  // Initialize all modules
   ReadingProgress.init();
   NavbarScroll.init();
   CodeCopy.init();
@@ -536,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
   AutoNumbering.init();
   PostTableOfContents.init();
 
-  // Mermaid diagram support
+  // Mermaid support
   document.querySelectorAll('pre > code.language-mermaid').forEach(function(codeBlock) {
     const pre = codeBlock.parentElement;
     const mermaidCode = codeBlock.textContent;
@@ -549,6 +557,4 @@ document.addEventListener('DOMContentLoaded', function() {
   if (window.mermaid) {
     mermaid.init(undefined, document.querySelectorAll('.mermaid'));
   }
-
-  console.log('✅ Site initialized');
 });

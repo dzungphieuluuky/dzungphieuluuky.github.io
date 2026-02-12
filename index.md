@@ -1,31 +1,31 @@
 ---
 layout: page
 title: Synaptheos
-subtitle: "Made with Beautiful Jekyll"
+subtitle: "Portfolio"
 markdown: kramdown
 ---
 
 # About Me
-Hi there I'm dzungphieuluuky. I'm currently an undergraduate student and an enthusiast in physics and deep learning. This is my personal website and blogs where I use to write some of my blogs.
+Hi there I'm dzungphieuluuky. I'm currently an undergraduate student and an enthusiast in physics and deep learning. This is my personal portfolio website to update my achievements and share my experience via writing blogs.
 
 I'm fascinated by the intersection of mathematics, computer science, and physics. 
 
 # Interests
 Currently, my main interests are:
-- **Reinforcement Learning**: a machine learning subfield to train an agent to do something automatically for you.
+- **Reinforcement Learning**: a machine learning subfield where you train an agent to do something smart and automatically for you, such as energy management, traffic control or game playing, etc.
 - **Quantum Computing**: a field increasingly gain more popularity in community and hope to build super computer with the help of quantum phenomena.
-- **Diffusion Models**: a kind of models that's inspired from diffusion process to build generative model, which is kind of surprising from my own perspective.
+- **Diffusion Models**: a family of generative models inspired from diffusion process of particles in physics that are used to generate images, texts and maybe more. I find the mechanism of this guy quite interesting and worth learning.
 
 # Favourite Channels
 Watching YouTube is one of my ways of burning time when I'm free, some of my favourite channels are:
-- [**3Blue1Brown**](https://www.youtube.com/@3blue1brown): a must-watch channel for those who love maths.
-- [**Richard Behiel**](https://www.youtube.com/@RichBehiel): a nice guy with a PhD aiming to explain advanced physics concepts.
+- [**3Blue1Brown**](https://www.youtube.com/@3blue1brown): a must-watch channel for those who love maths, especially visualized maths.
+- [**Richard Behiel**](https://www.youtube.com/@RichBehiel): a nice guy with a PhD aiming to explain advanced physics concepts. He has some videos talking about quantum electrodynamics or something similar that last for around 3 hours :D.
 - [**Physics Explained**](https://www.youtube.com/@PhysicsExplainedVideos): another guy with a deep understanding of physics trying to explain formulas from their birth.
 - [**Veritasium**](https://www.youtube.com/@veritasium): a channel for anyone burned continuously with curiosity and desire to expand knowledge.
-- [**Fireship**](https://www.youtube.com/@Fireship): coding channel with lightspeed way of explaining things.
+- [**Fireship**](https://www.youtube.com/@Fireship): coding channel with lightspeed way of explaining things, suitable for those who needs some speed to focus.
 
 # My Idols
-- [**Richard Feynman**](https://en.wikipedia.org/wiki/Richard_Feynman): for his sense of humour, deep understanding of physics, and great way of teaching.
+- [**Richard Feynman**](https://en.wikipedia.org/wiki/Richard_Feynman): for his sense of humour, deep understanding of physics, and great way of explaining things.
 - [**John von Neumann**](https://en.wikipedia.org/wiki/John_von_Neumann): for his absolute power in many different fields of mathematics.
 
 # Maths I like and don't like

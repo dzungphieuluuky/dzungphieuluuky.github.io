@@ -1,0 +1,264 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+% \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+%   \textbf{\href{http://sourabhbajaj.com/}{\Large Sourabh Bajaj}} & Email : \href{mailto:sourabh@sourabhbajaj.com}{sourabh@sourabhbajaj.com}\\
+%   \href{http://sourabhbajaj.com/}{http://www.sourabhbajaj.com} & Mobile : +1-123-456-7890 \\
+% \end{tabular*}
+
+\begin{center}
+    \textbf{\Huge \scshape Pham Ngoc Dung} \\ \vspace{1pt}
+    \small 0792667152 $|$ \href{mailto:pndung23@clc.fitus.edu.vn}{\underline{Education Contact}} $|$ 
+    \href{https://www.linkedin.com/in/dung-pham-99014b29a/}{\underline{LinkedIn}} $|$
+    \href{https://dzungphieuluuky.github.io/synaptheos/}{\underline{Portfolio}} $|$
+    \href{https://github.com/dzungphieuluuky}{\underline{GitHub}}
+\end{center}
+
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {University of Science, VNU-HCM}{Ho Chi Minh City, Vietnam}
+      {Bachelor of Information Technology, CGPA: 3.95/4.0}{Sep. 2023 -- Present}
+    \resumeSubheading
+      {Thoai Ngoc Hau High School for the Gifted}{An Giang}
+      {Physics Specialized, GPA: 9.8/10.0}{Sep. 2020 -- May 2023}
+  \resumeSubHeadingListEnd
+
+%-----------RESEARCH INTEREST-----------
+\section{Research Interests}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Generative Modeling:} Diffusion models, diffusion-based approach for few-shot generation and style-content disentanglement. \\
+     \textbf{Large Language Models:} Looped language models, diffusion-based large language models (LLaDA). \\
+     \textbf{Reinforcement Learning:} Sample efficiency, exploration-exploitation trade-offs, diffusion-based approach for policy learning and trajectory optimizations in model-based reinforcement learning.
+    }}
+ \end{itemize}
+ 
+ %-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Undergraduate Research Assistant}{Oct 2025 -- Present}
+      {VNUHCM - University of Science, Computational Linguistics Center}{Ho Chi Minh City, Vietnam}
+      \resumeItemListStart
+        \resumeItem{Present technical research progress and proposed methodological advancements during weekly seminars with the Principal Professor.}
+        \resumeItem{Collaborate with faculty and graduate researchers to brainstorm and refine architectural optimizations.}
+        \resumeItem{Maintain a dedicated research commitment of 20+ hours per week, balancing high-level assistantship responsibilities with a 3.95/4.0 CGPA curriculum.}      \resumeItemListEnd
+      
+% -----------Multiple Positions Heading-----------
+%    \resumeSubSubheading
+%     {Software Engineer I}{Oct 2014 - Sep 2016}
+%     \resumeItemListStart
+%        \resumeItem{Apache Beam}
+%          {Apache Beam is a unified model for defining both batch and streaming data-parallel processing pipelines}
+%     \resumeItemListEnd
+%    \resumeSubHeadingListEnd
+%-------------------------------------------
+
+    % \resumeSubheading
+    %   {Information Technology Support Specialist}{Sep. 2018 -- Present}
+    %   {Southwestern University}{Georgetown, TX}
+    %   \resumeItemListStart
+    %     \resumeItem{Communicate with managers to set up campus computers used on campus}
+    %     \resumeItem{Assess and troubleshoot computer problems brought by students, faculty and staff}
+    %     \resumeItem{Maintain upkeep of computers, classroom equipment, and 200 printers across campus}
+    % \resumeItemListEnd
+
+    % \resumeSubheading
+    %   {Artificial Intelligence Research Assistant}{May 2019 -- July 2019}
+    %   {Southwestern University}{Georgetown, TX}
+    %   \resumeItemListStart
+    %     \resumeItem{Explored methods to generate video game dungeons based off of \emph{The Legend of Zelda}}
+    %     \resumeItem{Developed a game in Java to test the generated dungeons}
+    %     \resumeItem{Contributed 50K+ lines of code to an established codebase via Git}
+    %     \resumeItem{Conducted  a human subject study to determine which video game dungeon generation technique is enjoyable}
+    %     \resumeItem{Wrote an 8-page paper and gave multiple presentations on-campus}
+    %     \resumeItem{Presented virtually to the World Conference on Computational Intelligence}
+    %   \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+\section{Dedicated Projects}
+    \resumeSubHeadingListStart
+      \resumeProjectHeading
+          {\textbf{Font Diffusion} $|$ \emph{Python, Git, PyTorch, diffusers, Wandb}}{\href{https://github.com/dzungphieuluuky/FontDiffusion}{\textbf{Code}} $|$ Oct 2025 -- Present}
+          \resumeItemListStart
+            \resumeItem{Engineered an end-to-end machine learning pipeline for high-fidelity dataset generation and model training, utilizing Weights and Biases for granular experiment tracking and reproducibility.}
+            \resumeItem{Integrated FSTDiff innovations and developed custom modules using Skeleton Distance Transformation and Discrete Fourier Transform (DFT) to effectively decouple content features from style features.}
+            \resumeItem{Designed and implemented a novel loss function (identity mapping) to bolster content-invariance, which significantly streamlined the style transformation learning process.}
+            \resumeItem{Streamlined research collaboration and version control by publishing curated datasets and model checkpoints to the Hugging Face ecosystem.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{Ouro Trace} $|$ \emph{Python, Git, PyTorch, transformers, Wandb, lm-evaluation-harness}}{\href{https://github.com/dzungphieuluuky/OuroTrace}{\textbf{Code}} $|$ Oct 2025 -- Dec 2025}
+          \resumeItemListStart
+            \resumeItem{Benchmarked the performance and behavioral dynamics of Ouro Looped Language Models based on recent ByteDance research using reasoning tasks, \textbf{lm-evaluation-harness} and experimental tracking with \textbf{Wandb}.}
+            \resumeItem{Engineered dedicated generation controls by implementing custom system prompts, strict stop sequences, and parameter tuning to ensure consistent and accurate answer extraction via regular expression parsing.}
+            \resumeItem{Conducted comparative analysis between looped architectures and traditional language models , evaluating them via perplexity benchmarks and reasoning-intensive datasets.}
+            \resumeItem{Discovered critical insights into the relationship between recurrent steps and reasoning performance, identifying the optimal recurrent steps value to maximize model performance on reasoning tasks while using resources efficiently.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{Energy RL} $|$ \emph{Python, Git, PyTorch, Stable Baselines 3, Gymnasium, NumPy, Numba}}{\href{https://github.com/dzungphieuluuky/EnergyRL}{\textbf{Code}} $|$ Sep 2025 -- Nov 2025}
+          \resumeItemListStart
+            \resumeItem{Developed a Reinforcement Learning agent to optimize network resource management under non-stationary energy demands.}
+            \resumeItem{Architected a custom environment simulator using Gymnasium and NumPy, later implementing Numba to accelerate processing speeds for high-performance experience collection.}
+            \resumeItem{Evaluated the efficacy of PPO and SAC algorithms by implementing custom callbacks for real-time metric logging, automated evaluation, and checkpointing.}
+            \resumeItem{Achieved a performance score of 60/100, demonstrating significant improvements against random baselines even when operating under significant computational and hardware constraints.}
+          \resumeItemListEnd
+      
+      \resumeProjectHeading
+          {\textbf{Personal Portfolio} $|$ \emph{Ruby, Beautiful Jekyll}}{\href{https://dzungphieuluuky.github.io/synaptheos/}{\textbf{Link}} $|$ Apr 2025 -- Present}
+          \resumeItemListStart
+            \resumeItem{Architected and maintained a professional technical portfolio using Ruby and the Beautiful Jekyll framework  to showcase personal achievements.}
+            \resumeItem{Authored several technical blog posts for documenting learning journeys and sharing personal experience when working with deep learning projects.}
+          \resumeItemListEnd
+          
+    \resumeSubHeadingListEnd
+
+% -----------Awards----------------------
+\section{Achievements}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Flextrack Challenge 2025 (University of Wollongong)} $|$ \emph{Rank 33rd Overall} \hfill Oct 2025 \\
+     Developed a classification model (track 1) and regression model (track 2) for Detecting Energy Flexibility in Buildings; hosted on AICrowd (Username: \textbf{zoltraak}). \\
+     \textit{Leaderboard: \url{https://www.aicrowd.com/challenges/flextrack-challenge-2025/leaderboards}} \vspace{1mm} \\
+     
+     \textbf{Odon Vallet Scholarship (Rencontres du Vietnam)} $|$ \emph{Recipient} \hfill 2022, 2023 \\
+     Awarded for exceptional academic performance; recognized as top 0.05\% among students of the same grade in the school. \vspace{1mm} \\
+     
+     \textbf{Vietnam National Physics Olympiad} $|$ \emph{Third Prize \& Honor Prize} \hfill 2022, 2023 \\
+     Nationwide competition for theoretical physics knowledge and understanding. \vspace{1mm} \\
+     
+     \textbf{30/4 Traditional Olympiad on Physics} $|$ \emph{Gold Medal (Rank 4th)} \hfill Apr 2021 \\
+     Achieved 4th place among elite students of the same grade in Physics from Southern Vietnam.
+    }}
+ \end{itemize}
+
+
+%
+%-----------PROGRAMMING SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Deep Learning}{: PyTorch, Hugging Face ecosystem, transformers, diffusers, accelerate, Stable Baselines 3, Farama Foundation Gymnasium } \\
+     \textbf{Data Science \& Numerical Computing}{: NumPy, Pandas, Numba, Einops } \\
+     \textbf{MLOps}{: Weights and Biases (Wandb) } \\
+     \textbf{Programming}{: Python, C++, Git, GitHub, Docker, VS Code, Visual Studio} \\
+     \textbf{Mathematics Background}{: Linear Algebra, Calculus I \& II, Probability \& Statistics} \\
+     \textbf{Languages}{: Vietnamese (Native), English (Fluent), German (Beginner) }
+    }}
+ \end{itemize}
+
+%-------------------------------------------
+\end{document}

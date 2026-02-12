@@ -404,10 +404,12 @@ const EnhancedSearch = {
     let html = '';
     this.allResults.forEach((result, index) => {
       const isSelected = index === this.selectedIndex ? 'selected' : '';
+      // Truncate excerpt to ~80 characters
+      const truncatedExcerpt = result.excerpt.substring(0, 80) + (result.excerpt.length > 80 ? '...' : '');
       html += `
         <div class="search-result-item ${isSelected}" data-index="${index}">
           <div class="search-result-title">${this.escapeHtml(result.title)}</div>
-          <div class="search-result-excerpt">${this.escapeHtml(result.excerpt)}</div>
+          <div class="search-result-excerpt">${this.escapeHtml(truncatedExcerpt)}</div>
           ${result.category ? `
             <div class="search-result-tags">
               ${result.category.split(',').slice(0, 2).map(tag => `
@@ -423,6 +425,7 @@ const EnhancedSearch = {
     this.searchResults.innerHTML = html;
     this.attachResultClickListeners();
   },
+
   
   attachResultClickListeners: function() {
     const items = this.searchResults.querySelectorAll('.search-result-item');

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: But what are Diffusion Language Models?
-subtitle: When natural language processing embraces the power of vision generative modeling
+title: But what is a diffusion language model?
+subtitle: When NLP accepts diffusion as his/her new girl/boyfriend?
 tags: diffusion-models, language-models, generative-ai, llada, neurips-2025, deep-learning
 comments: true
 author: dzungphieuluuky

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Brief introduction to Hugging Face Accelerate
-subtitle: Hands on distributed training and inference
+title: Make your code run in parallel universe
+subtitle: Hands on distributed system for machine learning
 tags: [deep-learning, accelerate, distributed-training, distributed-inference, pytorch, mlops, pytorch-lightning]
 comments: true
 author: dzungphieuluuky

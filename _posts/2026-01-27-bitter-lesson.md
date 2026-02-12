@@ -1,7 +1,7 @@
 ---
 layout: post
-title: On The Bitter Lesson
-subtitle: Harsh realization in intelligence design
+title: On the bitter lesson
+subtitle: Maybe there are more bitter lessons out there
 cover-img:
 thumbnail-img:
 share-img:

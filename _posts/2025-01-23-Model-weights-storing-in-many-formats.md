@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Model weights storing in many formats
+title: Model weights storing in multiverse of madness
 subtitle: Hands on Safetensors format for model weights storage
 cover-img:
 thumbnail-img:

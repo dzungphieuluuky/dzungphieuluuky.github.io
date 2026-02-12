@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Why learning diffusion models?
-subtitle: The elegant physics of generating reality
+subtitle: From chaos to order
 cover-img:
 thumbnail-img:
 share-img:

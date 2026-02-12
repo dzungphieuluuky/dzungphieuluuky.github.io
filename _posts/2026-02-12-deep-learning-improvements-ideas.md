@@ -1,8 +1,7 @@
-
 ---
 layout: post
-title: Improvement ideas for free over here
-subtitle: Personal notes on architectural improvements I found interesting
+title: Some incomplete ideas over here
+subtitle: Interesting patterns for architectural innovations
 cover-img: 
 thumbnail-img: 
 share-img: 

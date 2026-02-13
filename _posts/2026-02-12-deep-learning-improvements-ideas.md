@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Some incomplete ideas
+title: Some incomplete ideas over here
 subtitle: Interesting patterns for architectural innovations
 cover-img: 
 thumbnail-img: 
@@ -70,7 +70,7 @@ A latent space that's good for reconstruction isn't necessarily good for plannin
 
 ---
 
-## 2. Latent spaces are generating sets, not bases
+## 2. Latent spaces
 
 We talk about latent dimensions as if they encode features. As if the first coordinate corresponds to "has wheels" and the second to "is red" and the third to "facing left."
 
@@ -111,7 +111,7 @@ I don't know how to do this at scale. But I keep wishing we could.
 
 ---
 
-## 3. Relative values beat absolute values
+## 3. Relative > absolute
 
 Neural networks are surprisingly sensitive to scale.
 
@@ -125,9 +125,9 @@ Raw rewards are noisy. High-variance. Environment-dependent. A reward of +1 in o
 
 The solution is the advantage function:
 
-\[
+$$
 A(s,a) = Q(s,a) - V(s)
-\]
+$$
 
 Instead of learning from the raw reward, learn from how much better things went than expected. Center the signal around a baseline. The baseline doesn't have to be perfect—it just has to be correlated enough with the true expectation to reduce variance.
 
@@ -146,11 +146,11 @@ Zero is the default baseline everywhere. It's convenient. It requires no computa
 
 But it's rarely optimal.
 
-Making that baseline explicit and learnable—estimating V(s) instead of assuming it's zero, learning the residual instead of the full mapping—almost always helps. It's not about the specific mathematical form. It's about the principle: tell the network what's normal, so it can focus on what's surprising.
+Making that baseline explicit and learnable—estimating $V(s)$ instead of assuming it's zero, learning the residual instead of the full mapping—almost always helps. It's not about the specific mathematical form. It's about the principle: tell the network what's normal, so it can focus on what's surprising.
 
 ---
 
-## 4. Don't activate everything for every input
+## 4. Sparse structure
 
 Standard practice: every parameter, every input, every forward pass.
 
@@ -184,7 +184,7 @@ I don't know. But I suspect this is going to become a primary axis of architectu
 
 ---
 
-## 5. Process at multiple scales from the start
+## 5. At multiple scales
 
 When you look at a forest, you don't render individual leaves first, then branches, then trees, then the canopy.
 
@@ -225,7 +225,7 @@ The principle: Don't force your model to reconstruct wide views from narrow inpu
 
 ---
 
-## 6. Zero is a bad default baseline
+## 6. Zero is an implicit baseline
 
 Reinforcement learning taught me this.
 
@@ -235,7 +235,7 @@ Optimizing policy gradients directly against raw returns is painful. The varianc
 
 The fix: subtract a baseline.
 
-Learn what you expect to happen—the value function V(s), the average return from this state. Then learn from the gap between expectation and reality. The advantage. The residual. The surprise.
+Learn what you expect to happen—the value function $V(s)$, the average return from this state. Then learn from the gap between expectation and reality. The advantage. The residual. The surprise.
 
 This slices variance. It centers the learning signal around zero. It stabilizes training.
 

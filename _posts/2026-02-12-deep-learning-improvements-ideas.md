@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Some incomplete ideas over here
+title: Some incomplete ideas
 subtitle: Interesting patterns for architectural innovations
 cover-img: 
 thumbnail-img: 
@@ -9,102 +9,265 @@ tags: [deep-learning, research-ideas, architecture, interpretability]
 author: dzungphieuluuky
 ---
 
-I’ve spent the past year teaching myself deep learning and reinforcement learning outside of coursework. Around February 2025, while I was learning Operating Systems as one of my university courses that semester, I taught myself deep reinforcement learning using the bibl written by Richard Sutton and Andrew Barto. You can find it at [Reinforcement Learning: An Introduction](https://www.amazon.com/Reinforcement-Learning-Introduction-Adaptive-Computation/dp/0262039249), although several free versions are already available online.
+I’ve spent the past year teaching myself deep learning and reinforcement learning outside of coursework.
 
-Most of my time has been spent *absorbing*—reading papers, running experiments that fail, staring at loss curves that refuse to descend (or sometimes descend for a while before spiking like crazy after a few steps). The notoriously famous instability of deep reinforcement learning has always been around the corner.
+Around February 2025, while taking Operating Systems as one of my courses at that time, I decided to finally work through Reinforcement Learning: An Introduction by Sutton and Barto. At the same time, I was taking a probability theory course. It turned out to be perfect timing to learn about distributions and what will they look like in the real world of world class research, rather than some toy problems we meet in textbooks.
 
-But lately, I’ve started to notice patterns in what makes certain architectures feel elegant versus clunky. These aren’t formal research claims. They’re hunches. Intuitions that have crystallized from enough late-night debugging sessions.
+RL, at its core, is a sea of distributions.
 
-Across my learning journey, I discovered several interesting patterns when designing algorithms and deep learning architectures that may be useful—not as solutions, but as directions worth exploring. Maybe they spark something. Maybe they’re wrong. Either way, writing them down will definitely clarify my thoughts, as the Feynman Technique has enlightened me.
+There are state distributions that describe how the environment behaves—what configurations it can be in, what it tends to do. From these states, the agent selects actions. Sometimes deterministically, sometimes stochastically. Once it acts, we get a next-state distribution: given where we were and what we did, where do we land? Which states become more likely in the vast space of possible states that the environment contains? Which become unreachable? Then the environment returns a reward, which is also a draw from some distribution—sometimes fixed, sometimes random, always informative. This reward value is regularly a deterministic value and it is usually notated as $$R(s, a, s')$$
+Notice that $s, a, s'$ are the current state the agent was in, the action that the agent selected and the result next state depending on this selection. Writing these 3 concepts in that order from left to right feels natural to read and easier to remember what are their roles.
 
-**Attention, attention!** This post is expected to expand indefinitely depending on my observations and experience in the future, so the content in this post is always in **to be continued** mode :D
+The reward is the learning signal. It's the compass that guides the agent toward better decisions, toward states that are more valuable, toward behaviors that persist.
 
----
-
-## 1. Where to compute?
-
-Working directly in input space is expensive. An image is millions of pixels. A text sequence is thousands of tokens. Yet most of what matters for a task is compressed into a much lower-dimensional representation.
-
-We already do this implicitly—every encoder is a compression mechanism. But I wonder: **what if we deliberately shifted more computation into the latent space itself?**
-
-Instead of:
-- Input → process → output
-
-Why not:
-- Input → encode → **process entirely in latent** → decode
-
-Although we have not gained full understanding of latent space representations of inputs due to their high-dimensional nature, we can still comprehend it as a way to compress the input to a much more compact and efficient representation, such that every point in the latent space affects multiple points in the input space.
-
-This is how the original diffusion models evolved into a more advanced and modern architecture called Stable Diffusion or Latent Diffusion Models, which only act on the latents rather than the raw inputs. Maybe this kind of design choice can be applied to several other fields—perhaps all vision-related architectures, such as perception and decision-making for robots in robot learning, which directly inherits many properties of reinforcement learning, since it is also about training some kind of agent in a given environment.
+Distributions all the way down. State distributions, action distributions, next-state distributions, reward distributions, return distributions. Learning RL while wrestling with probability theory wasn't an extra burden. It was symbiotic. The math I learned in one place gave me language for the other.
 
 ---
 
-## 2. A basis for latent representations
+Most of my time this past year hasn't been spent building things that work. It's been spent absorbing.
 
-We treat latent dimensions as if they encode features. But there’s no guarantee these features are orthogonal, or even non-redundant. Multiple dimensions might encode variations of the same attribute; a single dimension might encode multiple entangled concepts. We can only calm ourselves by saying that by encapsulating all the raw inputs into the latent space, the model gets more expressive signals and utilizes much more efficient computational resources and memory. But we don't actually know which number in the latents corresponds to which feature of the input—maybe the color, shapes, textures, everything we can think of—but we cannot dissect it directly and meticulously.
+Reading papers. Running experiments that fail. Staring at loss curves that refuse to descend—or descend for a while and then spike violently, erasing hours of training in seconds. The instability of deep RL is infamous. It's always around the corner, waiting to sabotage a promising run. You learn to recognize the signs. The gradient norm suddenly inflating. The value estimate diverging to infinity. The policy collapsing to deterministic stupidity.
+
+But lately, I've started noticing patterns.
+
+Not in the results—most of my results are still garbage. But in the design. Certain architectural choices keep appearing in systems that feel right. Clean. Stable. Scalable. Not the systems that achieve SOTA on some benchmark and then vanish, but the ones that persist. The ones that get reused, repurposed, absorbed into the collective toolbox.
+
+These aren't research claims. They're small tips and tricks. Intuitions that crystallized during late-night debugging sessions, while waiting for another run to crash.
+
+I'm writing them down to clarify my own thinking. Maybe they spark something for you too. Maybe they're completely wrong. Either way, writing helps. Actually, "you" I'm talking about here is actualy my future-self.
+
+This post will keep growing. I add to it when I notice something new. Consider it permanently in to be continued mode.
+
+---
+
+## 1. Where to compute
+
+Processing raw inputs is expensive.
+
+An image is millions of pixels. Most of those pixels are redundant—adjacent values, repeated textures, irrelevant backgrounds. A text sequence is thousands of tokens, but the information density is low. The meaning of a sentence doesn't live in every character; it lives in the relationships between words, in syntax, in semantics.
+
+Yet most of what matters for a task can be represented in far fewer dimensions than the raw input occupies. This is not a coincidence. It's a property of the world we model. Natural data is compressible.
+
+Diffusion models make this painfully clear. Generating images by processing every pixel through every denoising step is computationally brutal. Each step requires a full forward pass through a U-Net operating on tens of thousands of pixels. There are all kinds of blocks inside U-Net: downsampling, upsampling, average pooling, max poling, convolutional layers with many different strides, dilations and kernel sizes.
+
+The solution? Don't.
+
+Encode the image into a lower-dimensional latent vector. Do the heavy lifting there—the denoising, the sampling, the iterative refinement. Decode at the end, once, when you're done. This is how Stable Diffusion works. It's why latent diffusion models replaced pixel-based ones almost overnight. The insight wasn't that latents are better representations. It was that computation should happen where the data is smallest.
+
+We don't fully understand the geometry of latent spaces. They're high-dimensional and weird—curved manifolds with non-intuitive distance metrics, directions that don't align with semantic axes, regions that map to gibberish. But we can still use them as compact encodings. Bottlenecks that condense what matters into something processable.
+
+The idea: Move the core computation—planning, reasoning, simulation, search—into latent space. Use the encoder to get there, the decoder to leave, and do everything important in between on compressed representations.
+
+This already works for generation. Could it work for other things?
+
+- Robot policies that operate on perceptual latents instead of raw camera feeds, so they can reason about scenes without rendering every pixel.
+- World models that plan entirely in learned latent dynamics, simulating trajectories not in ground truth state space but in a compressed approximation of it.
+- Multimodal systems that reason in a shared compressed space, translating between modalities without leaving the manifold.
+
+The hard part isn't compression. We know how to compress. The hard part is: what makes a latent space good for computation, not just compression?
+
+A latent space that's good for reconstruction isn't necessarily good for planning. A latent space that's good for classification isn't necessarily good for control. We don't yet know what properties matter when we want to manipulate representations rather than just decode them.
+
+---
+
+## 2. Latent spaces are generating sets, not bases
+
+We talk about latent dimensions as if they encode features. As if the first coordinate corresponds to "has wheels" and the second to "is red" and the third to "facing left."
+
+There's no guarantee of this. None.
+
+Multiple dimensions might capture variations of the same attribute, redundantly encoding the same information because the loss found a local optimum that spreads representations across many coordinates. A single dimension might entangle several concepts—color, orientation, and category all mixed together in a single float that resists interpretation.
+
+We comfort ourselves by saying compression saves compute. True. But we still don't know which coordinate corresponds to which property. Color? Shape? Texture? Something we haven't even named because our language doesn't have categories for the kinds of features neural networks discover? We can't dissect it. We can probe it, intervene on it, measure its effect on outputs—but we're always guessing, always reverse-engineering something that was never designed to be legible.
 
 This bothers me.
 
-In linear algebra, a basis is efficient because each vector contributes something unique: generate the whole space with minimal redundancy. Given that any generating set that contains enough vectors can generate the whole vector space, it might contain redundant information that is not so efficient to store (especially when we are living in the era of big data, where data is so large and the cost is ridiculously expensive to store them). What makes the basis so special is that it guarantees our vectors contain entirely different information about the vector space, and we can use them effectively and efficiently to construct the whole space without wasting anything.
+In linear algebra, a basis spans a space with no redundancy. Every vector contributes something unique. Together, they form a minimal generating set—you can't remove any vector without losing the ability to represent some part of the space.
 
-Our latent representations aren’t bases—they’re generating sets, full of overlap that we can't directly prove. If we want to use latent representation of inputs as efficiently as possible to construct outputs (images, texts, trajectories, anything, …), we might want to convert the latents from being a generating set to a basis to contain information as compactly as possible.
+A generating set can also span the space. It contains enough vectors to represent everything. But it contains overlap. Redundancy. Waste.
 
-**What would orthogonalization look like?** Not rigid orthogonality constraints (which might harm expressivity), but encouraging latent dimensions to capture distinct factors of variation. Sparse coding did this years ago. Could we bring similar ideas into modern architectures?
+Our latent representations are generating sets.
 
-If latent vectors were less entangled, they’d be:
-- More interpretable
-- More compact (same representational power with fewer dimensions → save more memory)
-- More amenable to controlled generation
+They work, but they're messy. Some redundancy is fine—it can even help with robustness, providing backup pathways when some dimensions are corrupted or noisy. But uncontrolled redundancy means we're using more dimensions than necessary, and we can't interpret what those dimensions actually represent.
 
-I'm currently in search of this kind of approach. Maybe there are already loss functions designed to guide the model in this direction, but yeah, there might be more innovations waiting for us in the future to build a more efficient architecture that is both effective (containing meaningful features) and efficient (using low-dimensional vectors rather than high-dimensional ones).
+What would less redundant latents look like?
 
----
+Not strict orthogonality. Enforcing orthogonal weight matrices kills expressivity—it's too rigid, too constrained. But soft pressure toward dimensions that capture distinct, minimally overlapping factors of variation? That's attractive.
 
-## 3. Relative values > absolute values
+People have tried this before, in various forms:
 
-Neural networks are surprisingly brittle to feature scale. Pass in a feature that ranges from $[0,1]$ and another that ranges from $[0,1000]$, and the latter will dominate gradient updates unless normalization steps in and treats each attribute differently.
+- Sparse coding, where each input is represented by a small subset of basis vectors.
+- Independent component analysis, which seeks statistically independent components.
+- β-VAE and other disentanglement losses, which penalize dependence between latent dimensions.
+- Information bottleneck methods, which compress away task-irrelevant variation.
 
-Normalization is always an important and indispensable task in most machine learning problems we are trying to solve. In traditional supervised learning, you may want to normalize values that have different scales to the same scale, usually in the range $[0,1]$, to treat them equally and eliminate the influence from exceedingly large values coming from attributes that possess a large-scale domain value.
+None of these have scaled successfully to large modern architectures. Not really. The losses are unstable, the trade-offs are harsh, and the benefits often disappear at scale. But the goal is still attractive:
 
-You also encounter this technique used in reinforcement learning. In such settings, we might want to normalize the reward signal that the agent receives to a much smaller scale to stabilize training, because stability is a holy grail in RL training. Sometimes, too-small reward values barely train the agents; other times, too-large values make the gradient flow so aggressive that it leads to exploding gradients and degrades performance.
+- More interpretable latents. Dimensions that actually correspond to something we can name.
+- More compact representations. Same representational power with fewer dimensions.
+- More controllable generation. Targeted edits without collateral damage to unrelated attributes.
 
----
-
-## 4. Sparse structure
-
-The traditional way of doing both training and inference is to activate all parameters in the network model. While using all the capabilities the network can provide, this method demands expensive computational resources—not to mention that there are some parameters that barely activate during the forward pass, which means we don't actually need to activate all of them. Therefore, as modern technologies appear, we are seeing more and more methods that leverage sparse structure in neural networks. All of them share the same mechanism: only activate a subset of parameters compared to the total capacity of the model, greatly speeding up inference and saving a lot of energy.
-
-**Mixture of Experts (MoE)** is one of the strongest examples of this kind of optimization. This technique mainly wants to say that we use all parameters during training but only use a subset of around just 10% during inference. There was a time I was working with DeepSeek OCR just for my assignment in my NLP course. Although the model contains around 3B parameters, the correspondence with the model said that they only allow around 580M parameters to be activated during inference—just nearly $1/6$ of the total parameters. Therefore, we can experience a much shorter time before it generates its full output for us. Using all parameters for the task would undeniably consume much more time.
-
-Apart from **MoE**, **Pruning** research shows most networks are heavily overparameterized and can lose 90% of their weights with minimal accuracy drop after training. This mindset of pruning things actually can be traced back to the Minimax algorithm and its Alpha-Beta pruning version. In the original algorithm, you would do a full traversal across the entire tree to predict what the opponent's next move will be, what our next moves will be, and what the opponent's next next move will be, all the way until we reach the final state of the game, get its utility score, and finally traverse back to the current state to choose the best next move. Noting that we can leverage useful information from sibling branches of the branch being considered, we can greatly reduce the need to traverse many unnecessary branches by pruning those branches. With this optimization, we can cut off nearly around $30-40\%$ of the entire tree and still get the same results.
-
-Although pruning comes from a very simple idea and just a small observation on how we can leverage information to make better decisions instead of blindly discovering everything out there, this technique still remains hard to dissect and fully understand its capabilities under different scenarios. That said, dissecting its complexities across different situations still remains a challenge. Maybe I will do a little research on this topic and release a post for it :D
+I don't know how to do this at scale. But I keep wishing we could.
 
 ---
 
-## 5. At different scales
+## 3. Relative values beat absolute values
 
-In the natural world, we don't look at a forest and then wait a few seconds to load the entire tree. We perceive the texture of the bark and the vastness of the canopy simultaneously. Yet, in deep learning, we often force models to process information at a single resolution—one pixel or one token at a time—before downsampling through strides or pooling to find the bigger picture.
+Neural networks are surprisingly sensitive to scale.
 
-To see global patterns, we usually rely on tricks or depth: stacking dozens of layers, using dilated convolutions, or building complex feature pyramids and U-Net skip connections. These methods work, but they feel like a workaround rather than a fundamental design.
+Pass in one feature that ranges from 0–1 and another that ranges from 0–1000, and the second will dominate gradient updates. Not because it's more important. Because it's numerically bigger. The network doesn't know that the units are different. It just sees large numbers and assigns large weights, then spends the rest of training trying to unlearn that initial mistake.
 
-Imagine a model that doesn't need to get deeper to see more; instead, it processes the input once and extracts features at every scale in parallel. We see glimpses of this in how autoencoders produce varied representations at different bottleneck depths, or how cross-attention could, in theory, listen to multiple resolutions at once. By making multi-scale extraction a Day 1 priority, we might find that shallow, multi-scale networks can actually outperform the massive, single-scale giants we build today.
+We fix this with normalization. BatchNorm, LayerNorm, all the Norms. They rescale activations to have consistent statistics across channels, across batches, across time. They're not just optimization conveniences—they're structural necessities. ResNet without BatchNorm doesn't train. Transformer without LayerNorm doesn't converge.
 
-In my recent projects, multi-scale feature extraction is definitely one of the most effective techniques used to train encoders in my network, especially for vision tasks. Rather than just encoding at a single resolution from the input, we might want to try different alternatives for encoding representations, such as parallelizing feature extraction at different scales/resolutions simultaneously. There might be around 3 to 5 scales extracting features from the same image, with resolutions like: $[64, 96, 128, 256, 512]$. This way, we can provide the model with different lenses of the same images that it needs to see and understand, significantly giving the representations in the latent space much more informative signal for learning.
+Reinforcement learning offers a sharper version of the same lesson.
 
-The main point of this idea doesn't only stop at extracting at different resolutions like this. We can also design some kind of architecture that captures the same input but with different perspectives, generally speaking. My example is about feature extraction for vision, so I think resolution or number of channels is the easiest one to think of, but we can try designing something similar for text or even multi-modal tasks.
+Raw rewards are noisy. High-variance. Environment-dependent. A reward of +1 in one environment might be equivalent to +1000 in another, depending on how the designer scaled things. Optimizing directly against raw returns is like trying to steer a ship by watching individual waves instead of reading the compass.
+
+The solution is the advantage function:
+
+\[
+A(s,a) = Q(s,a) - V(s)
+\]
+
+Instead of learning from the raw reward, learn from how much better things went than expected. Center the signal around a baseline. The baseline doesn't have to be perfect—it just has to be correlated enough with the true expectation to reduce variance.
+
+This isn't a trick. It's a shift in how we think about learning signals.
+
+Absolute values are brittle. They depend on arbitrary scales, arbitrary offsets, arbitrary units. Deviations from expectations are stable. They isolate the information in the signal from its context.
+
+The same pattern shows up everywhere:
+
+- Residual networks learn deviations from identity. The default behavior—the baseline—is to pass the input through unchanged. The network only needs to learn the delta.
+- Reward normalization rescales returns to have zero mean and unit variance, removing environment-specific scaling.
+- Contrastive losses compare relative similarity, not absolute labels. An image is more similar to its augmented version than to a different image.
+- Centered activations shift distributions to have zero mean, improving gradient flow through saturating nonlinearities.
+
+Zero is the default baseline everywhere. It's convenient. It requires no computation, no estimation, no learning.
+
+But it's rarely optimal.
+
+Making that baseline explicit and learnable—estimating V(s) instead of assuming it's zero, learning the residual instead of the full mapping—almost always helps. It's not about the specific mathematical form. It's about the principle: tell the network what's normal, so it can focus on what's surprising.
 
 ---
 
-## 6. Zero is an implicit expectation
+## 4. Don't activate everything for every input
 
-This final hunch is a lesson I’ve carried over from reinforcement learning. You can even anticipate what I'm going to say with this header if you are also addicted to the beauty of reinforcement learning just like me. That being said, I'm still going to give a very whole-hearted explanation of what this idea is talking about :33.
+Standard practice: every parameter, every input, every forward pass.
 
-In RL, we’ve learned that raw rewards are noisy and inefficient. Usually, they are affected greatly by the environment settings of the researchers in charge, or just maybe because of the nature of the environment. Some difficulties we might encounter: the environment gives rewards that have very large variance. Sometimes it's low (0.001 score), other times it skyrockets (99999999 scores) if the agent happened to do something great.
+This is expensive. It's also wasteful.
 
-To counter this problem, we use **advantage**—the gap between what actually happened and what we expected would happen. By centering the signal around a meaningful baseline—depending on the specific task we are trying to solve at hand—we slash the variance and make learning much smoother. Because each task may have a different expectation tailored specifically to its nature, we can have a very low expected value for states in extremely difficult problems where the agent still fails consecutively for a very large number of tries, or we can have a very high expected one for piece-of-cake problems where the agent can learn blazingly fast how to complete the task with perfect score in just a short amount of time.
+Many parameters barely activate during the forward pass. Their weights are near zero, or their outputs are consistently suppressed by ReLU, or they're in parts of the network that specialize in patterns that rarely appear. Yet we pay the computational cost for them on every example, regardless of whether they contribute.
 
-Therefore, setting up realistic baselines using expected values—different for each scenario—is incredibly better than using raw values, which, as we can see, is currently using zero as an implicit baseline.
+Two different research directions converge on the same observation: you don't need full capacity for every example.
 
-To be continues...
+Mixture of Experts (MoE) is the most prominent example.
+
+During training, all experts receive gradients. Every parameter gets updated based on the batch. But during inference, each input is routed to only a small subset of experts—typically 10–20% of the total parameters. The router learns to assign inputs to the experts best suited for them.
+
+I experienced this firsthand while using DeepSeek OCR for an NLP assignment. The model has roughly 3B parameters total. But only about 580M are activated during inference—barely one-sixth of the total. Outputs arrive in a fraction of the time. The model doesn't need its full capacity to process any single input. It needs that capacity to cover the distribution of possible inputs. Each input only needs a slice.
+
+Pruning tells a complementary story.
+
+Research shows that most trained networks are massively overparameterized. You can remove 90% of the weights—set them to zero, eliminate them entirely—and accuracy drops only a few points, sometimes less. The network had the capacity to do the task with far fewer parameters all along. Training just used the extra capacity to find a good solution faster, or to navigate the loss landscape more smoothly.
+
+This idea echoes an much older algorithm: Minimax with Alpha-Beta pruning.
+
+In vanilla Minimax, you traverse the entire game tree. Every branch, every leaf, every evaluation. The computation grows exponentially with depth. Alpha-Beta pruning exploits a simple insight: if you already know that one branch leads to a worse outcome than another branch already evaluated, you can stop exploring it. You don't need to know exactly how bad it is. Just that it's bad enough.
+
+With this optimization, you can eliminate 30–40% of the tree—sometimes much more—and still arrive at the exact same decision.
+
+What fascinates me is that MoE and pruning, despite their modern sophistication, are descendants of this simple, powerful insight: you don't need to explore everything if you already know where value lies.
+
+Yet despite its simplicity, sparse computation remains surprisingly hard to analyze theoretically. Why do some architectures prune cleanly while others collapse? How does sparsity affect the geometry of the representation manifold? Can sparse structure emerge naturally from learning dynamics, or does it need to be architected in?
+
+I don't know. But I suspect this is going to become a primary axis of architectural design, not just an optimization footnote.
+
+---
+
+## 5. Process at multiple scales from the start
+
+When you look at a forest, you don't render individual leaves first, then branches, then trees, then the canopy.
+
+You see texture and structure at all scales simultaneously. The grain of the bark. The pattern of branches against the sky. The shape of the canopy. These aren't processed sequentially. They're perceived in parallel, integrated into a single coherent experience.
+
+Most vision architectures don't work this way.
+
+They process at a single resolution. Usually high. Then they progressively downsample—strides, pooling, convolutions with increasing dilation—to recover global structure through depth. Information flows bottom-up, from fine details to coarse abstractions, through dozens of layers.
+
+It works. It's the foundation of modern computer vision. But it feels indirect.
+
+Why force the network to reconstruct wide-angle views from pinhole inputs? Why require depth to see the big picture?
+
+What if multi-scale processing was a Day 1 design decision?
+
+Not an emergent property of deep stacking. Not something the network has to learn to do over many layers. But a structural constraint: the input is processed at multiple resolutions from the very first layer, and these parallel streams are integrated throughout the network.
+
+Examples already exist, scattered across the literature:
+
+- Feature pyramids and U-Net skip connections, which combine coarse semantic features with fine spatial details.
+- Parallel encoders operating at different resolutions, their outputs concatenated or attentively fused.
+- Cross-scale attention, where tokens at one scale attend to tokens at another.
+- Hierarchical transformers with nested context windows.
+
+In my own projects, I've found that parallel encoders processing the same image at multiple resolutions consistently outperform single-scale baselines.
+
+Take an input image. Generate downsampled versions at resolutions like [64, 96, 128, 256, 512]. Pass each through a separate encoder stream—or share weights across streams, tied convolutions, something learned. Fuse the resulting representations through concatenation, attention, or learned weights.
+
+The low-resolution stream captures global structure. The high-resolution stream preserves fine details. Together, they provide complementary information that depth alone struggles to reconstruct.
+
+Each scale is a different lens. A different aperture. A different answer to the question: what matters in this image?
+
+This principle isn't just about vision.
+
+For text, vary the context window size. Or the granularity of tokenization—characters, subwords, words, phrases. For time series, vary the temporal resolution—milliseconds, seconds, minutes, hours. For graphs, vary the neighborhood radius—immediate neighbors, two-hop neighborhoods, community structure.
+
+The principle: Don't force your model to reconstruct wide views from narrow inputs. Give it multiple apertures from the start.
+
+---
+
+## 6. Zero is a bad default baseline
+
+Reinforcement learning taught me this.
+
+Raw rewards are messy. They spike when the agent discovers something good. They vanish when the environment enters a low-reward region. They depend entirely on how someone configured the reward function—the scaling, the clipping, the sparse vs. dense design choices.
+
+Optimizing policy gradients directly against raw returns is painful. The variance is enormous. A single lucky trajectory can dominate an entire batch. The signal-to-noise ratio is abysmal.
+
+The fix: subtract a baseline.
+
+Learn what you expect to happen—the value function V(s), the average return from this state. Then learn from the gap between expectation and reality. The advantage. The residual. The surprise.
+
+This slices variance. It centers the learning signal around zero. It stabilizes training.
+
+But the deeper pattern isn't about RL. It's about baselines.
+
+Many of our systems implicitly assume zero is the right baseline. It almost never is.
+
+- Residual connections assume identity is a reasonable default. The network only needs to learn the deviation. But is identity actually a good prior? For some tasks, yes. For others, no. The assumption is baked in.
+- Centered activations assume zero mean helps optimization. This is empirically true for many architectures, but it's still an assumption about the optimal distribution of pre-activations.
+- Contrastive losses assume relative comparison is more stable than absolute prediction. Instead of predicting a class label, predict which of two samples is more similar to a query.
+- Normalization layers assume that rescaling to zero mean and unit variance is beneficial. They learn affine parameters to undo this if needed, but the default is zero.
+
+In each case, we're replacing an implicit zero baseline with something more informed. Sometimes learnable. Sometimes just a better default.
+
+Zero is convenient. It costs nothing to compute. It requires no estimation, no auxiliary networks, no additional loss terms.
+
+But it's rarely the right expectation.
+
+If your architecture assumes zero anywhere—baselines, initializations, residuals, centering—ask whether you could learn a better one. Not because zero is bad, but because the right baseline is almost never zero.
+
+Moving from absolute values to relative ones—from raw scores to advantages, from full mappings to residuals, from classification to contrast—is not just a trick, but a very dark, very powerful trick! (Dumbledore reference on dark magic)
+
+Learning is not about accumulating points. It's about registering surprise.
+
+The magnitude of the signal should reflect how unexpected the outcome was, not its raw value. A reward of +1 when you expected +0.9 is a small surprise, a small update. A reward of +1 when you expected -10 is a huge surprise, a huge update. The same raw reward, different information content.
+
+This is how humans learn. We don't memorize absolute outcomes. We update our beliefs when reality diverges from expectation. The more surprising the divergence, the larger the update.
+
+Our architectures should do the same.
+
+---
+
+To be continued.
+
 ---

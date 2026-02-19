@@ -561,3 +561,44 @@ document.addEventListener('DOMContentLoaded', function() {
     mermaid.init(undefined, document.querySelectorAll('.mermaid'));
   }
 });
+
+
+// Scroll to top button
+(function() {
+  const scrollBtn = document.createElement('button');
+  scrollBtn.id = 'scroll-to-top';
+  scrollBtn.setAttribute('aria-label', 'Scroll to top');
+  scrollBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
+  document.body.appendChild(scrollBtn);
+
+  window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 300) {
+      scrollBtn.style.display = 'flex';
+    } else {
+      scrollBtn.style.display = 'none';
+    }
+  });
+
+  scrollBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// TOC active section highlighting
+(function() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const id = entry.target.getAttribute('id');
+      const tocLink = document.querySelector(`.toc-container a[href="#${id}"]`);
+      
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.toc-container a').forEach(link => link.classList.remove('active'));
+        if (tocLink) tocLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-100px 0px -66%' });
+
+  document.querySelectorAll('h2[id], h3[id], h4[id]').forEach(heading => {
+    observer.observe(heading);
+  });
+})();

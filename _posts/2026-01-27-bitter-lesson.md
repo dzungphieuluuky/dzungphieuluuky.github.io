@@ -5,7 +5,7 @@ subtitle: Maybe there are more bitter lessons out there
 cover-img:
 thumbnail-img:
 share-img:
-tags: [personal, learning-journey]
+tags: [personal]
 author: dzungphieuluuky
 ---
 

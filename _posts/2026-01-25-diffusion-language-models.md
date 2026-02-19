@@ -2,7 +2,7 @@
 layout: post
 title: But what is a diffusion language model?
 subtitle: When NLP accepts diffusion as his/her new girl/boyfriend?
-tags: diffusion-models, language-models, generative-ai, llada, neurips-2025, deep-learning
+tags: [diffusion, language]
 comments: true
 author: dzungphieuluuky
 ---

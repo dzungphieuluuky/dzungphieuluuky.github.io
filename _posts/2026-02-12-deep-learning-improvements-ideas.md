@@ -5,7 +5,7 @@ subtitle: Interesting patterns for architectural innovations
 cover-img: 
 thumbnail-img: 
 share-img: 
-tags: [deep-learning, research-ideas, architecture, interpretability]
+tags: [personal, machine-learning]
 author: dzungphieuluuky
 ---
 

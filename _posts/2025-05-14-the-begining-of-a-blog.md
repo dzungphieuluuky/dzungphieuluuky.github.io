@@ -5,7 +5,7 @@ subtitle: The blog of the beginning
 cover-img:
 thumbnail-img:
 share-img:
-tags: [personal, learning-journey]
+tags: [personal]
 author: dzungphieuluuky
 ---
 

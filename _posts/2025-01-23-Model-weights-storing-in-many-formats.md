@@ -5,7 +5,7 @@ subtitle: Hands on Safetensors format for model weights storage
 cover-img:
 thumbnail-img:
 share-img: 
-tags: [machine-learning, deep-learning, model-formats, huggingface, pytorch, onnx]
+tags: [machine-learning]
 author: dzungphieuluuky
 ---
 

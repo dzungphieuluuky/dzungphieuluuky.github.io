@@ -5,7 +5,7 @@ subtitle: The magic of reinforcement learning
 cover-img:
 thumbnail-img:
 share-img:
-tags: [personal, reinforcement-learning, AI]
+tags: [reinforcement-learning]
 author: dzungphieuluuky
 ---
 # Introduction

@@ -2,7 +2,7 @@
 layout: post
 title: Discrete vs. Continuous?
 subtitle: The divine battle between discrete and continuous
-tags: [physics, mathematics, quantum-mechanics, classical-mechanics, discrete-math, continuous-math, philosophy-of-science]
+tags: [miscellaneous]
 comments: true
 author: dzungphieuluuky
 ---

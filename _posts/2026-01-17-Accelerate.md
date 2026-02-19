@@ -2,7 +2,7 @@
 layout: post
 title: Make your code run in parallel universe
 subtitle: Hands on distributed system for machine learning
-tags: [deep-learning, accelerate, distributed-training, distributed-inference, pytorch, mlops, pytorch-lightning]
+tags: [distributed-computing]
 comments: true
 author: dzungphieuluuky
 ---

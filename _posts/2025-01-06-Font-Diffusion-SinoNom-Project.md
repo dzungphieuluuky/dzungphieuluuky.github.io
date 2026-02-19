@@ -5,7 +5,7 @@ subtitle: Tổng kết thực hiện module FontDiffusion - Dự án Tạo sinh 
 cover-img:
 thumbnail-img:
 share-img:
-tags: [learning-journey, diffusion, sino-nom, deep-learning]
+tags: [sino-nom]
 author: dzungphieuluuky
 ---
 

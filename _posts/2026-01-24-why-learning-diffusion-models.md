@@ -5,7 +5,7 @@ subtitle: From chaos to order
 cover-img:
 thumbnail-img:
 share-img:
-tags: [personal, diffusion-models, generative-ai, physics]
+tags: [diffusion]
 author: dzungphieuluuky
 ---
 

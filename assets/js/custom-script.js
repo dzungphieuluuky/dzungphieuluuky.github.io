@@ -4,97 +4,212 @@
 
 const InteractionManager = {
   initialized: false,
-  
-  init: function() {
+
+  init: function () {
     if (this.initialized) return;
-    
-    // Enable transitions on first user interaction
-    const enableInteractiveMode = () => {
+
+    const enable = () => {
       if (!document.body.classList.contains('user-interactive')) {
         document.body.classList.add('user-interactive');
         this.initialized = true;
       }
     };
-    
-    // Listen for interactions
-    document.addEventListener('click', enableInteractiveMode, { once: true, passive: true });
-    document.addEventListener('mousemove', enableInteractiveMode, { once: true, passive: true });
-    document.addEventListener('scroll', enableInteractiveMode, { once: true, passive: true });
-    document.addEventListener('keydown', enableInteractiveMode, { once: true, passive: true });
+
+    document.addEventListener('click',     enable, { once: true, passive: true });
+    document.addEventListener('mousemove', enable, { once: true, passive: true });
+    document.addEventListener('scroll',    enable, { once: true, passive: true });
+    document.addEventListener('keydown',   enable, { once: true, passive: true });
   }
 };
 
 // ====================================
-// 1. Reading Progress Bar (NO ANIMATION)
+// 1. Reading Progress Bar
 // ====================================
 
 const ReadingProgress = {
-  init: function() {
-    if (!document.getElementById('reading-progress')) {
-      const progressBar = document.createElement('div');
-      progressBar.id = 'reading-progress';
-      document.body.appendChild(progressBar);
+  bar: null,
+
+  init: function () {
+    this.bar = document.getElementById('reading-progress');
+    if (!this.bar) {
+      this.bar = document.createElement('div');
+      this.bar.id = 'reading-progress';
+      document.body.appendChild(this.bar);
     }
-    
-    this.updateProgress();
-    window.addEventListener('scroll', () => this.updateProgress(), { passive: true });
+
+    this.update();
+    window.addEventListener('scroll', () => this.update(), { passive: true });
   },
-  
-  updateProgress: function() {
-    const progressBar = document.getElementById('reading-progress');
-    if (!progressBar) return;
-    
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight - windowHeight;
-    const scrolled = window.scrollY;
-    const progress = (scrolled / documentHeight) * 100;
-    
-    progressBar.style.width = `${Math.min(progress, 100)}%`;
+
+  update: function () {
+    if (!this.bar) return;
+    const total    = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
+    this.bar.style.width = Math.min(progress, 100) + '%';
   }
 };
 
 // ====================================
-// 2. Code Copy to Clipboard
+// 2. Scroll-To-Top Button
+// ====================================
+
+const ScrollToTop = {
+  btn: null,
+  THRESHOLD: 380,
+
+  init: function () {
+    this.btn = document.createElement('button');
+    this.btn.id = 'scroll-to-top';
+    this.btn.setAttribute('aria-label', 'Scroll to top');
+    this.btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
+    document.body.appendChild(this.btn);
+
+    window.addEventListener('scroll', () => this.toggle(), { passive: true });
+
+    this.btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  },
+
+  toggle: function () {
+    if (!this.btn) return;
+    if (window.scrollY > this.THRESHOLD) {
+      this.btn.classList.add('visible');
+    } else {
+      this.btn.classList.remove('visible');
+    }
+  }
+};
+
+// ====================================
+// 3. Smooth Anchor Navigation
+//    Overrides default jump for in-page links
+// ====================================
+
+const SmoothAnchors = {
+  init: function () {
+    document.addEventListener('click', (e) => {
+      const anchor = e.target.closest('a[href^="#"]');
+      if (!anchor) return;
+
+      const id     = decodeURIComponent(anchor.getAttribute('href').slice(1));
+      if (!id) return;
+
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      e.preventDefault();
+
+      // Compute offset accounting for sticky navbar
+      const navbarH  = parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue('--navbar-height') || '58',
+        10
+      );
+      const top = target.getBoundingClientRect().top + window.scrollY - navbarH - 16;
+
+      window.scrollTo({ top, behavior: 'smooth' });
+
+      // Update URL hash without jumping
+      history.pushState(null, '', '#' + id);
+    });
+  }
+};
+
+// ====================================
+// 4. TOC Active Section Highlighting
+//    (works for both .inline-toc and .toc-container)
+// ====================================
+
+const TocHighlight = {
+  observer: null,
+
+  init: function () {
+    const headings = document.querySelectorAll('h2[id], h3[id], h4[id]');
+    if (headings.length === 0) return;
+
+    const navbarH = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue('--navbar-height') || '58',
+      10
+    );
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+
+        const id = entry.target.getAttribute('id');
+
+        // Clear all active states
+        document.querySelectorAll('.inline-toc a, .toc-container a').forEach(
+          (link) => link.classList.remove('active')
+        );
+
+        // Set active on matching links
+        document
+          .querySelectorAll(
+            `.inline-toc a[href="#${id}"], .toc-container a[href="#${id}"]`
+          )
+          .forEach((link) => {
+            link.classList.add('active');
+            // Scroll the TOC panel to keep the active item visible
+            const toc = link.closest('.inline-toc, .toc-container');
+            if (toc) {
+              const linkTop    = link.offsetTop;
+              const tocScroll  = toc.scrollTop;
+              const tocHeight  = toc.clientHeight;
+              if (linkTop < tocScroll || linkTop > tocScroll + tocHeight - 40) {
+                toc.scrollTo({ top: linkTop - tocHeight / 2, behavior: 'smooth' });
+              }
+            }
+          });
+      });
+    }, {
+      rootMargin: `-${navbarH + 20}px 0px -60% 0px`,
+      threshold: 0
+    });
+
+    headings.forEach((h) => this.observer.observe(h));
+  }
+};
+
+// ====================================
+// 5. Code Copy to Clipboard
 // ====================================
 
 const CodeCopy = {
-  init: function() {
-    const codeBlocks = document.querySelectorAll('pre code');
-    if (codeBlocks.length === 0) return;
-    
-    codeBlocks.forEach((codeBlock) => {
+  init: function () {
+    document.querySelectorAll('pre code').forEach((codeBlock) => {
       const pre = codeBlock.parentElement;
       if (!pre || pre.tagName !== 'PRE') return;
-      
       if (pre.querySelector('.copy-btn')) return;
-      
+
+      // Language label
+      const lang = (codeBlock.className.match(/language-([^\s]+)/) || [])[1];
       const meta = document.createElement('div');
       meta.className = 'code-meta';
-      const lang = (codeBlock.className.match(/language-([^\s]+)/) || [])[1];
-      meta.textContent = lang ? lang.charAt(0).toUpperCase() + lang.slice(1) : '';
+      meta.textContent = lang
+        ? lang.charAt(0).toUpperCase() + lang.slice(1)
+        : '';
       pre.appendChild(meta);
-      
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'copy-btn';
-      copyBtn.textContent = 'Copy';
-      copyBtn.setAttribute('type', 'button');
-      pre.appendChild(copyBtn);
-      
-      copyBtn.addEventListener('click', async (e) => {
+
+      // Copy button
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.type      = 'button';
+      btn.textContent = 'Copy';
+      pre.appendChild(btn);
+
+      btn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        const code = codeBlock.textContent;
-        
         try {
-          await navigator.clipboard.writeText(code);
-          copyBtn.textContent = 'Copied!';
-          copyBtn.classList.add('copied');
-          
+          await navigator.clipboard.writeText(codeBlock.textContent);
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
           setTimeout(() => {
-            copyBtn.textContent = 'Copy';
-            copyBtn.classList.remove('copied');
-          }, 1500);
-        } catch (err) {
-          console.error('Failed to copy:', err);
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 1600);
+        } catch {
+          btn.textContent = 'Error';
         }
       });
     });
@@ -102,86 +217,75 @@ const CodeCopy = {
 };
 
 // ====================================
-// 3. Image Lightbox (Lazy Init)
+// 6. Image Lightbox
 // ====================================
 
 const ImageLightbox = {
   lightbox: null,
-  
-  init: function() {
+
+  init: function () {
     const images = document.querySelectorAll('article img, .post-content img, main img');
     if (images.length === 0) return;
-    
-    this.createLightbox();
-    
-    images.forEach(img => {
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', () => this.open(img), { once: false });
+
+    this._create();
+    images.forEach((img) => {
+      img.addEventListener('click', () => this.open(img));
     });
   },
-  
-  createLightbox: function() {
+
+  _create: function () {
     this.lightbox = document.createElement('div');
     this.lightbox.className = 'lightbox';
     this.lightbox.innerHTML = `
-      <div class="lightbox-close">×</div>
+      <div class="lightbox-close" role="button" aria-label="Close">×</div>
       <div class="lightbox-content">
         <img src="" alt="">
         <div class="lightbox-caption"></div>
-      </div>
-    `;
+      </div>`;
     document.body.appendChild(this.lightbox);
-    
-    const closeBtn = this.lightbox.querySelector('.lightbox-close');
-    closeBtn.addEventListener('click', () => this.close());
-    
+
+    this.lightbox.querySelector('.lightbox-close')
+      .addEventListener('click', () => this.close());
+
     this.lightbox.addEventListener('click', (e) => {
       if (e.target === this.lightbox) this.close();
     });
-    
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.lightbox.classList.contains('active')) {
         this.close();
       }
     });
   },
-  
-  open: function(img) {
-    const lightboxImg = this.lightbox.querySelector('img');
-    const caption = this.lightbox.querySelector('.lightbox-caption');
-    
-    lightboxImg.src = img.src;
-    lightboxImg.alt = img.alt || '';
-    caption.textContent = img.alt || '';
-    
+
+  open: function (img) {
+    this.lightbox.querySelector('img').src           = img.src;
+    this.lightbox.querySelector('img').alt           = img.alt || '';
+    this.lightbox.querySelector('.lightbox-caption').textContent = img.alt || '';
     this.lightbox.classList.add('active');
     document.body.classList.add('overflow-hidden');
   },
-  
-  close: function() {
+
+  close: function () {
     this.lightbox.classList.remove('active');
     document.body.classList.remove('overflow-hidden');
   }
 };
 
 // ====================================
-// 4. Navbar Scroll Effect (Optimized)
+// 7. Navbar Scroll Effect
 // ====================================
 
 const NavbarScroll = {
-  lastScrollY: 0,
-  
-  init: function() {
+  init: function () {
     const navbar = document.querySelector('.navbar');
     if (!navbar) return;
-    
+
     let ticking = false;
-    
     window.addEventListener('scroll', () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrolled = window.scrollY > 100;
-          navbar.classList.toggle('scrolled', scrolled);
+        requestAnimationFrame(() => {
+          navbar.classList.toggle('scrolled', window.scrollY > 80);
           ticking = false;
         });
         ticking = true;
@@ -191,331 +295,115 @@ const NavbarScroll = {
 };
 
 // ====================================
-// 5. Post Table of Contents
+// 8. Post Table of Contents (Inline Box)
 // ====================================
 
 const PostTableOfContents = {
-  init: function() {
+  init: function () {
     const article = document.querySelector('article');
     if (!article) return;
-    
+
     const headers = article.querySelectorAll('h2[id], h3[id]');
     if (headers.length < 2) return;
-    
-    let tocHTML = '<div class="post-toc-box"><details open><summary>▼ Table of Contents</summary><ul class="post-toc-list">';
-    let currentH2 = null;
-    
+
+    let html = `
+      <div class="post-toc-box">
+        <details open>
+          <summary>▼ Table of Contents</summary>
+          <ul class="post-toc-list">`;
+
+    let inH2 = false;
+
     headers.forEach((header) => {
-      const id = header.getAttribute('id');
+      const id   = header.getAttribute('id');
       const text = header.textContent.replace(/^\d+\.?\s*/, '').trim();
-      const tag = header.tagName;
-      
-      if (tag === 'H2') {
-        if (currentH2 !== null) tocHTML += '</ul></li>';
-        tocHTML += '<li><a href="#' + id + '">' + text + '</a><ul>';
-        currentH2 = id;
-      } else if (tag === 'H3') {
-        tocHTML += '<li><a href="#' + id + '">' + text + '</a></li>';
+
+      if (header.tagName === 'H2') {
+        if (inH2) html += '</ul></li>';
+        html  += `<li><a href="#${id}">${text}</a><ul>`;
+        inH2   = true;
+      } else if (header.tagName === 'H3') {
+        html  += `<li><a href="#${id}">${text}</a></li>`;
       }
     });
-    
-    if (currentH2 !== null) tocHTML += '</ul></li>';
-    tocHTML += '</ul></details></div>';
-    
-    article.insertAdjacentHTML('afterbegin', tocHTML);
+
+    if (inH2) html += '</ul></li>';
+    html += '</ul></details></div>';
+
+    article.insertAdjacentHTML('afterbegin', html);
   }
 };
 
 // ====================================
-// 6. Reading Time Calculation
+// 9. Reading Time
 // ====================================
 
 const ReadingTime = {
-  init: function() {
+  init: function () {
     const article = document.querySelector('article');
     if (!article) return;
-    
-    const text = article.textContent || article.innerText;
-    const wordCount = text.trim().split(/\s+/).length;
-    const readingTime = Math.ceil(wordCount / 200);
-    
-    let metadataBar = document.querySelector('.metadata-bar');
-    
-    if (!metadataBar) {
-      metadataBar = document.createElement('div');
-      metadataBar.className = 'metadata-bar';
-      
-      const title = document.querySelector('h1');
-      if (title && title.parentElement) {
-        title.parentElement.insertBefore(metadataBar, title.nextSibling);
+
+    const words       = (article.textContent || '').trim().split(/\s+/).length;
+    const minutes     = Math.max(1, Math.ceil(words / 200));
+    let   metaBar     = document.querySelector('.metadata-bar');
+
+    if (!metaBar) {
+      metaBar = document.createElement('div');
+      metaBar.className = 'metadata-bar';
+      const h1 = document.querySelector('h1');
+      if (h1 && h1.parentElement) {
+        h1.parentElement.insertBefore(metaBar, h1.nextSibling);
       } else {
-        article.insertBefore(metadataBar, article.firstChild);
+        article.insertBefore(metaBar, article.firstChild);
       }
     }
-    
-    const existingReadingTime = metadataBar.querySelector('[data-reading-time]');
-    if (!existingReadingTime) {
-      const readingTimeHTML = `
+
+    if (!metaBar.querySelector('[data-reading-time]')) {
+      metaBar.insertAdjacentHTML('afterbegin', `
         <div class="metadata-item" data-reading-time="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span>Estimated Reading Time: <strong>${readingTime}</strong> min</span>
-        </div>
-      `;
-      metadataBar.insertAdjacentHTML('afterbegin', readingTimeHTML);
+          <span>Estimated Reading Time: <strong>${minutes}</strong> min</span>
+        </div>`);
     }
   }
 };
 
 // ====================================
-// 7. Auto-Numbering Headers
+// 10. Auto-Numbering Headers
 // ====================================
 
 const AutoNumbering = {
-  init: function() {
+  init: function () {
     const article = document.querySelector('article');
     if (!article) return;
-    
-    const headers = article.querySelectorAll('h2, h3');
-    if (headers.length === 0) return;
-    
-    let h2Count = 0;
-    let h3Count = 0;
-    
-    headers.forEach(header => {
+
+    let h2n = 0, h3n = 0;
+
+    article.querySelectorAll('h2, h3').forEach((header) => {
       if (header.classList.contains('subtitle')) return;
-      
+
       if (header.tagName === 'H2') {
-        h2Count++;
-        h3Count = 0;
-        if (!header.id) header.id = 'section-' + h2Count;
+        h2n++;
+        h3n = 0;
+        if (!header.id) header.id = `section-${h2n}`;
       } else if (header.tagName === 'H3') {
-        h3Count++;
-        if (!header.id) header.id = 'section-' + h2Count + '-' + h3Count;
+        h3n++;
+        if (!header.id) header.id = `section-${h2n}-${h3n}`;
       }
     });
   }
 };
 
 // ====================================
-// 8. Enhanced Search Modal
+// 11. Post Preview Click
 // ====================================
-
-const EnhancedSearch = {
-  searchInput: null,
-  searchResults: null,
-  searchModal: null,
-  searchTrigger: null,
-  allResults: [],
-  selectedIndex: -1,
-  corpusCache: null,
-  
-  init: function() {
-    this.searchInput = document.querySelector('.search-input');
-    this.searchResults = document.querySelector('.search-results');
-    this.searchModal = document.getElementById('search-modal');
-    this.searchTrigger = document.getElementById('search-trigger');
-    
-    if (!this.searchInput || !this.searchResults || !this.searchModal || !this.searchTrigger) {
-      return;
-    }
-    
-    this.preloadCorpus();
-    
-    this.searchTrigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.openModal();
-    });
-    
-    this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
-    this.searchInput.addEventListener('keydown', (e) => this.handleKeyboard(e));
-    
-    document.addEventListener('click', (e) => this.handleClickOutside(e));
-    document.querySelector('.search-modal-close')?.addEventListener('click', () => this.closeModal());
-    
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        this.openModal();
-      }
-    });
-  },
-  
-  preloadCorpus: async function() {
-    try {
-      const baseurl = document.querySelector('meta[name="baseurl"]')?.content || '';
-      const response = await fetch(baseurl + '/assets/data/searchcorpus.json');
-      if (response.ok) {
-        this.corpusCache = await response.json();
-      }
-    } catch (err) {
-      console.warn('Could not preload search corpus:', err);
-    }
-  },
-  
-  openModal: function() {
-    this.searchModal.classList.add('active');
-    this.searchInput.focus();
-  },
-  
-  closeModal: function() {
-    this.searchModal.classList.remove('active');
-    this.searchInput.value = '';
-    this.searchResults.classList.remove('active');
-    this.allResults = [];
-    this.selectedIndex = -1;
-  },
-  
-  handleSearch: function(e) {
-    const query = e.target.value.trim().toLowerCase();
-    
-    if (query.length < 2) {
-      this.searchResults.classList.remove('active');
-      this.allResults = [];
-      this.selectedIndex = -1;
-      return;
-    }
-    
-    if (!this.corpusCache) {
-      this.searchResults.innerHTML = '<div class="search-no-results">Search unavailable</div>';
-      return;
-    }
-    
-    this.allResults = this.corpusCache.filter(item => 
-      item.title.toLowerCase().includes(query) ||
-      item.excerpt.toLowerCase().includes(query) ||
-      item.content.toLowerCase().includes(query) ||
-      item.category.toLowerCase().includes(query)
-    ).slice(0, 10);
-    
-    this.selectedIndex = -1;
-    this.renderResults();
-    this.searchResults.classList.add('active');
-  },
-
-  renderResults: function() {
-    if (this.allResults.length === 0) {
-      this.searchResults.innerHTML = '<div class="search-no-results">No results found</div>';
-      return;
-    }
-    
-    let html = '';
-    this.allResults.forEach((result, index) => {
-      const isSelected = index === this.selectedIndex ? 'selected' : '';
-      // Truncate excerpt to ~80 characters
-      const truncatedExcerpt = result.excerpt.substring(0, 80) + (result.excerpt.length > 80 ? '...' : '');
-      html += `
-        <div class="search-result-item ${isSelected}" data-index="${index}">
-          <div class="search-result-title">${this.escapeHtml(result.title)}</div>
-          <div class="search-result-excerpt">${this.escapeHtml(truncatedExcerpt)}</div>
-          ${result.category ? `
-            <div class="search-result-tags">
-              ${result.category.split(',').slice(0, 2).map(tag => `
-                <span class="search-result-category">${this.escapeHtml(tag.trim())}</span>
-              `).join('')}
-            </div>
-          ` : ''}
-          <a href="${result.url}" class="search-result-link"></a>
-        </div>
-      `;
-    });
-    
-    this.searchResults.innerHTML = html;
-    this.attachResultClickListeners();
-  },
-
-  
-  attachResultClickListeners: function() {
-    const items = this.searchResults.querySelectorAll('.search-result-item');
-    items.forEach(item => {
-      item.addEventListener('click', () => {
-        const index = parseInt(item.dataset.index);
-        this.selectResult(index);
-      });
-      
-      item.addEventListener('mouseenter', () => {
-        this.selectedIndex = parseInt(item.dataset.index);
-        this.updateSelection();
-      });
-    });
-  },
-  
-  handleKeyboard: function(e) {
-    if (this.allResults.length === 0) return;
-    
-    switch(e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        this.selectedIndex = Math.min(this.selectedIndex + 1, this.allResults.length - 1);
-        this.updateSelection();
-        break;
-        
-      case 'ArrowUp':
-        e.preventDefault();
-        this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
-        this.updateSelection();
-        break;
-        
-      case 'Enter':
-        e.preventDefault();
-        if (this.selectedIndex >= 0) {
-          this.selectResult(this.selectedIndex);
-        }
-        break;
-        
-      case 'Escape':
-        e.preventDefault();
-        this.closeModal();
-        break;
-    }
-  },
-  
-  updateSelection: function() {
-    const items = this.searchResults.querySelectorAll('.search-result-item');
-    items.forEach((item, index) => {
-      if (index === this.selectedIndex) {
-        item.classList.add('selected');
-        item.scrollIntoView({ block: 'nearest' });
-      } else {
-        item.classList.remove('selected');
-      }
-    });
-  },
-  
-  selectResult: function(index) {
-    if (index >= 0 && index < this.allResults.length) {
-      const result = this.allResults[index];
-      this.closeModal();
-      window.location.href = result.url;
-    }
-  },
-  
-  handleClickOutside: function(e) {
-    if (e.target === this.searchModal) {
-      this.closeModal();
-    }
-  },
-  
-  escapeHtml: function(text) {
-    const map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
-  }
-};
 
 const PostPreviewClick = {
-  init: function() {
-    const previews = document.querySelectorAll('.post-preview');
-    if (previews.length === 0) return;
-    
-    previews.forEach(preview => {
+  init: function () {
+    document.querySelectorAll('.post-preview').forEach((preview) => {
       const link = preview.querySelector('a');
       if (link) {
         preview.addEventListener('click', () => {
@@ -527,78 +415,230 @@ const PostPreviewClick = {
 };
 
 // ====================================
+// 12. Enhanced Search Modal
+// ====================================
+
+const EnhancedSearch = {
+  input:    null,
+  results:  null,
+  modal:    null,
+  trigger:  null,
+  corpus:   null,
+  matches:  [],
+  selected: -1,
+
+  init: function () {
+    this.input   = document.querySelector('.search-input');
+    this.results = document.querySelector('.search-results');
+    this.modal   = document.getElementById('search-modal');
+    this.trigger = document.getElementById('search-trigger');
+
+    if (!this.input || !this.results || !this.modal || !this.trigger) return;
+
+    this._preload();
+
+    this.trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.open();
+    });
+
+    this.input.addEventListener('input',   (e) => this._search(e));
+    this.input.addEventListener('keydown', (e) => this._keyboard(e));
+
+    document.querySelector('.search-modal-close')
+      ?.addEventListener('click', () => this.close());
+
+    document.addEventListener('click', (e) => {
+      if (e.target === this.modal) this.close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        this.open();
+      }
+      if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+        this.close();
+      }
+    });
+  },
+
+  _preload: async function () {
+    try {
+      const base = document.querySelector('meta[name="baseurl"]')?.content || '';
+      const res  = await fetch(base + '/assets/data/searchcorpus.json');
+      if (res.ok) this.corpus = await res.json();
+    } catch (err) {
+      console.warn('Search corpus unavailable:', err);
+    }
+  },
+
+  open: function () {
+    this.modal.classList.add('active');
+    // Small delay lets CSS animation finish before focus
+    setTimeout(() => this.input.focus(), 60);
+  },
+
+  close: function () {
+    this.modal.classList.remove('active');
+    this.input.value = '';
+    this.results.classList.remove('active');
+    this.matches  = [];
+    this.selected = -1;
+  },
+
+  _search: function (e) {
+    const q = e.target.value.trim().toLowerCase();
+
+    if (q.length < 2) {
+      this.results.classList.remove('active');
+      this.matches  = [];
+      this.selected = -1;
+      return;
+    }
+
+    if (!this.corpus) {
+      this.results.innerHTML = '<div class="search-no-results">Search unavailable</div>';
+      this.results.classList.add('active');
+      return;
+    }
+
+    this.matches = this.corpus
+      .filter(
+        (item) =>
+          item.title.toLowerCase().includes(q) ||
+          item.excerpt.toLowerCase().includes(q) ||
+          item.content.toLowerCase().includes(q) ||
+          item.category.toLowerCase().includes(q)
+      )
+      .slice(0, 10);
+
+    this.selected = -1;
+    this._render();
+    this.results.classList.add('active');
+  },
+
+  _render: function () {
+    if (this.matches.length === 0) {
+      this.results.innerHTML = '<div class="search-no-results">No results found</div>';
+      return;
+    }
+
+    this.results.innerHTML = this.matches
+      .map((r, i) => {
+        const excerpt = r.excerpt.length > 90
+          ? r.excerpt.substring(0, 90) + '…'
+          : r.excerpt;
+        const tags = r.category
+          ? r.category.split(',').slice(0, 2)
+              .map((t) => `<span class="search-result-category">${this._esc(t.trim())}</span>`)
+              .join('')
+          : '';
+
+        return `
+          <div class="search-result-item${i === this.selected ? ' selected' : ''}"
+               data-index="${i}" data-url="${r.url}">
+            <div class="search-result-title">${this._esc(r.title)}</div>
+            <div class="search-result-excerpt">${this._esc(excerpt)}</div>
+            ${tags ? `<div class="search-result-tags">${tags}</div>` : ''}
+          </div>`;
+      })
+      .join('');
+
+    this.results.querySelectorAll('.search-result-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        window.location.href = item.dataset.url;
+        this.close();
+      });
+      item.addEventListener('mouseenter', () => {
+        this.selected = parseInt(item.dataset.index, 10);
+        this._updateSelection();
+      });
+    });
+  },
+
+  _keyboard: function (e) {
+    if (this.matches.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.selected = Math.min(this.selected + 1, this.matches.length - 1);
+      this._updateSelection();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.selected = Math.max(this.selected - 1, -1);
+      this._updateSelection();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (this.selected >= 0) {
+        window.location.href = this.matches[this.selected].url;
+        this.close();
+      }
+    }
+  },
+
+  _updateSelection: function () {
+    this.results.querySelectorAll('.search-result-item').forEach((item, i) => {
+      item.classList.toggle('selected', i === this.selected);
+      if (i === this.selected) {
+        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
+  },
+
+  _esc: function (text) {
+    return text.replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;',
+      '"': '&quot;', "'": '&#039;'
+    })[c]);
+  }
+};
+
+// ====================================
+// 13. Mermaid Diagram Support
+// ====================================
+
+const MermaidSupport = {
+  init: function () {
+    document.querySelectorAll('pre > code.language-mermaid').forEach((codeBlock) => {
+      const pre     = codeBlock.parentElement;
+      const div     = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = codeBlock.textContent;
+      pre.parentNode.replaceChild(div, pre);
+    });
+
+    if (window.mermaid) {
+      mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+    }
+  }
+};
+
+// ====================================
 // Main Initialization
 // ====================================
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Enable transitions on interaction
+document.addEventListener('DOMContentLoaded', () => {
   InteractionManager.init();
-  
-  // Initialize all modules
+
+  // Core UI
   ReadingProgress.init();
+  ScrollToTop.init();
   NavbarScroll.init();
+  SmoothAnchors.init();
+
+  // Content enhancements
   CodeCopy.init();
   ImageLightbox.init();
-  EnhancedSearch.init();
-  PostPreviewClick.init();
-  
+  MermaidSupport.init();
+
   // Post-only features
-  ReadingTime.init();
   AutoNumbering.init();
   PostTableOfContents.init();
+  ReadingTime.init();
 
-  // Mermaid support
-  document.querySelectorAll('pre > code.language-mermaid').forEach(function(codeBlock) {
-    const pre = codeBlock.parentElement;
-    const mermaidCode = codeBlock.textContent;
-    const mermaidDiv = document.createElement('div');
-    mermaidDiv.className = 'mermaid';
-    mermaidDiv.textContent = mermaidCode;
-    pre.parentNode.replaceChild(mermaidDiv, pre);
-  });
-
-  if (window.mermaid) {
-    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-  }
+  // Navigation & search
+  TocHighlight.init();
+  EnhancedSearch.init();
+  PostPreviewClick.init();
 });
-
-
-// Scroll to top button
-(function() {
-  const scrollBtn = document.createElement('button');
-  scrollBtn.id = 'scroll-to-top';
-  scrollBtn.setAttribute('aria-label', 'Scroll to top');
-  scrollBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
-  document.body.appendChild(scrollBtn);
-
-  window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-      scrollBtn.style.display = 'flex';
-    } else {
-      scrollBtn.style.display = 'none';
-    }
-  });
-
-  scrollBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-})();
-
-// TOC active section highlighting
-(function() {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const id = entry.target.getAttribute('id');
-      const tocLink = document.querySelector(`.toc-container a[href="#${id}"]`);
-      
-      if (entry.isIntersecting) {
-        document.querySelectorAll('.toc-container a').forEach(link => link.classList.remove('active'));
-        if (tocLink) tocLink.classList.add('active');
-      }
-    });
-  }, { rootMargin: '-100px 0px -66%' });
-
-  document.querySelectorAll('h2[id], h3[id], h4[id]').forEach(heading => {
-    observer.observe(heading);
-  });
-})();

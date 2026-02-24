@@ -3,10 +3,7 @@
    Inspired by Anthropic & ThinkingMachines
    ==================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;500;600;700&display=swap');
 
 /* ====================================
    Palette & Variables
@@ -148,8 +145,27 @@ h2 {
   font-size: 1.6rem;
   margin-top: 2.8rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-primary);
-  padding-bottom: 0.3rem;
+  /* Remove full-width border; use a short pseudo-element underline instead */
+  border-bottom: none;
+  padding-bottom: 0;
+  position: relative;
+  display: inline-block;   /* shrinks to text width */
+  width: 100%;             /* but still takes full row */
+}
+
+h2::after {
+  content: '';
+  display: block;
+  width: 2.5rem;           /* fixed short underline accent */
+  height: 2px;
+  background: var(--accent-light);
+  margin-top: 0.35rem;
+  border-radius: 2px;
+  transition: width var(--transition-base);
+}
+
+h2:hover::after {
+  width: 4rem;             /* subtle grow on hover */
 }
 
 h3 {
@@ -203,16 +219,15 @@ a:hover {
   position: fixed;
   top: 0;
   left: 0;
-  width: 0%;
+  width: 100%;           /* always full width — scaleX controls visible length */
   height: 3px;
-  background: linear-gradient(
-    90deg,
-    var(--palette-indigo),
-    var(--palette-turquoise)
-  );
+  background: linear-gradient(90deg, var(--accent-primary), var(--palette-turquoise));
   z-index: 9999;
-  transition: width 80ms linear;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 80ms linear;
   border-radius: 0 2px 2px 0;
+  will-change: transform;
 }
 
 /* ====================================
@@ -654,13 +669,19 @@ table tr:hover td {
   padding: 1.2rem 1.5rem;
   margin-bottom: 1rem;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+  /* Stronger shadow so card lifts off the near-white page bg */
+  box-shadow: 0 2px 8px rgba(11, 37, 69, 0.07),
+              0 0   0 1px rgba(11, 37, 69, 0.04);
+  transition: box-shadow var(--transition-base),
+              border-color var(--transition-base),
+              transform var(--transition-base);
 }
 
 .post-preview:hover {
   border-color: var(--accent-primary);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 6px 20px rgba(63, 81, 181, 0.10),
+              0 0   0 1px rgba(63, 81, 181, 0.12);
+  transform: translateY(-2px);
 }
 
 .post-preview h3 {
@@ -1686,4 +1707,93 @@ table tr:hover td {
   .cv-viewer-section iframe {
     height: 600px !important;
   }
+}
+
+/* ====================================
+   Theme Toggle Button
+   ==================================== */
+
+#theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-base), background var(--transition-base);
+  line-height: 1;
+}
+
+#theme-toggle:hover {
+  color: var(--accent-primary);
+  background: var(--accent-subtle);
+}
+
+#theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  display: none;         /* both hidden by default */
+}
+
+/* Light mode → show moon */
+html:not(.dark-mode) #theme-toggle .icon-moon { display: block; }
+
+/* Dark mode → show sun  */
+html.dark-mode        #theme-toggle .icon-sun  { display: block; }
+
+/* ====================================
+   Dark Mode Variables
+   ==================================== */
+
+html.dark-mode {
+  --bg-primary:     #0f1117;
+  --bg-secondary:   #161b27;
+  --bg-tertiary:    #1c2333;
+  --bg-elevated:    #1c2333;
+  --text-primary:   #e8edf5;
+  --text-secondary: #c5cdd9;
+  --text-tertiary:  #8899aa;
+  --text-muted:     #6a7d8f;
+  --border-primary:   rgba(200, 210, 255, 0.08);
+  --border-secondary: rgba(200, 210, 255, 0.04);
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.30);
+  --shadow-md:  0 6px 18px rgba(0,0,0,0.40);
+  --shadow-lg:  0 12px 30px rgba(0,0,0,0.50);
+  --shadow-xl:  0 24px 50px rgba(0,0,0,0.60);
+  --table-cell-bg:        #161b27;
+  --table-row-hover:      rgba(48,213,200,0.07);
+  --table-border:         rgba(200,210,255,0.08);
+  --table-border-strong:  rgba(200,210,255,0.15);
+  --code-border:          rgba(130,80,200,0.4);
+  color-scheme: dark;
+}
+
+html.dark-mode .navbar {
+  background: rgba(15, 17, 23, 0.92);
+}
+
+html.dark-mode .navbar.scrolled {
+  background: rgba(22, 27, 39, 0.98);
+}
+
+html.dark-mode pre {
+  background: #0d1117;
+}
+
+html.dark-mode code:not(pre code) {
+  background: rgba(130, 80, 200, 0.12);
+  color: var(--palette-turquoise);
+  border-color: rgba(130, 80, 200, 0.2);
+}
+
+html.dark-mode .post-toc-box {
+  background: rgba(22, 27, 39, 0.95);
+}
+
+html.dark-mode .post-preview {
+  background: var(--bg-secondary);
+  border-color: rgba(200, 210, 255, 0.08);
 }

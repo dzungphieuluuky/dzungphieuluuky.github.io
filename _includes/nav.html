@@ -1,25 +1,40 @@
 <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
 
   {%- if site.title-img -%}
-    <a class="navbar-brand navbar-brand-logo" href="{{ '/' | absolute_url }}"><img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url}}"/></a>
+    <a class="navbar-brand navbar-brand-logo" href="{{ '/' | absolute_url }}">
+      <img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url }}"/>
+    </a>
   {%- elsif site.title -%}
     <a class="navbar-brand" href="{{ '/' | absolute_url }}">{{ site.title }}</a>
   {%- endif -%}
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button"
+          data-toggle="collapse" data-target="#main-navbar"
+          aria-controls="main-navbar" aria-expanded="false"
+          aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="main-navbar">
     <ul class="navbar-nav ml-auto">
+
       {%- for link in site.navbar-links -%}
         {%- if link[1].first %}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ link[0] }}</a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="nav-link dropdown-toggle" href="#"
+               id="navbarDropdown" role="button"
+               data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+              {{ link[0] }}
+            </a>
+            <div class="dropdown-menu dropdown-menu-right"
+                 aria-labelledby="navbarDropdown">
               {%- for childlink in link[1] -%}
                 {%- for linkparts in childlink %}
-                  <a class="dropdown-item" href="{{ linkparts[1] | relative_url }}">{{ linkparts[0] }}</a>
+                  <a class="dropdown-item"
+                     href="{{ linkparts[1] | relative_url }}">
+                    {{ linkparts[0] }}
+                  </a>
                 {%- endfor -%}
               {%- endfor %}
             </div>
@@ -30,16 +45,54 @@
           </li>
         {%- endif -%}
       {%- endfor -%}
+
       <li class="nav-item">
         <a class="nav-link" href="{{ '/cv' | relative_url }}">CV</a>
       </li>
+
+      <!-- Dark Mode Toggle -->
+      <li class="nav-item nav-item-icon">
+        <button id="theme-toggle"
+                class="nav-link nav-icon-btn"
+                aria-label="Toggle dark mode"
+                title="Toggle dark mode (T)">
+          <!-- Moon — visible in light mode -->
+          <svg class="icon-moon" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <!-- Sun — visible in dark mode -->
+          <svg class="icon-sun" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1"     x2="12" y2="3"/>
+            <line x1="12" y1="21"    x2="12" y2="23"/>
+            <line x1="4.22"  y1="4.22"  x2="5.64"  y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1"     y1="12"    x2="3"     y2="12"/>
+            <line x1="21"    y1="12"    x2="23"    y2="12"/>
+            <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
+            <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+      </li>
+
       {% if site.post_search %}
-        <li class="nav-item">
-          <button class="nav-link search-trigger" id="search-trigger" aria-label="Open search" title="Search (Ctrl+K)">
-            <span id="nav-search-icon" class="fa fa-search"></span>
+        <!-- Search Trigger -->
+        <li class="nav-item nav-item-icon">
+          <button class="nav-link nav-icon-btn search-trigger"
+                  id="search-trigger"
+                  aria-label="Open search"
+                  title="Search (Ctrl+K)">
+            <span id="nav-search-icon" class="fa fa-search" aria-hidden="true"></span>
           </button>
         </li>
       {%- endif -%}
+
     </ul>
   </div>
 
@@ -53,7 +106,9 @@
     <div class="avatar-container">
       <div class="avatar-img-border">
         <a href="{{ '/' | absolute_url }}">
-          <img alt="Navigation bar avatar" class="avatar-img" src="{{ site.avatar | relative_url }}" />
+          <img alt="Navigation bar avatar"
+               class="avatar-img"
+               src="{{ site.avatar | relative_url }}" />
         </a>
       </div>
     </div>

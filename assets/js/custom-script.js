@@ -615,6 +615,45 @@ const MermaidSupport = {
 };
 
 // ====================================
+// 14. Dark Mode
+// ====================================
+
+const DarkMode = {
+  init: function () {
+    const stored     = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (stored === 'dark' || (!stored && prefersDark)) {
+      document.documentElement.classList.add('dark-mode');
+    }
+
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.addEventListener('click', () => this.toggle());
+
+    // Keyboard shortcut: press T to toggle (only when not typing in an input)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 't' || e.key === 'T') {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        this.toggle();
+      }
+    });
+
+    // Sync across browser tabs
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'theme') {
+        document.documentElement.classList.toggle('dark-mode', e.newValue === 'dark');
+      }
+    });
+  },
+
+  toggle: function () {
+    const isDark = document.documentElement.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+};
+
+// ====================================
 // Main Initialization
 // ====================================
 
@@ -631,6 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
   CodeCopy.init();
   ImageLightbox.init();
   MermaidSupport.init();
+  DarkMode.init();
 
   // Post-only features
   AutoNumbering.init();

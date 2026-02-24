@@ -398,22 +398,83 @@ const AutoNumbering = {
 };
 
 // ====================================
-// 11. Post Preview Click
+// 11. Post Preview Click + Substack Layout
 // ====================================
 
 const PostPreviewClick = {
   init: function () {
-    document.querySelectorAll('.post-preview').forEach((preview) => {
-      const link = preview.querySelector('a');
-      if (link) {
-        preview.addEventListener('click', () => {
-          window.location.href = link.href;
-        });
+    const previews = Array.from(document.querySelectorAll('.post-preview'));
+    if (previews.length === 0) return;
+
+    this._injectMonthGroups(previews);
+    this._wireClicks(previews);
+    this._injectThumbnailPlaceholders(previews);
+  },
+
+  _wireClicks: function (previews) {
+    previews.forEach((preview) => {
+      const link = preview.querySelector('a[href]');
+      if (!link) return;
+      // Make entire card navigate — but don't intercept inner <a> clicks
+      preview.addEventListener('click', (e) => {
+        if (e.target.closest('a') && e.target.closest('a') !== link) return;
+        window.location.href = link.href;
+      });
+    });
+  },
+
+  _injectMonthGroups: function (previews) {
+    const months = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+
+    let lastKey = null;
+
+    previews.forEach((preview) => {
+      // Try to read the ISO date from a data attribute or the meta text
+      const metaEl = preview.querySelector('.post-meta, time');
+      if (!metaEl) return;
+
+      // Accept both <time datetime="..."> and plain text like "February 12, 2026"
+      const raw = metaEl.getAttribute('datetime') || metaEl.textContent.trim();
+      const date = new Date(raw);
+      if (isNaN(date)) return;
+
+      const key   = `${date.getFullYear()}-${date.getMonth()}`;
+      const label = `${months[date.getMonth()]} ${date.getFullYear()}`;
+
+      if (key !== lastKey) {
+        lastKey = key;
+        const groupEl       = document.createElement('div');
+        groupEl.className   = 'post-month-group';
+        groupEl.textContent = label;
+        preview.parentNode.insertBefore(groupEl, preview);
       }
+    });
+  },
+
+  _injectThumbnailPlaceholders: function (previews) {
+    previews.forEach((preview) => {
+      // Skip if thumbnail already exists in markup
+      if (preview.querySelector('.post-thumbnail')) return;
+
+      // Look for an img already inside the preview (some themes put it there)
+      const existingImg = preview.querySelector('img');
+      if (existingImg) {
+        existingImg.classList.add('post-thumbnail');
+        // Move it to end so CSS grid places it in column 2
+        preview.appendChild(existingImg);
+        return;
+      }
+
+      // No image — leave the grid single-column gracefully
+      preview.style.gridTemplateColumns = '1fr';
     });
   }
 };
 
+// ...existing code...
 // ====================================
 // 12. Enhanced Search Modal
 // ====================================

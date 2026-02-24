@@ -1,10 +1,10 @@
 ---
 layout: page
-title: Portfolio
+title: About Me
 subtitle: "How you do anything is how you do everything"
 markdown: kramdown
 ---
-# About Me
+# Introduction
 
 Hi there I'm dzungphieuluuky. I'm currently an undergraduate student and an enthusiast in physics and deep learning. This is my portfolio website to update my achievements and share my experience via writing blogs.
 

@@ -212,22 +212,152 @@ a:hover {
 }
 
 /* ====================================
+   Portfolio / Page Layout (layout: page)
+   ==================================== */
+
+/* Page title — "Portfolio" */
+.intro-header .page-heading h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+/* Subtitle — "How you do anything is how you do everything" */
+.intro-header .page-heading .page-subheading {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  font-style: italic;
+  color: var(--text-tertiary);
+  font-family: 'Source Serif 4', serif;
+  margin-top: 0.75rem;
+}
+
+/* Divider line below subtitle */
+.intro-header .page-heading hr {
+  width: 60px !important;
+  margin: 1.25rem auto 1.5rem !important;
+  border-top: 2px solid var(--palette-turquoise) !important;
+  opacity: 1 !important;
+}
+
+/* ====================================
+   Page Body Content (.page-content targets layout: page)
+   ==================================== */
+
+/* Main content wrapper */
+.page-content,
+.container.role main {
+  max-width: var(--reading-width);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Section headings — "About Me", "Research Interests", etc. */
+.page-content h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 3rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+}
+
+/* Short accent line under each h1 on the page */
+.page-content h1::after {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--accent-light);
+  margin-top: 0.4rem;
+  border-radius: 2px;
+  transition: width var(--transition-base);
+}
+
+.page-content h1:hover::after {
+  width: 4rem;
+}
+
+/* Body paragraphs */
+.page-content p {
+  font-family: 'Source Serif 4', 'Lora', serif;
+  font-size: 1.2rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+
+/* Bullet lists — Research Interests, Fun Facts, etc. */
+.page-content ul {
+  padding-left: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-content ul li {
+  font-family: 'Source Serif 4', 'Lora', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+/* Bold labels inside list items — "Reinforcement Learning:", etc. */
+.page-content ul li strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Links inside content */
+.page-content a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-base),
+              border-color var(--transition-base);
+}
+
+.page-content a:hover {
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent-hover);
+}
+
+/* ── Dark mode ────────────────────── */
+
+html.dark-mode .page-content p,
+html.dark-mode .page-content li {
+  color: var(--text-secondary);
+}
+
+html.dark-mode .page-content h1 {
+  color: var(--text-primary);
+}
+
+/* ====================================
    Reading Progress Bar
    ==================================== */
 
 #reading-progress {
-  position: fixed;
-  top: 0;
+  position: fixed !important;
+  top: 0 !important;
   left: 0;
-  width: 100%;           /* always full width — scaleX controls visible length */
+  width: 100%;          /* always full width — scaleX shrinks the visible part */
   height: 3px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--palette-turquoise));
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary),
+    var(--palette-turquoise)
+  );
   z-index: 9999;
-  transform: scaleX(0);
-  transform-origin: left center;
+  transform: scaleX(0);           /* start hidden */
+  transform-origin: left center;  /* grow left-to-right */
   transition: transform 80ms linear;
-  border-radius: 0 2px 2px 0;
+  border-radius: 0;
+  display: block;
   will-change: transform;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
 }
 
 /* ====================================
@@ -2021,3 +2151,230 @@ html.dark-mode .post-preview {
   background: var(--bg-secondary);
   border-color: rgba(200, 210, 255, 0.08);
 }
+/* ...existing code... */
+
+/* ====================================
+   CV Page
+   ==================================== */
+
+.cv-container {
+  max-width: var(--reading-width, 72ch);
+  margin: 0 auto;
+  padding: 0 0 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ── Download Section ─────────────── */
+
+.cv-download-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.cv-download-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.cv-download-buttons {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+/* Base button */
+.cv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  border: 1.5px solid transparent;
+  transition: background var(--transition-base),
+              border-color var(--transition-base),
+              transform var(--transition-base),
+              box-shadow var(--transition-base);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.cv-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+
+.cv-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.cv-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cv-btn-text strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.cv-btn-text small {
+  font-size: 0.68rem;
+  font-weight: 500;
+  opacity: 0.75;
+  letter-spacing: 0.03em;
+}
+
+/* Primary — PDF */
+.cv-btn-primary {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+}
+
+.cv-btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #fff;
+}
+
+/* Secondary — LaTeX */
+.cv-btn-secondary {
+  background: transparent;
+  border-color: var(--border-primary);
+  color: var(--text-secondary);
+}
+
+.cv-btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-subtle);
+}
+
+/* ── Viewer Section ───────────────── */
+
+.cv-viewer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.cv-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1.1rem;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.cv-viewer-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cv-open-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.cv-open-link:hover {
+  color: var(--accent-hover);
+  text-decoration: none;
+}
+
+.cv-open-link svg {
+  width: 13px;
+  height: 13px;
+}
+
+.cv-iframe-wrapper {
+  width: 100%;
+  background: var(--bg-tertiary);
+}
+
+.cv-iframe-wrapper iframe {
+  display: block;
+  width: 100%;
+  height: 88vh;
+  min-height: 600px;
+  border: none;
+}
+
+.cv-iframe-fallback {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.95rem;
+}
+
+.cv-iframe-fallback a {
+  color: var(--accent-primary);
+}
+
+/* ── Dark mode ────────────────────── */
+
+html.dark-mode .cv-viewer-section {
+  border-color: rgba(200, 210, 255, 0.08);
+}
+
+html.dark-mode .cv-viewer-header {
+  background: var(--bg-secondary);
+  border-color: rgba(200, 210, 255, 0.08);
+}
+
+html.dark-mode .cv-iframe-wrapper {
+  background: #0d1117;
+}
+
+/* ── Responsive ───────────────────── */
+
+@media (max-width: 600px) {
+  .cv-download-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .cv-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cv-iframe-wrapper iframe {
+    height: 70vh;
+    min-height: 400px;
+  }
+}
+
+/* ...existing code... */

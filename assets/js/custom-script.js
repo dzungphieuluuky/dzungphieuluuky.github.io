@@ -36,16 +36,16 @@ const ReadingProgress = {
       this.bar.id = 'reading-progress';
       document.body.appendChild(this.bar);
     }
-
+    // No scroll listener here — driven by the shared rAF loop in DOMContentLoaded
     this.update();
-    window.addEventListener('scroll', () => this.update(), { passive: true });
   },
 
   update: function () {
     if (!this.bar) return;
-    const total    = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
-    this.bar.style.width = Math.min(progress, 100) + '%';
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const ratio = total > 0 ? Math.min(window.scrollY / total, 1) : 0;
+    // Must use scaleX — matches the CSS transform: scaleX(0) declaration
+    this.bar.style.transform = `scaleX(${ratio})`;
   }
 };
 
@@ -726,6 +726,22 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollToTop.init();
   NavbarScroll.init();
   SmoothAnchors.init();
+
+  // Single shared rAF scroll loop — replaces all individual scroll listeners
+  // on ReadingProgress and ScrollToTop
+  (() => {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          ReadingProgress.update();
+          ScrollToTop.toggle();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
 
   // Content enhancements
   CodeCopy.init();

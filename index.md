@@ -1,6 +1,6 @@
 ---
 layout: page
-title: About Me
+title: Synaptheos
 subtitle: "How you do anything is how you do everything"
 markdown: kramdown
 ---

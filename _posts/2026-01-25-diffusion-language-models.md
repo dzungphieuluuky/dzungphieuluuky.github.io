@@ -1,101 +1,106 @@
 ---
 layout: post
 title: But what is a diffusion language model?
-subtitle: When NLP accepts diffusion as his/her new girl/boyfriend?
+subtitle: When language models learn to sketch before they write
 tags: [diffusion, language]
 comments: true
 author: dzungphieuluuky
 ---
 
-Have you ever been curious about what comes next in AI's journey with language? We've grown accustomed to chatbots that write one word at a time, thinking forward in a straight line. But what if they could think differently—starting with a blur of ideas and refining them into clarity, like an artist sketching and then painting over a canvas? The second approach seems like magic, especially when we think about how a language model could already know and generate a final answer before starting to generate its intermediate reasoning steps. Is it possible to already know the answer before reasoning about how we end up with that answer?
+Here's a question that's been sitting with me: what if a language model could hold the whole sentence in its mind at once, instead of building it word by word?
 
-That's the fascinating shift diffusion language models bring to the table. In this post, I'd like to share what makes this approach so intriguing, why it has researchers excited (especially with breakthroughs like LLaDA at NeurIPS 2025), and how it might quietly reshape the way machines understand and generate text. Let's dive into this dark magic together.
+Not just predicting what comes next — but keeping a blurry draft of the entire thought, and gradually sharpening it until every word clicks into place. Like a painter who sketches the whole composition before committing pigment to any single corner of the canvas.
 
-**Diffusion language models challenge autoregressive dominance with parallel generation, bidirectional context, and better controllability.**
+That's the quiet revolution behind diffusion language models. And once you see it, you start to notice how strange the familiar way of doing things actually is.
 
-## Prerequisites
-Before jumping right into diffusion language models, you might want to get a clear picture of what diffusion models are. I've already written a friendly blog about this topic on my personal website, and you can also find other materials online because there are way more experts out there who have written about this topic with much more comprehensive and technical detail. Among them, I highly recommend [What are diffusion models?](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) on Lilian Weng's blog due to its centralized content that contains most important details about diffusion models from many papers and articles—perfect for revisiting anytime.
+---
 
-Now, assuming we have some idea of what diffusion models are for image generation, we'll jump into the next big shift in their applications: text generation.
+## The strange ritual of writing left to right
 
-## What Are Diffusion Language Models?
+Every major language model you've used — GPT, Gemini, Claude — shares the same hidden rhythm. It reads your prompt, then begins its answer one token at a time, marching from left to right, each new word leaning on everything that came before.
 
-Diffusion language models (DLMs) adapt the denoising process from image generation to text. Instead of predicting the next token based on previous tokens in sequence (autoregressive generation), DLMs work differently.
+This is called *autoregressive* generation. And it works. It works astonishingly well.
 
-Autoregressive models, like GPT or Gemini (and perhaps most LLMs you're using at the moment), generate text token by token. Each new token depends on all previous tokens. We all know that the attention score assigned to each token is calculated by self-attention or cross-attention, depending on whether the query contains only input or both input and output sequences. This mimics how we speak—we think about what we've said to decide what to say next. It's been the standard approach for years since the outstanding 2017 paper, [Attention is All You Need](https://arxiv.org/abs/1706.03762), was released. The most game-changing move of that paper was the total removal of recurrent neural network units from older architectures, relying solely on the attention mechanism for language representation. This bold shift empowered computation with high parallelism and significantly improved training and inference speeds.
+But there's something peculiar about it. The model is permanently blind to its own future. When it writes word forty-seven, it has no idea what word forty-eight will be. It can't revise. It can't hold a half-formed intuition in suspense and wait for the rest to clarify. It commits, word by word, with no going back.
 
-Back to our story: diffusion language models take inspiration from diffusion image generation—which was actually its original purpose. In that process, they try to destroy the input image by iteratively adding Gaussian noise, gradually transforming the original data distribution into a uniform Gaussian distribution with noise that our normal eyes would see as nothing meaningful. During training, they try to predict the noise necessary to recover the current noisy image back to its original form and perform the denoising process with that predicted noise. In text generation, they start with random noise and gradually refine it into coherent text through multiple denoising steps. The model can predict all tokens simultaneously at each step, then iteratively improve the output by denoising each token in the output sequence, gradually transforming it into a meaningful sentence that humans can understand normally.
+You and I don't write this way. We wander. We write a sentence, delete half of it, change direction. We sometimes know roughly where we're going before we know exactly how we'll get there. The autoregressive model never has that luxury. It walks forward with its eyes fixed on the ground, never looking up to see the horizon.
 
-Here's a simple look at how one denoising step might work:
+---
 
-```python
-def denoise_step(embeddings_t, t, model):
-    predicted_noise = model(embeddings_t, t)
-    alpha_t = 1 - beta_schedule[t]
-    embeddings_prev = (embeddings_t - sqrt(1 - alpha_t) * predicted_noise) / sqrt(alpha_t)
-    return embeddings_prev
-```
+## What diffusion brings: the art of iterative refinement
 
-While the code above contains some mysterious components we can't understand immediately, we can still draw some useful information about what the denoising step is doing:
+Diffusion models were born in the world of images. The idea is simple enough to feel like a kind of magic: take a photograph and slowly add noise until it becomes pure static — then train a neural network to reverse that process, to find the image hidden in the noise.
 
-- First, we have three arguments entering the function:
-    - `embeddings_t`: this is the embedding or latent representation of the result being denoised at timestep `t`.
-    - `t`: this is the current timestep of the denoising process; it acts as the argument to get the denoising coefficient from the scheduler.
-    - `model`: the model being used for the denoising process, probably a U-Net or autoencoder since these models have the capability to encode features into their latent representations.
+What makes this powerful is that if you can learn to reverse the diffusion, you can *generate* images by starting from random static and progressively cleaning it up, step by step, until a coherent picture emerges from the chaos.
 
-Many DLMs operate in continuous embedding space, then convert to discrete tokens—avoiding some limitations of autoregressive approaches.
+Now apply that same intuition to language.
 
-## The Mathematics
+A diffusion language model doesn't generate tokens one by one. Instead, it starts with a sequence of noise — masked or jumbled words, placeholders where meaning should be — and iteratively refines the *entire sequence at once*. Every token can influence every other token at every step. The model isn't marching blindly forward; it's circling its thought, revising the whole thing simultaneously, pass after pass, until the noise resolves into something worth saying.
 
-DLMs typically add noise to token embeddings according to a schedule, then learn to reverse the process. The training objective minimizes a denoising score matching loss:
+Imagine trying to remember a dream. At first, only fragments come: a face, a feeling, a room you've never seen. You hold them together, let them sit, and slowly they connect into a scene. That's what diffusion language models do. They don't build the dream from beginning to end — they let it coalesce.
 
-$$ L(\theta) = \mathbb{E}_{t, x_0, \epsilon} \left[ \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right] $$
+---
 
-where \\( x_t = \sqrt{\alpha_t} x_0 + \sqrt{1 - \alpha_t} \epsilon \\).
+## The mathematics, without the equations
 
-Of course, this loss function is actually foundational to all diffusion-based models. Depending on the downstream tasks you're trying to solve, there may be a few other loss functions taken into account to provide better alignment with the problems.
+Behind this is a training process that feels almost paradoxical at first. You take a clean sentence, corrupt it with noise, and ask the model to predict what you've done — to see through the static and recognize the signal beneath. Over and over, across millions of examples, the model learns what clean language looks like, and more importantly, it learns the path from noise back to meaning.
 
-To name a few examples to prove I'm not using GPT or other LLMs to generate this entire blog post:
-- In style transfer tasks, you might want to train a model that can transform a source image into a target image with different styles while preserving the content. It could be transforming a real-life cat into an animated cat; while the styles differ, they are still cats—not transforming from a cat into a cow or something else. You get my idea. In this case, it would be wise to include a content-preserving loss that measures content representation of the images using other encoders like Vision Transformers or CNN-based networks. This way, we can force the model to effectively preserve content and focus only on style changes.
-- In tasks that require models to generate samples that closely resemble one sample while contrasting with others, we might choose contrastive learning approaches as our lifesaver. In this setting, you could add a contrastive loss to our total loss function—for example, an Info Noise Contrastive Estimation (InfoNCE) loss—to better guide the model in distinguishing between positive samples (desired ones) and negative samples (undesired ones). Note that I'm using singular form for the desired one and plural forms for undesired ones to show that we need many contradiction pairs to guide our model better.
+Many diffusion language models work in a continuous space of word-like vectors rather than on discrete tokens directly. This is a subtle but important shift. Words become points in a landscape, and denoising becomes a kind of navigation — moving those points step by step until they settle into positions that correspond to real words in real sentences.
 
-Back to the diffusion language world, we've seen a cornerstone in this field at the NeurIPS 2025 conference: the LLaDA model, which uses masking techniques where tokens are progressively revealed during reverse diffusion, combining BERT-style masking with iterative refinement.
+It's not words being generated anymore. It's meaning, being coaxed into form.
 
-## Key Breakthrough: LLaDA (NeurIPS 2025)
+---
 
-**LLaDA** (Large Language Diffusion with mAsking) represents a significant milestone—an 8B-parameter DLM trained from scratch that performs comparably to **LLaMA3** 8B across various benchmarks. It shows particular strength in understanding reversed text (addressing the "reversal curse"—yeah, might need to talk about this later) and offers better controllability through positional constraints. The original paper for the LLaDA architecture can be found at [Large Language Diffusion Models](https://openreview.net/pdf?id=KnqiC0znVF).
+## LLaDA: when the idea became real
 
-This ability to understand reversed text gives DLMs potential advantages in reasoning tasks that require processing information forward and backward multiple times. Hmm, actually I was working with Looped Transformers before in my previous machine learning project, specifically the Ouro model from ByteDance, which uses a looping mechanism to iteratively refine the output response multiple times before generating the final answer. In that work, I was also analyzing the performance of the Ouro model on some reasoning tasks such as n-ary addition, p-hop induction, and i-GSM tasks. Among the three, p-hop induction seems to be the hardest, requiring the model to digest the problem input in both directions—forward and backward—multiple times to generate a highly correct answer. This bidirectional processing somewhat corresponds to the way diffusion language models generate text because they don't use the autoregressive fashion of traditional models. Perhaps diffusion language models and looped language models represent a universal paradigm we could leverage to enhance the reasoning capabilities of language models. Oops, I just remembered that there are also recursive models that were released a few months ago. Hmm, maybe there will be a post comparing these seemingly similar guys. Seems promising, huh? $...$
+For years, diffusion language models were a curiosity — elegant in theory, but never quite able to keep up with the brute efficiency of autoregressive generation. They belonged in papers, not in products.
 
-Other notable developments:
-- **Block Diffusion (2025)**: Hybrid approaches that combine autoregressive and diffusion strengths. You, including my future self, can find more information in the original paper [Block Diffusion](https://arxiv.org/pdf/2503.09573).
-- Research showing DLMs can be data-efficient learners; the original paper currently sits at [Diffusion Language Models are Super Data Learners](https://arxiv.org/pdf/2511.03276).
+Then came LLaDA — Large Language Diffusion with mAsking — presented at NeurIPS 2025. An eight-billion-parameter model trained from scratch, using a masking-based diffusion process. During forward diffusion, tokens are progressively hidden; during reverse diffusion, they're progressively revealed. Think of it like BERT's masked language modeling, but made iterative and generative rather than simply predictive.
 
-## Autoregressive vs. Diffusion Language Models
+The result that turned heads: LLaDA performs comparably to LLaMA 3 8B across a wide range of benchmarks.
 
-| Aspect              | Autoregressive (e.g., GPT)              | Diffusion Language Models (e.g., LLaDA)       |
-|---------------------|-----------------------------------------|-----------------------------------------------|
-| Generation          | Sequential, token-by-token              | Parallel/iterative denoising                  |
-| Context             | Unidirectional                          | Bidirectional/infilling                       |
-| Controllability     | Limited (prompt-dependent)              | High (masks, guidance, positional)            |
-| Strengths           | Fast inference, strong likelihood        | Reversal tasks, reasoning, multimodality      |
-| Challenges          | Exposure bias, reversal curse           | Higher compute during sampling                |
-| Scaling Behavior    | Standard pre-training                   | Competitive at 8B+, data-efficient            |
+But the numbers aren't the most interesting part. What caught my attention is *where* LLaDA excels. It handles reversed text far better than autoregressive models — it doesn't suffer from the *reversal curse*, where models trained on "A implies B" fail to infer "B implies A". It also allows something remarkable: you can tell the model that word five must be "quantum" and word twelve must be "entanglement", and it will build a coherent sentence around those fixed points. Autoregressive models struggle with this kind of constraint. They're built for flow, not for anchors.
 
-DLMs address some limitations of autoregressive models, like sequential dependency (which can lead to degeneration or hallucination based on unwanted tokens generated earlier in the sequence) and poor understanding of reversed text. They offer new capabilities in controlled text synthesis.
+These aren't minor differences. They suggest something deeper: that the two architectures aren't just different implementations of the same capability. They have genuinely different kinds of intelligence.
 
-While inference speed has been a challenge for DLMs, optimized sampling algorithms like DPM-Solver++ can reduce the number of steps needed, making them more practical—perhaps facilitating real-time applications?
+---
 
-## Why This Excites Me
+## Two ways of thinking
 
-Coming from a background in physics and a deep interest in reinforcement learning and diffusion models, DLMs feel like a natural evolution. They combine generative flexibility with language understanding in a way that opens new possibilities. This architecture also draws me back into the world of language modeling. Since this field has been advancing tremendously in recent years, I find it has become so popular that when someone talks about AI or machine learning in general, it's very likely they're just talking about LLMs—not AI or machine learning as a broad discipline. But thanks to DLMs, I find myself making a kind of comeback in NLP. 🚀🚀
+The contrast is worth sitting with.
 
-The potential for iterative refinement—where a model can improve its own output through multiple passes—and the ability to integrate with other approaches like reinforcement learning fuels interesting ideas about adaptive, reasoning-rich AI. This mechanism seems to be more universal than we thought. Perhaps language models in the next era will be developed around iterative refinement mechanisms, though they might differ in what they use to refine. For example, diffusion models use intermediate results to refine them into correctness and readability before arriving at a final answer. On the other hand, looped models refine directly on the output sequence multiple times. We can clearly see that, even though both refine intermediate results, diffusion models cannot generate directly without refinement because the output isn't ready to be considered a final answer. But looped models refine the output itself, so they are always ready to use that output as the final answer—though it might be wrong, it's surely a valid and readable sequence.
+Autoregressive models are linear thinkers. They move forward, never backward, building meaning in a straight line. This makes them fast and surprisingly reliable. But they can't revise. They can't hold a contradiction in mind and wait for it to resolve. They commit, and they live with the consequences.
 
-The convergence of different disciplines leading to innovations like this is exactly what I find most compelling in research.
+Diffusion models are iterative thinkers. They start with a blur and sharpen. They can see the whole field at once, which means they can notice when something doesn't fit, and adjust accordingly. This makes them slower, but also more flexible. They can be constrained in ways linear thinkers can't.
 
-## Conclusion
+The sampling speed gap is real. An autoregressive model generates one token at a time, but each step is cheap. A diffusion model runs many full passes over the entire sequence. Efficient sampling techniques close this gap somewhat, but it remains a practical consideration.
 
-Diffusion language models, with breakthroughs like LLaDA, signal an interesting shift in text generation. They promise more controllable, coherent, and creative text synthesis—and a promising way to generate answers even before reasoning thoughts are available. As research continues through 2025–2026, we may be seeing the beginning of new approaches that complement or even compete with autoregressive methods.
+What's more striking, though, is emerging evidence that diffusion language models may be more data-efficient — able to match autoregressive performance with significantly less training data. If this holds at scale, it changes the economics of language modeling entirely. It suggests that learning to refine might be a more natural path to language than learning to predict.
 
-It's worth noting that diffusion models have also inspired related approaches like **Diffusion Policy** in robotics, which combines reinforcement learning with diffusion techniques—a topic for another post.
+---
+
+## A personal convergence
+
+I come to this from an unusual angle. My own research lives at the intersection of reinforcement learning and diffusion models for physical simulation. For a long time, language modeling felt like a separate continent — relevant, but distant.
+
+Diffusion language models pull those threads together in a way that feels almost inevitable.
+
+There's also a resonance with work I've been following on looped transformers — models that refine their output by running the same transformer multiple times in a loop. The Ouro model from ByteDance is a beautiful example: it iterates over its own representations, sharpening them with each pass. I've been analyzing these models on reasoning tasks that require moving forward *and* backward through chains of facts. Bidirectional processing is the key.
+
+Diffusion language models have bidirectionality built into their bones. Looped models achieve it through iteration. The mechanisms differ, but both are responses to the same insight — that purely linear thinking is not always enough for the hard problems.
+
+I suspect these approaches — diffusion generation, looped refinement, recursive architectures — are converging on something important. They're all, in different ways, about *iterative refinement of a complete thought* rather than linear construction of a sequence. And that pattern resonates because it's how good thinking actually works. We don't think in straight lines. We think in circles, in revisions, in second guesses that turn out to be right.
+
+---
+
+## What this opens up
+
+For years, autoregressive models were the only game in town. They defined what it meant to generate language. Their limitations became invisible, simply because there was nothing to compare them to.
+
+Now there's an alternative. Not just a tweak or a variant, but a genuinely different way of approaching the problem. Diffusion language models think in wholes rather than parts. They revise rather than commit. They can be anchored to constraints that would trip up a linear thinker.
+
+Whether they eventually displace autoregressive models, or complement them, or merge with them into something new — I don't know. But the existence of a competitive alternative, after years of single-paradigm dominance, is itself significant. It forces a question that had gone unasked:
+
+What other assumptions are we carrying, simply because we've never had reason to doubt them?
+
+That's the kind of question I find most worth asking.

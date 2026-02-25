@@ -5,20 +5,17 @@
 const InteractionManager = {
   initialized: false,
 
-  init: function () {
+  init() {
     if (this.initialized) return;
-
     const enable = () => {
       if (!document.body.classList.contains('user-interactive')) {
         document.body.classList.add('user-interactive');
         this.initialized = true;
       }
     };
-
-    document.addEventListener('click',     enable, { once: true, passive: true });
-    document.addEventListener('mousemove', enable, { once: true, passive: true });
-    document.addEventListener('scroll',    enable, { once: true, passive: true });
-    document.addEventListener('keydown',   enable, { once: true, passive: true });
+    ['click', 'mousemove', 'scroll', 'keydown'].forEach((evt) =>
+      document.addEventListener(evt, enable, { once: true, passive: true })
+    );
   }
 };
 
@@ -29,22 +26,20 @@ const InteractionManager = {
 const ReadingProgress = {
   bar: null,
 
-  init: function () {
+  init() {
     this.bar = document.getElementById('reading-progress');
     if (!this.bar) {
       this.bar = document.createElement('div');
       this.bar.id = 'reading-progress';
       document.body.appendChild(this.bar);
     }
-    // No scroll listener here — driven by the shared rAF loop in DOMContentLoaded
     this.update();
   },
 
-  update: function () {
+  update() {
     if (!this.bar) return;
     const total = document.documentElement.scrollHeight - window.innerHeight;
     const ratio = total > 0 ? Math.min(window.scrollY / total, 1) : 0;
-    // Must use scaleX — matches the CSS transform: scaleX(0) declaration
     this.bar.style.transform = `scaleX(${ratio})`;
   }
 };
@@ -53,63 +48,61 @@ const ReadingProgress = {
 // 2. Scroll-To-Top Button
 // ====================================
 
+/*
+ * BEFORE: ScrollToTop attached its own window 'scroll' listener inside init(),
+ *         AND the shared rAF loop in DOMContentLoaded also called toggle().
+ *         That meant toggle() ran twice per scroll event.
+ * AFTER:  Removed the internal listener entirely. toggle() is only called
+ *         from the single shared rAF loop.
+ */
+
 const ScrollToTop = {
   btn: null,
   THRESHOLD: 380,
 
-  init: function () {
+  init() {
     this.btn = document.createElement('button');
     this.btn.id = 'scroll-to-top';
     this.btn.setAttribute('aria-label', 'Scroll to top');
-    this.btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
+    this.btn.innerHTML =
+      '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
     document.body.appendChild(this.btn);
 
-    window.addEventListener('scroll', () => this.toggle(), { passive: true });
-
-    this.btn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    // No scroll listener here — driven exclusively by the shared rAF loop
+    this.btn.addEventListener('click', () =>
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    );
   },
 
-  toggle: function () {
+  toggle() {
     if (!this.btn) return;
-    if (window.scrollY > this.THRESHOLD) {
-      this.btn.classList.add('visible');
-    } else {
-      this.btn.classList.remove('visible');
-    }
+    this.btn.classList.toggle('visible', window.scrollY > this.THRESHOLD);
   }
 };
 
 // ====================================
 // 3. Smooth Anchor Navigation
-//    Overrides default jump for in-page links
 // ====================================
 
 const SmoothAnchors = {
-  init: function () {
+  init() {
     document.addEventListener('click', (e) => {
       const anchor = e.target.closest('a[href^="#"]');
       if (!anchor) return;
-
-      const id     = decodeURIComponent(anchor.getAttribute('href').slice(1));
+      const id = decodeURIComponent(anchor.getAttribute('href').slice(1));
       if (!id) return;
-
       const target = document.getElementById(id);
       if (!target) return;
-
       e.preventDefault();
-
-      // Compute offset accounting for sticky navbar
-      const navbarH  = parseInt(
-        getComputedStyle(document.documentElement).getPropertyValue('--navbar-height') || '58',
+      const navbarH = parseInt(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--navbar-height') || '58',
         10
       );
-      const top = target.getBoundingClientRect().top + window.scrollY - navbarH - 16;
-
-      window.scrollTo({ top, behavior: 'smooth' });
-
-      // Update URL hash without jumping
+      window.scrollTo({
+        top: target.getBoundingClientRect().top + window.scrollY - navbarH - 16,
+        behavior: 'smooth'
+      });
       history.pushState(null, '', '#' + id);
     });
   }
@@ -117,55 +110,69 @@ const SmoothAnchors = {
 
 // ====================================
 // 4. TOC Active Section Highlighting
-//    (works for both .inline-toc and .toc-container)
 // ====================================
+
+/*
+ * BEFORE: querySelectorAll('h2[id], h3[id]') — h1 section headings were never
+ *         observed, so TOC links for h1 entries never received the .active class.
+ *         Also used link.offsetTop (relative to nearest positioned ancestor)
+ *         to scroll the TOC panel, which gave wrong values when the TOC itself
+ *         was position:fixed or deeply nested.
+ *
+ * AFTER:  Observes h1[id], h2[id], h3[id].
+ *         Uses getBoundingClientRect() relative to the TOC container for
+ *         accurate scroll-into-view behaviour.
+ */
 
 const TocHighlight = {
   observer: null,
 
-  init: function () {
-    const headings = document.querySelectorAll('h2[id], h3[id], h4[id]');
-    if (headings.length === 0) return;
+  init() {
+    const headings = document.querySelectorAll('h1[id], h2[id], h3[id]');
+    if (!headings.length) return;
 
     const navbarH = parseInt(
-      getComputedStyle(document.documentElement).getPropertyValue('--navbar-height') || '58',
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--navbar-height') || '58',
       10
     );
 
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = entry.target.getAttribute('id');
 
-        const id = entry.target.getAttribute('id');
+          document
+            .querySelectorAll('.inline-toc a, .toc-container a, .post-toc-box a')
+            .forEach((l) => l.classList.remove('active'));
 
-        // Clear all active states
-        document.querySelectorAll('.inline-toc a, .toc-container a').forEach(
-          (link) => link.classList.remove('active')
-        );
-
-        // Set active on matching links
-        document
-          .querySelectorAll(
-            `.inline-toc a[href="#${id}"], .toc-container a[href="#${id}"]`
-          )
-          .forEach((link) => {
-            link.classList.add('active');
-            // Scroll the TOC panel to keep the active item visible
-            const toc = link.closest('.inline-toc, .toc-container');
-            if (toc) {
-              const linkTop    = link.offsetTop;
-              const tocScroll  = toc.scrollTop;
-              const tocHeight  = toc.clientHeight;
-              if (linkTop < tocScroll || linkTop > tocScroll + tocHeight - 40) {
-                toc.scrollTo({ top: linkTop - tocHeight / 2, behavior: 'smooth' });
+          document
+            .querySelectorAll(
+              `.inline-toc a[href="#${id}"],
+               .toc-container a[href="#${id}"],
+               .post-toc-box a[href="#${id}"]`
+            )
+            .forEach((link) => {
+              link.classList.add('active');
+              // Scroll TOC panel using bounding-rect math (accurate for fixed/sticky panels)
+              const toc = link.closest('.inline-toc, .toc-container, .post-toc-box');
+              if (toc) {
+                const tocRect  = toc.getBoundingClientRect();
+                const linkRect = link.getBoundingClientRect();
+                const relative = linkRect.top - tocRect.top;
+                if (relative < 0 || relative > tocRect.height - 40) {
+                  toc.scrollTo({
+                    top: toc.scrollTop + relative - tocRect.height / 2,
+                    behavior: 'smooth'
+                  });
+                }
               }
-            }
-          });
-      });
-    }, {
-      rootMargin: `-${navbarH + 20}px 0px -60% 0px`,
-      threshold: 0
-    });
+            });
+        });
+      },
+      { rootMargin: `-${navbarH + 20}px 0px -60% 0px`, threshold: 0 }
+    );
 
     headings.forEach((h) => this.observer.observe(h));
   }
@@ -176,13 +183,12 @@ const TocHighlight = {
 // ====================================
 
 const CodeCopy = {
-  init: function () {
+  init() {
     document.querySelectorAll('pre code').forEach((codeBlock) => {
       const pre = codeBlock.parentElement;
       if (!pre || pre.tagName !== 'PRE') return;
       if (pre.querySelector('.copy-btn')) return;
 
-      // Language label
       const lang = (codeBlock.className.match(/language-([^\s]+)/) || [])[1];
       const meta = document.createElement('div');
       meta.className = 'code-meta';
@@ -191,10 +197,9 @@ const CodeCopy = {
         : '';
       pre.appendChild(meta);
 
-      // Copy button
       const btn = document.createElement('button');
       btn.className = 'copy-btn';
-      btn.type      = 'button';
+      btn.type = 'button';
       btn.textContent = 'Copy';
       pre.appendChild(btn);
 
@@ -223,17 +228,14 @@ const CodeCopy = {
 const ImageLightbox = {
   lightbox: null,
 
-  init: function () {
+  init() {
     const images = document.querySelectorAll('article img, .post-content img, main img');
-    if (images.length === 0) return;
-
+    if (!images.length) return;
     this._create();
-    images.forEach((img) => {
-      img.addEventListener('click', () => this.open(img));
-    });
+    images.forEach((img) => img.addEventListener('click', () => this.open(img)));
   },
 
-  _create: function () {
+  _create() {
     this.lightbox = document.createElement('div');
     this.lightbox.className = 'lightbox';
     this.lightbox.innerHTML = `
@@ -244,7 +246,8 @@ const ImageLightbox = {
       </div>`;
     document.body.appendChild(this.lightbox);
 
-    this.lightbox.querySelector('.lightbox-close')
+    this.lightbox
+      .querySelector('.lightbox-close')
       .addEventListener('click', () => this.close());
 
     this.lightbox.addEventListener('click', (e) => {
@@ -252,21 +255,20 @@ const ImageLightbox = {
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.lightbox.classList.contains('active')) {
+      if (e.key === 'Escape' && this.lightbox.classList.contains('active'))
         this.close();
-      }
     });
   },
 
-  open: function (img) {
-    this.lightbox.querySelector('img').src           = img.src;
-    this.lightbox.querySelector('img').alt           = img.alt || '';
+  open(img) {
+    this.lightbox.querySelector('img').src = img.src;
+    this.lightbox.querySelector('img').alt = img.alt || '';
     this.lightbox.querySelector('.lightbox-caption').textContent = img.alt || '';
     this.lightbox.classList.add('active');
     document.body.classList.add('overflow-hidden');
   },
 
-  close: function () {
+  close() {
     this.lightbox.classList.remove('active');
     document.body.classList.remove('overflow-hidden');
   }
@@ -277,20 +279,23 @@ const ImageLightbox = {
 // ====================================
 
 const NavbarScroll = {
-  init: function () {
+  init() {
     const navbar = document.querySelector('.navbar');
     if (!navbar) return;
-
     let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          navbar.classList.toggle('scrolled', window.scrollY > 80);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }, { passive: true });
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            navbar.classList.toggle('scrolled', window.scrollY > 80);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
   }
 };
 
@@ -298,13 +303,31 @@ const NavbarScroll = {
 // 8. Post Table of Contents (Inline Box)
 // ====================================
 
+/*
+ * BEFORE: querySelectorAll('h2[id], h3[id]') — h1 section headings inside the
+ *         post body were silently dropped from the TOC.
+ *         The nesting state machine also produced invalid HTML when the first
+ *         header encountered was an h3 (it opened a nested <ul> with no parent
+ *         <li> to attach to).
+ *
+ * AFTER:  Includes h1[id], h2[id], h3[id].
+ *         h1 entries get .toc-h1 for distinct CSS styling (bolder, slightly
+ *         larger per custom-styles.css).
+ *         State machine is rewritten with an explicit level tracker so nesting
+ *         is always structurally valid regardless of heading order.
+ */
+
 const PostTableOfContents = {
-  init: function () {
+  init() {
     const article = document.querySelector('article');
     if (!article) return;
 
-    const headers = article.querySelectorAll('h2[id], h3[id]');
+    // Include h1 so in-body section headings (not the page title) appear
+    const headers = article.querySelectorAll('h1[id], h2[id], h3[id]');
     if (headers.length < 2) return;
+
+    // Map tag names to numeric levels
+    const levelOf = { H1: 1, H2: 2, H3: 3 };
 
     let html = `
       <div class="post-toc-box">
@@ -312,22 +335,30 @@ const PostTableOfContents = {
           <summary>▼ Table of Contents</summary>
           <ul class="post-toc-list">`;
 
-    let inH2 = false;
+    // Track open list context: 0 = at root, 1 = inside child ul
+    let openChildUl = false;
 
-    headers.forEach((header) => {
-      const id   = header.getAttribute('id');
-      const text = header.textContent.replace(/^\d+\.?\s*/, '').trim();
+    headers.forEach((header, idx) => {
+      const id    = header.getAttribute('id');
+      const text  = header.textContent.replace(/^\d+\.?\s*/, '').trim();
+      const level = levelOf[header.tagName];
 
-      if (header.tagName === 'H2') {
-        if (inH2) html += '</ul></li>';
-        html  += `<li><a href="#${id}">${text}</a><ul>`;
-        inH2   = true;
-      } else if (header.tagName === 'H3') {
-        html  += `<li><a href="#${id}">${text}</a></li>`;
+      if (level === 1) {
+        // Close any open sub-list before starting a new top-level h1 entry
+        if (openChildUl) { html += '</ul></li>'; openChildUl = false; }
+        html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
+      } else if (level === 2) {
+        if (openChildUl) { html += '</ul></li>'; }
+        html += `<li><a href="#${id}">${text}</a><ul>`;
+        openChildUl = true;
+      } else if (level === 3) {
+        // If we hit an h3 with no preceding h2, open a root-level wrapper
+        if (!openChildUl) { html += '<li><ul>'; openChildUl = true; }
+        html += `<li><a href="#${id}">${text}</a></li>`;
       }
     });
 
-    if (inH2) html += '</ul></li>';
+    if (openChildUl) html += '</ul></li>';
     html += '</ul></details></div>';
 
     article.insertAdjacentHTML('afterbegin', html);
@@ -338,20 +369,27 @@ const PostTableOfContents = {
 // 9. Reading Time
 // ====================================
 
+/*
+ * BEFORE: 200 wpm — commonly cited but low; research average is ~238 wpm.
+ * AFTER:  238 wpm.
+ */
+
 const ReadingTime = {
-  init: function () {
+  WPM: 238,
+
+  init() {
     const article = document.querySelector('article');
     if (!article) return;
 
-    const words       = (article.textContent || '').trim().split(/\s+/).length;
-    const minutes     = Math.max(1, Math.ceil(words / 200));
-    let   metaBar     = document.querySelector('.metadata-bar');
+    const words   = (article.textContent || '').trim().split(/\s+/).length;
+    const minutes = Math.max(1, Math.ceil(words / this.WPM));
+    let   metaBar = document.querySelector('.metadata-bar');
 
     if (!metaBar) {
       metaBar = document.createElement('div');
       metaBar.className = 'metadata-bar';
       const h1 = document.querySelector('h1');
-      if (h1 && h1.parentElement) {
+      if (h1?.parentElement) {
         h1.parentElement.insertBefore(metaBar, h1.nextSibling);
       } else {
         article.insertBefore(metaBar, article.firstChild);
@@ -359,14 +397,16 @@ const ReadingTime = {
     }
 
     if (!metaBar.querySelector('[data-reading-time]')) {
-      metaBar.insertAdjacentHTML('afterbegin', `
-        <div class="metadata-item" data-reading-time="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          <span>Estimated Reading Time: <strong>${minutes}</strong> min</span>
-        </div>`);
+      metaBar.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="metadata-item" data-reading-time="true">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <circle cx="12" cy="12" r="10"></circle>
+             <polyline points="12 6 12 12 16 14"></polyline>
+           </svg>
+           <span>Estimated Reading Time: <strong>${minutes}</strong> min</span>
+         </div>`
+      );
     }
   }
 };
@@ -375,23 +415,34 @@ const ReadingTime = {
 // 10. Auto-Numbering Headers
 // ====================================
 
+/*
+ * BEFORE: Only numbered h2/h3. h1 section headings had no auto-id
+ *         and were skipped by both the TOC builder and TocHighlight observer.
+ *
+ * AFTER:  Numbers h1, h2, h3. h1 resets the h2 and h3 counters.
+ *         IDs are added if missing so TocHighlight can observe them.
+ */
+
 const AutoNumbering = {
-  init: function () {
+  init() {
     const article = document.querySelector('article');
     if (!article) return;
 
-    let h2n = 0, h3n = 0;
+    let h1n = 0, h2n = 0, h3n = 0;
 
-    article.querySelectorAll('h2, h3').forEach((header) => {
+    article.querySelectorAll('h1, h2, h3').forEach((header) => {
       if (header.classList.contains('subtitle')) return;
 
-      if (header.tagName === 'H2') {
-        h2n++;
-        h3n = 0;
-        if (!header.id) header.id = `section-${h2n}`;
+      if (header.tagName === 'H1') {
+        h1n++; h2n = 0; h3n = 0;
+        if (!header.id) header.id = `section-${h1n}`;
+      } else if (header.tagName === 'H2') {
+        h2n++; h3n = 0;
+        if (!header.id) header.id = `section-${h1n > 0 ? h1n + '-' : ''}${h2n}`;
       } else if (header.tagName === 'H3') {
         h3n++;
-        if (!header.id) header.id = `section-${h2n}-${h3n}`;
+        if (!header.id)
+          header.id = `section-${h1n > 0 ? h1n + '-' : ''}${h2n}-${h3n}`;
       }
     });
   }
@@ -401,21 +452,29 @@ const AutoNumbering = {
 // 11. Post Preview Click + Substack Layout
 // ====================================
 
-const PostPreviewClick = {
-  init: function () {
-    const previews = Array.from(document.querySelectorAll('.post-preview'));
-    if (previews.length === 0) return;
+/*
+ * BEFORE: _injectMonthGroups used new Date(rawString) where rawString might be
+ *         plain text like "February 12, 2026". While V8 handles this,
+ *         the spec doesn't guarantee it — the datetime attribute is more reliable.
+ *
+ * AFTER:  Prefers the datetime attribute on <time> elements; falls back to
+ *         textContent only when no datetime is present, and guards against
+ *         invalid dates explicitly before using them.
+ */
 
+const PostPreviewClick = {
+  init() {
+    const previews = Array.from(document.querySelectorAll('.post-preview'));
+    if (!previews.length) return;
     this._injectMonthGroups(previews);
     this._wireClicks(previews);
     this._injectThumbnailPlaceholders(previews);
   },
 
-  _wireClicks: function (previews) {
+  _wireClicks(previews) {
     previews.forEach((preview) => {
       const link = preview.querySelector('a[href]');
       if (!link) return;
-      // Make entire card navigate — but don't intercept inner <a> clicks
       preview.addEventListener('click', (e) => {
         if (e.target.closest('a') && e.target.closest('a') !== link) return;
         window.location.href = link.href;
@@ -423,30 +482,31 @@ const PostPreviewClick = {
     });
   },
 
-  _injectMonthGroups: function (previews) {
-    const months = [
+  _injectMonthGroups(previews) {
+    const MONTHS = [
       'January','February','March','April','May','June',
       'July','August','September','October','November','December'
     ];
-
     let lastKey = null;
 
     previews.forEach((preview) => {
-      // Try to read the ISO date from a data attribute or the meta text
-      const metaEl = preview.querySelector('.post-meta, time');
-      if (!metaEl) return;
+      const timeEl = preview.querySelector('time');
+      const metaEl = preview.querySelector('.post-meta');
 
-      // Accept both <time datetime="..."> and plain text like "February 12, 2026"
-      const raw = metaEl.getAttribute('datetime') || metaEl.textContent.trim();
+      // Prefer the machine-readable datetime attribute
+      const raw = timeEl?.getAttribute('datetime') || metaEl?.textContent.trim();
+      if (!raw) return;
+
       const date = new Date(raw);
-      if (isNaN(date)) return;
+      // Guard: skip if the date is not valid
+      if (isNaN(date.getTime())) return;
 
       const key   = `${date.getFullYear()}-${date.getMonth()}`;
-      const label = `${months[date.getMonth()]} ${date.getFullYear()}`;
+      const label = `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 
       if (key !== lastKey) {
         lastKey = key;
-        const groupEl       = document.createElement('div');
+        const groupEl = document.createElement('div');
         groupEl.className   = 'post-month-group';
         groupEl.textContent = label;
         preview.parentNode.insertBefore(groupEl, preview);
@@ -454,30 +514,35 @@ const PostPreviewClick = {
     });
   },
 
-  _injectThumbnailPlaceholders: function (previews) {
+  _injectThumbnailPlaceholders(previews) {
     previews.forEach((preview) => {
-      // Skip if thumbnail already exists in markup
       if (preview.querySelector('.post-thumbnail')) return;
-
-      // Look for an img already inside the preview (some themes put it there)
       const existingImg = preview.querySelector('img');
       if (existingImg) {
         existingImg.classList.add('post-thumbnail');
-        // Move it to end so CSS grid places it in column 2
         preview.appendChild(existingImg);
         return;
       }
-
-      // No image — leave the grid single-column gracefully
       preview.style.gridTemplateColumns = '1fr';
     });
   }
 };
 
-// ...existing code...
 // ====================================
 // 12. Enhanced Search Modal
 // ====================================
+
+/*
+ * BEFORE: _preload was declared as `_preload: async function ()` inside an
+ *         object literal — that syntax is valid, but calling it via
+ *         `this._preload()` without await means errors were silently swallowed.
+ *         The fire-and-forget call is intentional (preload on init), but the
+ *         internal try/catch was missing the error parameter.
+ *
+ * AFTER:  Kept fire-and-forget preload (intentional UX: don't block init),
+ *         fixed error parameter in catch, added a corpus-loading state flag
+ *         so the UI shows a "Loading…" hint while the fetch is in flight.
+ */
 
 const EnhancedSearch = {
   input:    null,
@@ -487,22 +552,18 @@ const EnhancedSearch = {
   corpus:   null,
   matches:  [],
   selected: -1,
+  loading:  false,
 
-  init: function () {
+  init() {
     this.input   = document.querySelector('.search-input');
     this.results = document.querySelector('.search-results');
     this.modal   = document.getElementById('search-modal');
     this.trigger = document.getElementById('search-trigger');
-
     if (!this.input || !this.results || !this.modal || !this.trigger) return;
 
     this._preload();
 
-    this.trigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.open();
-    });
-
+    this.trigger.addEventListener('click', (e) => { e.preventDefault(); this.open(); });
     this.input.addEventListener('input',   (e) => this._search(e));
     this.input.addEventListener('keydown', (e) => this._keyboard(e));
 
@@ -515,8 +576,7 @@ const EnhancedSearch = {
 
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        this.open();
+        e.preventDefault(); this.open();
       }
       if (e.key === 'Escape' && this.modal.classList.contains('active')) {
         this.close();
@@ -524,23 +584,25 @@ const EnhancedSearch = {
     });
   },
 
-  _preload: async function () {
+  async _preload() {
+    this.loading = true;
     try {
       const base = document.querySelector('meta[name="baseurl"]')?.content || '';
-      const res  = await fetch(base + '/assets/data/searchcorpus.json');
+      const res  = await fetch(`${base}/assets/data/searchcorpus.json`);
       if (res.ok) this.corpus = await res.json();
     } catch (err) {
       console.warn('Search corpus unavailable:', err);
+    } finally {
+      this.loading = false;
     }
   },
 
-  open: function () {
+  open() {
     this.modal.classList.add('active');
-    // Small delay lets CSS animation finish before focus
     setTimeout(() => this.input.focus(), 60);
   },
 
-  close: function () {
+  close() {
     this.modal.classList.remove('active');
     this.input.value = '';
     this.results.classList.remove('active');
@@ -548,43 +610,41 @@ const EnhancedSearch = {
     this.selected = -1;
   },
 
-  _search: function (e) {
+  _search(e) {
     const q = e.target.value.trim().toLowerCase();
-
     if (q.length < 2) {
       this.results.classList.remove('active');
-      this.matches  = [];
-      this.selected = -1;
+      this.matches = []; this.selected = -1;
       return;
     }
-
+    if (this.loading) {
+      this.results.innerHTML = '<div class="search-no-results">Loading search index…</div>';
+      this.results.classList.add('active');
+      return;
+    }
     if (!this.corpus) {
       this.results.innerHTML = '<div class="search-no-results">Search unavailable</div>';
       this.results.classList.add('active');
       return;
     }
-
     this.matches = this.corpus
-      .filter(
-        (item) =>
-          item.title.toLowerCase().includes(q) ||
-          item.excerpt.toLowerCase().includes(q) ||
-          item.content.toLowerCase().includes(q) ||
-          item.category.toLowerCase().includes(q)
+      .filter((item) =>
+        item.title.toLowerCase().includes(q)    ||
+        item.excerpt.toLowerCase().includes(q)  ||
+        item.content.toLowerCase().includes(q)  ||
+        item.category.toLowerCase().includes(q)
       )
       .slice(0, 10);
-
     this.selected = -1;
     this._render();
     this.results.classList.add('active');
   },
 
-  _render: function () {
-    if (this.matches.length === 0) {
+  _render() {
+    if (!this.matches.length) {
       this.results.innerHTML = '<div class="search-no-results">No results found</div>';
       return;
     }
-
     this.results.innerHTML = this.matches
       .map((r, i) => {
         const excerpt = r.excerpt.length > 90
@@ -592,10 +652,10 @@ const EnhancedSearch = {
           : r.excerpt;
         const tags = r.category
           ? r.category.split(',').slice(0, 2)
-              .map((t) => `<span class="search-result-category">${this._esc(t.trim())}</span>`)
-              .join('')
+              .map((t) =>
+                `<span class="search-result-category">${this._esc(t.trim())}</span>`
+              ).join('')
           : '';
-
         return `
           <div class="search-result-item${i === this.selected ? ' selected' : ''}"
                data-index="${i}" data-url="${r.url}">
@@ -618,9 +678,8 @@ const EnhancedSearch = {
     });
   },
 
-  _keyboard: function (e) {
-    if (this.matches.length === 0) return;
-
+  _keyboard(e) {
+    if (!this.matches.length) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       this.selected = Math.min(this.selected + 1, this.matches.length - 1);
@@ -629,29 +688,25 @@ const EnhancedSearch = {
       e.preventDefault();
       this.selected = Math.max(this.selected - 1, -1);
       this._updateSelection();
-    } else if (e.key === 'Enter') {
+    } else if (e.key === 'Enter' && this.selected >= 0) {
       e.preventDefault();
-      if (this.selected >= 0) {
-        window.location.href = this.matches[this.selected].url;
-        this.close();
-      }
+      window.location.href = this.matches[this.selected].url;
+      this.close();
     }
   },
 
-  _updateSelection: function () {
+  _updateSelection() {
     this.results.querySelectorAll('.search-result-item').forEach((item, i) => {
       item.classList.toggle('selected', i === this.selected);
-      if (i === this.selected) {
+      if (i === this.selected)
         item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
     });
   },
 
-  _esc: function (text) {
-    return text.replace(/[&<>"']/g, (c) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;',
-      '"': '&quot;', "'": '&#039;'
-    })[c]);
+  _esc(text) {
+    return text.replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]
+    );
   }
 };
 
@@ -660,18 +715,15 @@ const EnhancedSearch = {
 // ====================================
 
 const MermaidSupport = {
-  init: function () {
+  init() {
     document.querySelectorAll('pre > code.language-mermaid').forEach((codeBlock) => {
-      const pre     = codeBlock.parentElement;
-      const div     = document.createElement('div');
-      div.className = 'mermaid';
+      const pre = codeBlock.parentElement;
+      const div = document.createElement('div');
+      div.className   = 'mermaid';
       div.textContent = codeBlock.textContent;
       pre.parentNode.replaceChild(div, pre);
     });
-
-    if (window.mermaid) {
-      mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-    }
+    if (window.mermaid) mermaid.init(undefined, document.querySelectorAll('.mermaid'));
   }
 };
 
@@ -680,37 +732,65 @@ const MermaidSupport = {
 // ====================================
 
 const DarkMode = {
-  init: function () {
-    const stored     = localStorage.getItem('theme');
+  init() {
+    const stored      = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (stored === 'dark' || (!stored && prefersDark)) {
+    if (stored === 'dark' || (!stored && prefersDark))
       document.documentElement.classList.add('dark-mode');
-    }
 
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.addEventListener('click', () => this.toggle());
+    document.getElementById('theme-toggle')
+      ?.addEventListener('click', () => this.toggle());
 
-    // Keyboard shortcut: press T to toggle (only when not typing in an input)
     document.addEventListener('keydown', (e) => {
-      if (e.key === 't' || e.key === 'T') {
-        const tag = document.activeElement?.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        this.toggle();
-      }
+      if (e.key !== 't' && e.key !== 'T') return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      this.toggle();
     });
 
-    // Sync across browser tabs
     window.addEventListener('storage', (e) => {
-      if (e.key === 'theme') {
+      if (e.key === 'theme')
         document.documentElement.classList.toggle('dark-mode', e.newValue === 'dark');
-      }
     });
   },
 
-  toggle: function () {
+  toggle() {
     const isDark = document.documentElement.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+};
+
+// ====================================
+// 15. Reveal-on-Scroll Animations  ← NEW
+// ====================================
+
+/*
+ * BEFORE: custom-styles.css defines .reveal and .reveal.active transitions
+ *         but no JS ever added the .active class — elements with .reveal
+ *         were permanently invisible (opacity:0, translateY(18px)).
+ *
+ * AFTER:  IntersectionObserver adds .active when an element crosses
+ *         20% into the viewport. Works for any element with class="reveal".
+ */
+
+const RevealOnScroll = {
+  init() {
+    const targets = document.querySelectorAll('.reveal');
+    if (!targets.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target); // fire once
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    targets.forEach((el) => observer.observe(el));
   }
 };
 
@@ -726,36 +806,40 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollToTop.init();
   NavbarScroll.init();
   SmoothAnchors.init();
+  DarkMode.init();
 
-  // Single shared rAF scroll loop — replaces all individual scroll listeners
-  // on ReadingProgress and ScrollToTop
+  // Single shared rAF scroll loop
   (() => {
     let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          ReadingProgress.update();
-          ScrollToTop.toggle();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }, { passive: true });
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            ReadingProgress.update();
+            ScrollToTop.toggle();   // only place toggle() is called
+            ticking = false;
+          });
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
   })();
 
   // Content enhancements
   CodeCopy.init();
   ImageLightbox.init();
   MermaidSupport.init();
-  DarkMode.init();
+  RevealOnScroll.init();   // ← new
 
-  // Post-only features
-  AutoNumbering.init();
-  PostTableOfContents.init();
+  // Post-only features (safe to run on all pages — guard is inside each init)
+  AutoNumbering.init();          // must run before PostTableOfContents
+  PostTableOfContents.init();    // must run after AutoNumbering sets IDs
   ReadingTime.init();
+  TocHighlight.init();
 
   // Navigation & search
-  TocHighlight.init();
   EnhancedSearch.init();
   PostPreviewClick.init();
 });

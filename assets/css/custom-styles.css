@@ -58,7 +58,7 @@
   --radius-xl:  16px;
 
   /* Reading */
-  --reading-width:       740px;
+  --reading-width:       900px;
   --reading-line-height: 1.95;
   --reading-font-size:   1.08rem;
   --navbar-height:       58px;
@@ -243,8 +243,11 @@ a:hover {
 .page-content,
 .container.role main {
   max-width: var(--reading-width);
-  margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .page-content h1 {
@@ -281,6 +284,8 @@ a:hover {
   line-height: 1.85;
   color: var(--text-secondary);
   margin-bottom: 1.25rem;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 .page-content ul {
@@ -369,6 +374,7 @@ html.dark-mode .page-content h1 { color: var(--text-primary); }
   font-size: 1.2rem;
   line-height: 1.85;
   max-width: var(--reading-width);
+  width: 100%;
   margin: 2.5rem auto;
   padding: 2.5rem 2.75rem;
   background: var(--bg-secondary);
@@ -394,6 +400,9 @@ article p {
   font-size: 1.2rem;
   line-height: 1.85;
   margin-bottom: 1.4rem;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 .blog-post hr,
@@ -416,6 +425,7 @@ article blockquote {
   color: var(--text-tertiary);
   line-height: 1.9;
   font-size: 1.04rem;
+  text-align: justify;
 }
 
 .blog-post blockquote p,
@@ -454,6 +464,9 @@ article ol {
 article li {
   margin-bottom: 0.45rem;
   line-height: var(--reading-line-height);
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 /* ====================================
@@ -1795,14 +1808,24 @@ html.dark-mode .cv-iframe-wrapper  { background: #0d1117; }
 /* ====================================
    Responsive
    ==================================== */
-
 @media (max-width: 1200px) {
   .inline-toc { width: 200px; right: 1rem; }
 }
 
 @media (max-width: 1024px) {
+  :root { --reading-width: 100%; }
+
   .inline-toc { display: none; }
-  .blog-post  { margin-left: auto; margin-right: auto; }
+
+  .page-content,
+  .container.role main,
+  .blog-post,
+  article.blog-post {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 @media (max-width: 900px) {

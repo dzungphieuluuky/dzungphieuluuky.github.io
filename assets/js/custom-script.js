@@ -322,29 +322,26 @@ const PostTableOfContents = {
     const article = document.querySelector('article');
     if (!article) return;
 
-    // Include h1 so in-body section headings (not the page title) appear
     const headers = article.querySelectorAll('h1[id], h2[id], h3[id]');
     if (headers.length < 2) return;
 
-    // Map tag names to numeric levels
     const levelOf = { H1: 1, H2: 2, H3: 3 };
 
+    // ── Build inline TOC box (top of post) ──────────────────
     let html = `
       <div class="post-toc-box">
         <details open>
           <summary>▼ Table of Contents</summary>
           <ul class="post-toc-list">`;
 
-    // Track open list context: 0 = at root, 1 = inside child ul
     let openChildUl = false;
 
-    headers.forEach((header, idx) => {
+    headers.forEach((header) => {
       const id    = header.getAttribute('id');
       const text  = header.textContent.replace(/^\d+\.?\s*/, '').trim();
       const level = levelOf[header.tagName];
 
       if (level === 1) {
-        // Close any open sub-list before starting a new top-level h1 entry
         if (openChildUl) { html += '</ul></li>'; openChildUl = false; }
         html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
       } else if (level === 2) {
@@ -352,7 +349,6 @@ const PostTableOfContents = {
         html += `<li><a href="#${id}">${text}</a><ul>`;
         openChildUl = true;
       } else if (level === 3) {
-        // If we hit an h3 with no preceding h2, open a root-level wrapper
         if (!openChildUl) { html += '<li><ul>'; openChildUl = true; }
         html += `<li><a href="#${id}">${text}</a></li>`;
       }
@@ -360,10 +356,38 @@ const PostTableOfContents = {
 
     if (openChildUl) html += '</ul></li>';
     html += '</ul></details></div>';
-
     article.insertAdjacentHTML('afterbegin', html);
+
+    // ── Populate sidebar TOC ─────────────────────────────────
+    const sidebar = document.querySelector('.inline-toc ul');
+    if (!sidebar) return;
+
+    let sidebarHtml = '';
+    let sidebarOpenChild = false;
+
+    headers.forEach((header) => {
+      const id    = header.getAttribute('id');
+      const text  = header.textContent.replace(/^\d+\.?\s*/, '').trim();
+      const level = levelOf[header.tagName];
+
+      if (level === 1) {
+        if (sidebarOpenChild) { sidebarHtml += '</ul></li>'; sidebarOpenChild = false; }
+        sidebarHtml += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
+      } else if (level === 2) {
+        if (sidebarOpenChild) { sidebarHtml += '</ul></li>'; }
+        sidebarHtml += `<li><a href="#${id}">${text}</a><ul>`;
+        sidebarOpenChild = true;
+      } else if (level === 3) {
+        if (!sidebarOpenChild) { sidebarHtml += '<li><ul>'; sidebarOpenChild = true; }
+        sidebarHtml += `<li><a href="#${id}">${text}</a></li>`;
+      }
+    });
+
+    if (sidebarOpenChild) sidebarHtml += '</ul></li>';
+    sidebar.innerHTML = sidebarHtml;
   }
 };
+
 
 // ====================================
 // 9. Reading Time

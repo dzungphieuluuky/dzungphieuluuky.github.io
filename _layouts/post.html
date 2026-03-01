@@ -39,6 +39,13 @@ layout: base
       {% endif %}
 
       <div class="blog-post">
+        <!-- Sidebar TOC — place OUTSIDE the <article>, as a sibling -->
+        <nav class="inline-toc" id="inline-toc" aria-label="Table of contents">
+          <div class="inline-toc-title">Contents</div>
+          <ul>
+            <!-- Auto-populated by PostTableOfContents JS -->
+          </ul>
+        </nav>
         <article>
           <!-- Metadata Bar with Reading Time - MOVED HERE -->
           <div class="metadata-bar">

@@ -1,7 +1,7 @@
 /* ====================================
-   Elegant Reading Theme
-   Color palette: original (indigo, dark-blue, teal, turquoise, orange, dark-purple)
-   Reading aesthetic: Substack-inspired
+   Elegant Reading Theme — Refined
+   Color palette: indigo, dark-blue, teal, turquoise, orange, dark-purple
+   Reading aesthetic: Substack-inspired, elevated
    ==================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap');
@@ -19,13 +19,13 @@
   --palette-teal:        #008080;
   --palette-turquoise:   #30D5C8;
 
-  /* Backgrounds — warm paper whites, Substack-style */
+  /* Backgrounds */
   --bg-primary:    #FAFAFA;
   --bg-secondary:  #FFFFFF;
   --bg-tertiary:   #F5F5F0;
   --bg-elevated:   #FFFFFF;
 
-  /* Text — deep, calm, high contrast */
+  /* Text */
   --text-primary:   #1A1A1A;
   --text-secondary: #2C2C2C;
   --text-tertiary:  #6B6B6B;
@@ -37,30 +37,32 @@
   --accent-light:   var(--palette-teal);
   --accent-subtle:  rgba(63, 81, 181, 0.06);
 
-  /* Borders — subtle, barely-there lines */
+  /* Borders */
   --border-primary:   rgba(0, 0, 0, 0.08);
   --border-secondary: rgba(0, 0, 0, 0.04);
   --border-focus:     var(--palette-indigo);
 
-  /* Shadows — gentle elevation */
-  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.07);
-  --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.09);
-  --shadow-xl:  0 20px 48px rgba(0, 0, 0, 0.13);
+  /* Shadows — refined, directional */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-md:  0 2px 8px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.05);
+  --shadow-lg:  0 4px 16px rgba(0, 0, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.06);
+  --shadow-xl:  0 12px 40px rgba(0, 0, 0, 0.12), 0 24px 64px rgba(0, 0, 0, 0.08);
 
   /* Transitions */
   --transition-fast: 100ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 320ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Radii */
+  /* Radii — consistent scale */
+  --radius-xs:  2px;
   --radius-sm:  4px;
-  --radius-md:  6px;
-  --radius-lg:  10px;
-  --radius-xl:  14px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
 
-  /* Reading — Substack column width, generous line height */
+  /* Reading */
   --reading-width:       728px;
-  --reading-line-height: 1.9;
+  --reading-line-height: 1.85;
   --reading-font-size:   1.125rem;
   --navbar-height:       58px;
 
@@ -75,19 +77,30 @@
   --code-comment:           rgba(11, 37, 69, 0.45);
   --code-operator:          #14304a;
   --code-builtin:           var(--palette-indigo);
-  --code-border:            rgba(0, 0, 0, 0.1);
+  --code-border:            rgba(0, 0, 0, 0.08);
   --code-module-contrast:   #071629;
   --code-argument-contrast: #004f4f;
   --code-fn-contrast:       #993f00;
   --code-class-contrast:    #310048;
 
   /* Table */
-  --table-border:        rgba(0, 0, 0, 0.08);
-  --table-border-strong: rgba(0, 0, 0, 0.14);
+  --table-border:        rgba(0, 0, 0, 0.07);
+  --table-border-strong: rgba(0, 0, 0, 0.12);
   --table-header-bg:     #F7F7F5;
   --table-row-hover:     rgba(63, 81, 181, 0.04);
   --table-radius:        4px;
   --table-cell-bg:       var(--bg-secondary);
+
+  /* NEW: Footnote / sidenote */
+  --footnote-color: var(--text-muted);
+
+  /* NEW: Callout variants */
+  --callout-note-bg:    rgba(63, 81, 181, 0.05);
+  --callout-note-border: var(--palette-indigo);
+  --callout-tip-bg:     rgba(0, 128, 128, 0.05);
+  --callout-tip-border: var(--palette-teal);
+  --callout-warn-bg:    rgba(255, 122, 0, 0.05);
+  --callout-warn-border: var(--palette-orange);
 }
 
 /* ====================================
@@ -121,7 +134,7 @@ body {
   overscroll-behavior-y: contain;
 }
 
-/* Headings — Montserrat for authority, Substack-style hierarchy */
+/* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   color: var(--text-primary);
@@ -164,14 +177,14 @@ h4 {
   letter-spacing: 0;
 }
 
-/* Paragraphs — generous reading rhythm */
+/* Paragraphs */
 p {
   margin-bottom: 1.6rem;
   orphans: 3;
   widows: 3;
 }
 
-/* Links — understated, no heavy underlines */
+/* Links */
 a {
   color: var(--accent-primary);
   text-decoration: underline;
@@ -197,7 +210,7 @@ a:hover {
 }
 
 /* ====================================
-   Portfolio / Page Layout (layout: page)
+   Portfolio / Page Layout
    ==================================== */
 
 .intro-header .page-heading h1 {
@@ -223,7 +236,7 @@ a:hover {
 }
 
 /* ====================================
-   Page Body Content (layout: page)
+   Page Body Content
    ==================================== */
 
 .page-content,
@@ -250,7 +263,7 @@ a:hover {
 .page-content p {
   font-family: 'Source Serif 4', 'Lora', serif;
   font-size: 1.125rem;
-  line-height: 1.9;
+  line-height: 1.85;
   color: var(--text-secondary);
   margin-bottom: 1.4rem;
 }
@@ -319,17 +332,12 @@ html.dark-mode .page-content h1 { color: var(--text-primary); }
 }
 
 @keyframes anchorHighlight {
-  0% {
-    background: rgba(63, 81, 181, 0.06);
-    border-radius: var(--radius-sm);
-  }
-  100% {
-    background: transparent;
-  }
+  0%   { background: rgba(63, 81, 181, 0.07); border-radius: var(--radius-sm); }
+  100% { background: transparent; }
 }
 
 /* ====================================
-   Post Content — Reading Layout (Substack-core)
+   Post Content — Reading Layout
    ==================================== */
 
 .blog-post {
@@ -345,7 +353,7 @@ html.dark-mode .page-content h1 { color: var(--text-primary); }
   border: none;
 }
 
-/* Post h1 headings — section titles inside the body */
+/* Post h1 headings */
 .blog-post h1,
 article.blog-post h1 {
   font-size: 1.75rem;
@@ -357,14 +365,14 @@ article.blog-post h1 {
   letter-spacing: -0.03em;
 }
 
-/* Divider in body: a simple horizontal rule that Substack uses */
+/* Divider accent before h1 */
 .blog-post h1::before,
 article.blog-post h1::before {
   content: '';
   display: block;
-  width: 40px;
+  width: 36px;
   height: 3px;
-  background: var(--palette-turquoise);
+  background: linear-gradient(90deg, var(--palette-turquoise), var(--palette-indigo));
   margin-bottom: 1.25rem;
   border-radius: 2px;
 }
@@ -375,10 +383,10 @@ article p {
   line-height: var(--reading-line-height);
   margin-bottom: 1.6rem;
   color: var(--text-secondary);
-  text-align: justify;
+  text-align: left;
 }
 
-/* Drop cap for the very first paragraph — classic Substack touch */
+/* Drop cap */
 .blog-post > p:first-of-type::first-letter,
 article > p:first-of-type::first-letter {
   float: left;
@@ -400,7 +408,7 @@ article hr {
   opacity: 1;
 }
 
-/* Blockquote — Substack-style pull-quote feeling */
+/* Blockquote */
 .blog-post blockquote,
 article blockquote {
   border-left: 3px solid var(--palette-turquoise);
@@ -419,13 +427,14 @@ article blockquote p {
   margin-bottom: 0;
 }
 
+/* Images */
 .blog-post img,
 article img {
   display: block;
   max-width: 100%;
   height: auto;
   margin: 2.5rem auto;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   transition: box-shadow var(--transition-base), transform 200ms ease;
   cursor: zoom-in;
@@ -436,6 +445,29 @@ article img:hover {
   box-shadow: var(--shadow-lg);
 }
 
+/* Improved image captions */
+.blog-post figure,
+article figure {
+  margin: 2.5rem 0;
+  text-align: center;
+}
+
+.blog-post figure img,
+article figure img {
+  margin: 0 auto 0.75rem;
+}
+
+.blog-post figcaption,
+article figcaption {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+/* Lists */
 .blog-post ul,
 .blog-post ol,
 article ul,
@@ -448,6 +480,171 @@ article ol {
 article li {
   margin-bottom: 0.5rem;
   line-height: var(--reading-line-height);
+}
+
+/* ====================================
+   NEW: Callout / Admonition Boxes
+   ==================================== */
+
+.callout {
+  display: flex;
+  gap: 0.85rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  margin: 2rem 0;
+  border-left: 3px solid var(--callout-note-border);
+  background: var(--callout-note-bg);
+  font-size: 0.97rem;
+  line-height: 1.7;
+}
+
+.callout-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 0.15rem;
+  color: var(--callout-note-border);
+}
+
+.callout-body { flex: 1; }
+
+.callout-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--callout-note-border);
+  margin-bottom: 0.35rem;
+}
+
+.callout-body p { margin-bottom: 0; font-size: 0.97rem; }
+
+.callout.callout-tip {
+  border-left-color: var(--callout-tip-border);
+  background: var(--callout-tip-bg);
+}
+.callout.callout-tip .callout-icon  { color: var(--callout-tip-border); }
+.callout.callout-tip .callout-title { color: var(--callout-tip-border); }
+
+.callout.callout-warn {
+  border-left-color: var(--callout-warn-border);
+  background: var(--callout-warn-bg);
+}
+.callout.callout-warn .callout-icon  { color: var(--callout-warn-border); }
+.callout.callout-warn .callout-title { color: var(--callout-warn-border); }
+
+/* ====================================
+   NEW: Sidenotes / Footnotes
+   ==================================== */
+
+/* Inline footnote marker */
+.footnote-ref {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68em;
+  font-weight: 700;
+  color: var(--accent-primary);
+  vertical-align: super;
+  line-height: 0;
+  padding: 0 0.1em;
+  text-decoration: none;
+  border-bottom: none;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.footnote-ref:hover { color: var(--accent-hover); }
+
+/* Footnotes section at bottom of post */
+.footnotes-section {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-primary);
+}
+
+.footnotes-section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.footnotes-list {
+  list-style: none;
+  padding: 0;
+  counter-reset: footnote;
+}
+
+.footnotes-list li {
+  counter-increment: footnote;
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  line-height: 1.65;
+}
+
+.footnotes-list li::before {
+  content: counter(footnote);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  min-width: 1.2em;
+  padding-top: 0.2em;
+}
+
+/* ====================================
+   NEW: Keyboard Shortcut Hints
+   ==================================== */
+
+kbd {
+  display: inline-block;
+  padding: 0.12em 0.4em;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-size: 0.75em;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* ====================================
+   NEW: Post Series / Navigation Banner
+   ==================================== */
+
+.series-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--accent-subtle);
+  border: 1px solid rgba(63, 81, 181, 0.12);
+  border-radius: var(--radius-md);
+  margin: 1.5rem 0 2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+}
+
+.series-banner-label {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  white-space: nowrap;
+}
+
+.series-banner-title {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.85rem;
 }
 
 /* ====================================
@@ -594,7 +791,7 @@ table {
   background: transparent !important;
   border-collapse: collapse !important;
   margin: 2rem 0 !important;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   line-height: 1.6;
   border: 1px solid var(--table-border);
   border-radius: var(--radius-md);
@@ -625,18 +822,16 @@ table th {
   font-family: 'Montserrat', sans-serif !important;
   font-weight: 600 !important;
   letter-spacing: 0.01em !important;
-  font-size: 0.875rem !important;
+  font-size: 0.82rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
 }
 
-table tbody tr:last-child td {
-  border-bottom: none !important;
-}
+table tbody tr:last-child td { border-bottom: none !important; }
 
-table tr:hover td {
-  background: var(--table-row-hover) !important;
-}
+table tr:hover td { background: var(--table-row-hover) !important; }
 
-/* Fallback for Prism highlight tables */
+/* Prism highlight table fallback */
 .highlight table,
 .highlight tr,
 .highlight th,
@@ -669,11 +864,11 @@ table tr:hover td {
 .glass-card:hover,
 .scientific-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: rgba(63, 81, 181, 0.2);
+  border-color: rgba(63, 81, 181, 0.18);
 }
 
 /* ====================================
-   Post Previews — Substack Style
+   Post Previews
    ==================================== */
 
 .post-preview {
@@ -697,9 +892,7 @@ table tr:hover td {
 
 .post-preview:first-of-type { border-top: 1px solid var(--border-primary); }
 
-.post-preview:hover {
-  background: transparent;
-}
+.post-preview:hover { background: transparent; }
 
 /* Title */
 .post-preview h2,
@@ -829,7 +1022,7 @@ table tr:hover td {
 
 .post-preview .post-read-more { display: none; }
 
-/* Post page wrapper — sidebar + content side by side */
+/* Post page wrapper */
 .post-layout {
   display: flex;
   gap: 2rem;
@@ -841,12 +1034,11 @@ table tr:hover td {
 
 .post-layout .blog-post {
   flex: 1;
-  min-width: 0; /* prevents flex overflow */
+  min-width: 0;
   margin: 2rem 0 4rem;
 }
 
 .post-layout .inline-toc {
-  /* Override the fixed positioning — make it sticky instead */
   position: sticky;
   top: calc(var(--navbar-height) + 24px);
   right: unset;
@@ -857,7 +1049,7 @@ table tr:hover td {
 
 @media (max-width: 1024px) {
   .post-layout { flex-direction: column; }
-  .post-layout .inline-toc { display: none; } /* already hidden via existing rule */
+  .post-layout .inline-toc { display: none; }
 }
 
 /* ====================================
@@ -982,6 +1174,65 @@ table tr:hover td {
 
 .metadata-item svg    { width: 14px; height: 14px; color: var(--text-muted); flex-shrink: 0; }
 .metadata-item strong { color: var(--text-secondary); font-weight: 600; }
+
+/* ====================================
+   NEW: Share / Reaction Bar
+   ==================================== */
+
+.post-share-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border-primary);
+  border-bottom: 1px solid var(--border-primary);
+  margin: 3rem 0 2rem;
+  flex-wrap: wrap;
+}
+
+.post-share-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 0.25rem;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border-primary);
+  background: transparent;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  transition: all var(--transition-base);
+  letter-spacing: 0.02em;
+}
+
+.share-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-subtle);
+  text-decoration: none;
+}
+
+.share-btn svg { width: 14px; height: 14px; }
+
+/* Copy link button feedback */
+.share-btn.copied {
+  border-color: var(--palette-teal);
+  color: var(--palette-teal);
+  background: rgba(0, 128, 128, 0.05);
+}
 
 /* ====================================
    Table of Contents — Fixed Sidebar
@@ -1366,9 +1617,7 @@ html.dark-mode .post-toc-box {
 .search-modal .search-result-item:last-child { border-bottom: none; }
 
 .search-modal .search-result-item:hover,
-.search-modal .search-result-item.selected {
-  background: var(--accent-subtle);
-}
+.search-modal .search-result-item.selected { background: var(--accent-subtle); }
 
 .search-modal .search-result-item.selected {
   border-left: 2px solid var(--accent-primary);
@@ -1423,7 +1672,12 @@ html.dark-mode .post-toc-box {
   font-family: 'Source Serif 4', 'Lora', serif;
 }
 
+/* NEW: Keyboard shortcut hint in search */
 .search-modal .search-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   font-size: 0.68rem;
   color: var(--text-muted);
   font-family: 'Montserrat', sans-serif;
@@ -1431,6 +1685,11 @@ html.dark-mode .post-toc-box {
   letter-spacing: 0.07em;
   margin-top: 0.85rem;
   text-align: center;
+}
+
+.search-modal .search-hint kbd {
+  font-size: 0.65em;
+  padding: 0.1em 0.35em;
 }
 
 /* ====================================
@@ -1481,14 +1740,23 @@ html.dark-mode .post-toc-box {
   border: 1px solid var(--border-primary);
 }
 
+/* Improved reveal animation */
 .reveal {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(10px);
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .reveal.active { opacity: 1; transform: translateY(0); }
+
+/* Staggered reveal delays for children */
+.reveal-group > * { opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; }
+.reveal-group.active > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0ms; }
+.reveal-group.active > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 60ms; }
+.reveal-group.active > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 120ms; }
+.reveal-group.active > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 180ms; }
+.reveal-group.active > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 240ms; }
 
 /* ====================================
    Scroll To Top Button
@@ -1525,7 +1793,7 @@ html.dark-mode .post-toc-box {
   border-color: var(--accent-primary);
 }
 
-#scroll-to-top svg      { width: 20px; height: 20px; fill: var(--text-tertiary); transition: fill 0.2s ease; }
+#scroll-to-top svg       { width: 20px; height: 20px; fill: var(--text-tertiary); transition: fill 0.2s ease; }
 #scroll-to-top:hover svg { fill: #fff; }
 
 /* ====================================
@@ -1731,20 +1999,16 @@ html.dark-mode {
   --table-border-strong: rgba(255, 255, 255, 0.12);
   --table-header-bg:     rgba(255, 255, 255, 0.04);
   --code-border:         rgba(255, 255, 255, 0.08);
+  --callout-note-bg:     rgba(63, 81, 181, 0.08);
+  --callout-tip-bg:      rgba(0, 128, 128, 0.08);
+  --callout-warn-bg:     rgba(255, 122, 0, 0.08);
   color-scheme: dark;
 }
 
-html.dark-mode pre {
-  background: #111111;
-}
+html.dark-mode pre { background: #111111; }
 
-html.dark-mode .navbar {
-  background: rgba(15, 15, 15, 0.92);
-}
-
-html.dark-mode .navbar.scrolled {
-  background: rgba(26, 26, 26, 0.98);
-}
+html.dark-mode .navbar { background: rgba(15, 15, 15, 0.92); }
+html.dark-mode .navbar.scrolled { background: rgba(26, 26, 26, 0.98); }
 
 html.dark-mode code:not(pre code) {
   background: rgba(63, 81, 181, 0.12);
@@ -1761,6 +2025,28 @@ html.dark-mode .cv-iframe-wrapper  { background: #111111; }
 html.dark-mode .blog-post > p:first-of-type::first-letter,
 html.dark-mode article > p:first-of-type::first-letter {
   color: var(--palette-turquoise);
+}
+
+html.dark-mode .copy-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+html.dark-mode kbd {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+  color: var(--text-secondary);
+}
+
+html.dark-mode .series-banner {
+  background: rgba(63, 81, 181, 0.1);
+  border-color: rgba(63, 81, 181, 0.2);
+}
+
+html.dark-mode .share-btn {
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-tertiary);
 }
 
 /* ====================================
@@ -1814,6 +2100,8 @@ html.dark-mode article > p:first-of-type::first-letter {
   .search-modal .search-container { padding: 1.25rem; }
   .search-modal .search-icon { left: 1.75rem; top: 2.15rem; }
   .search-trigger { padding: 0.5rem !important; }
+
+  .post-share-bar { gap: 0.4rem; }
 }
 
 @media (max-width: 600px) {
@@ -1825,4 +2113,6 @@ html.dark-mode article > p:first-of-type::first-letter {
   .cv-download-buttons    { flex-direction: column; width: 100%; }
   .cv-btn                 { width: 100%; justify-content: center; }
   .cv-iframe-wrapper iframe { height: 70vh; min-height: 400px; }
+
+  .callout { padding: 0.875rem 1rem; }
 }

@@ -48,14 +48,6 @@ const ReadingProgress = {
 // 2. Scroll-To-Top Button
 // ====================================
 
-/*
- * BEFORE: ScrollToTop attached its own window 'scroll' listener inside init(),
- *         AND the shared rAF loop in DOMContentLoaded also called toggle().
- *         That meant toggle() ran twice per scroll event.
- * AFTER:  Removed the internal listener entirely. toggle() is only called
- *         from the single shared rAF loop.
- */
-
 const ScrollToTop = {
   btn: null,
   THRESHOLD: 380,
@@ -68,7 +60,6 @@ const ScrollToTop = {
       '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
     document.body.appendChild(this.btn);
 
-    // No scroll listener here — driven exclusively by the shared rAF loop
     this.btn.addEventListener('click', () =>
       window.scrollTo({ top: 0, behavior: 'smooth' })
     );
@@ -112,18 +103,6 @@ const SmoothAnchors = {
 // 4. TOC Active Section Highlighting
 // ====================================
 
-/*
- * BEFORE: querySelectorAll('h2[id], h3[id]') — h1 section headings were never
- *         observed, so TOC links for h1 entries never received the .active class.
- *         Also used link.offsetTop (relative to nearest positioned ancestor)
- *         to scroll the TOC panel, which gave wrong values when the TOC itself
- *         was position:fixed or deeply nested.
- *
- * AFTER:  Observes h1[id], h2[id], h3[id].
- *         Uses getBoundingClientRect() relative to the TOC container for
- *         accurate scroll-into-view behaviour.
- */
-
 const TocHighlight = {
   observer: null,
 
@@ -155,7 +134,6 @@ const TocHighlight = {
             )
             .forEach((link) => {
               link.classList.add('active');
-              // Scroll TOC panel using bounding-rect math (accurate for fixed/sticky panels)
               const toc = link.closest('.inline-toc, .toc-container, .post-toc-box');
               if (toc) {
                 const tocRect  = toc.getBoundingClientRect();
@@ -303,20 +281,6 @@ const NavbarScroll = {
 // 8. Post Table of Contents (Inline Box)
 // ====================================
 
-/*
- * BEFORE: querySelectorAll('h2[id], h3[id]') — h1 section headings inside the
- *         post body were silently dropped from the TOC.
- *         The nesting state machine also produced invalid HTML when the first
- *         header encountered was an h3 (it opened a nested <ul> with no parent
- *         <li> to attach to).
- *
- * AFTER:  Includes h1[id], h2[id], h3[id].
- *         h1 entries get .toc-h1 for distinct CSS styling (bolder, slightly
- *         larger per custom-styles.css).
- *         State machine is rewritten with an explicit level tracker so nesting
- *         is always structurally valid regardless of heading order.
- */
-
 const PostTableOfContents = {
   init() {
     const article = document.querySelector('article');
@@ -327,7 +291,6 @@ const PostTableOfContents = {
 
     const levelOf = { H1: 1, H2: 2, H3: 3 };
 
-    // ── Build inline TOC box (top of post) ──────────────────
     let html = `
       <div class="post-toc-box">
         <details open>
@@ -358,7 +321,7 @@ const PostTableOfContents = {
     html += '</ul></details></div>';
     article.insertAdjacentHTML('afterbegin', html);
 
-    // ── Populate sidebar TOC ─────────────────────────────────
+    // Populate sidebar TOC
     const sidebar = document.querySelector('.inline-toc ul');
     if (!sidebar) return;
 
@@ -388,15 +351,9 @@ const PostTableOfContents = {
   }
 };
 
-
 // ====================================
 // 9. Reading Time
 // ====================================
-
-/*
- * BEFORE: 200 wpm — commonly cited but low; research average is ~238 wpm.
- * AFTER:  238 wpm.
- */
 
 const ReadingTime = {
   WPM: 238,
@@ -439,14 +396,6 @@ const ReadingTime = {
 // 10. Auto-Numbering Headers
 // ====================================
 
-/*
- * BEFORE: Only numbered h2/h3. h1 section headings had no auto-id
- *         and were skipped by both the TOC builder and TocHighlight observer.
- *
- * AFTER:  Numbers h1, h2, h3. h1 resets the h2 and h3 counters.
- *         IDs are added if missing so TocHighlight can observe them.
- */
-
 const AutoNumbering = {
   init() {
     const article = document.querySelector('article');
@@ -475,16 +424,6 @@ const AutoNumbering = {
 // ====================================
 // 11. Post Preview Click + Substack Layout
 // ====================================
-
-/*
- * BEFORE: _injectMonthGroups used new Date(rawString) where rawString might be
- *         plain text like "February 12, 2026". While V8 handles this,
- *         the spec doesn't guarantee it — the datetime attribute is more reliable.
- *
- * AFTER:  Prefers the datetime attribute on <time> elements; falls back to
- *         textContent only when no datetime is present, and guards against
- *         invalid dates explicitly before using them.
- */
 
 const PostPreviewClick = {
   init() {
@@ -517,12 +456,10 @@ const PostPreviewClick = {
       const timeEl = preview.querySelector('time');
       const metaEl = preview.querySelector('.post-meta');
 
-      // Prefer the machine-readable datetime attribute
       const raw = timeEl?.getAttribute('datetime') || metaEl?.textContent.trim();
       if (!raw) return;
 
       const date = new Date(raw);
-      // Guard: skip if the date is not valid
       if (isNaN(date.getTime())) return;
 
       const key   = `${date.getFullYear()}-${date.getMonth()}`;
@@ -555,18 +492,6 @@ const PostPreviewClick = {
 // ====================================
 // 12. Enhanced Search Modal
 // ====================================
-
-/*
- * BEFORE: _preload was declared as `_preload: async function ()` inside an
- *         object literal — that syntax is valid, but calling it via
- *         `this._preload()` without await means errors were silently swallowed.
- *         The fire-and-forget call is intentional (preload on init), but the
- *         internal try/catch was missing the error parameter.
- *
- * AFTER:  Kept fire-and-forget preload (intentional UX: don't block init),
- *         fixed error parameter in catch, added a corpus-loading state flag
- *         so the UI shows a "Loading…" hint while the fetch is in flight.
- */
 
 const EnhancedSearch = {
   input:    null,
@@ -785,21 +710,12 @@ const DarkMode = {
 };
 
 // ====================================
-// 15. Reveal-on-Scroll Animations  ← NEW
+// 15. Reveal-on-Scroll Animations
 // ====================================
-
-/*
- * BEFORE: custom-styles.css defines .reveal and .reveal.active transitions
- *         but no JS ever added the .active class — elements with .reveal
- *         were permanently invisible (opacity:0, translateY(18px)).
- *
- * AFTER:  IntersectionObserver adds .active when an element crosses
- *         20% into the viewport. Works for any element with class="reveal".
- */
 
 const RevealOnScroll = {
   init() {
-    const targets = document.querySelectorAll('.reveal');
+    const targets = document.querySelectorAll('.reveal, .reveal-group');
     if (!targets.length) return;
 
     const observer = new IntersectionObserver(
@@ -807,14 +723,208 @@ const RevealOnScroll = {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('active');
-            observer.unobserve(entry.target); // fire once
+            observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.12 }
     );
 
     targets.forEach((el) => observer.observe(el));
+  }
+};
+
+// ====================================
+// 16. NEW: Post Share Bar
+// Injects a share strip after the post content with copy-link,
+// Twitter/X, and LinkedIn buttons.
+// ====================================
+
+const PostShareBar = {
+  init() {
+    const article = document.querySelector('article');
+    if (!article) return;
+
+    const bar = document.createElement('div');
+    bar.className = 'post-share-bar';
+
+    const url   = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(document.title);
+
+    bar.innerHTML = `
+      <span class="post-share-label">Share</span>
+      <button class="share-btn" id="share-copy-link" title="Copy link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        Copy link
+      </button>
+      <a class="share-btn"
+         href="https://twitter.com/intent/tweet?url=${url}&text=${title}"
+         target="_blank" rel="noopener noreferrer" title="Share on X">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        X
+      </a>
+      <a class="share-btn"
+         href="https://www.linkedin.com/sharing/share-offsite/?url=${url}"
+         target="_blank" rel="noopener noreferrer" title="Share on LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+        LinkedIn
+      </a>`;
+
+    // Append after last child of article
+    article.appendChild(bar);
+
+    // Copy link logic
+    document.getElementById('share-copy-link')?.addEventListener('click', async () => {
+      const btn = document.getElementById('share-copy-link');
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        const original = btn.innerHTML;
+        btn.innerHTML = btn.innerHTML.replace('Copy link', 'Copied!');
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch {
+        // Fallback: select + copy
+        const el = document.createElement('textarea');
+        el.value = window.location.href;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
+    });
+  }
+};
+
+// ====================================
+// 17. NEW: Footnote Tooltips
+// Wraps .footnote-ref links with a hover tooltip showing the
+// referenced footnote text inline, so readers don't need to
+// scroll to the bottom for short notes.
+// ====================================
+
+const FootnoteTooltips = {
+  tooltip: null,
+  hideTimer: null,
+
+  init() {
+    const refs = document.querySelectorAll('.footnote-ref');
+    if (!refs.length) return;
+
+    this.tooltip = document.createElement('div');
+    this.tooltip.id = 'footnote-tooltip';
+    Object.assign(this.tooltip.style, {
+      position:      'absolute',
+      zIndex:        '5000',
+      maxWidth:      '320px',
+      background:    'var(--bg-elevated)',
+      border:        '1px solid var(--border-primary)',
+      borderRadius:  'var(--radius-md)',
+      padding:       '0.75rem 1rem',
+      fontSize:      '0.82rem',
+      lineHeight:    '1.6',
+      color:         'var(--text-secondary)',
+      boxShadow:     'var(--shadow-lg)',
+      pointerEvents: 'none',
+      opacity:       '0',
+      transition:    'opacity 140ms ease',
+      fontFamily:    "'Source Serif 4', 'Lora', serif",
+    });
+    document.body.appendChild(this.tooltip);
+
+    refs.forEach((ref) => {
+      ref.addEventListener('mouseenter', (e) => this._show(e, ref));
+      ref.addEventListener('mouseleave', ()  => this._hide());
+      ref.addEventListener('focus',      (e) => this._show(e, ref));
+      ref.addEventListener('blur',       ()  => this._hide());
+    });
+  },
+
+  _show(e, ref) {
+    clearTimeout(this.hideTimer);
+    const href   = ref.getAttribute('href');
+    if (!href) return;
+    const target = document.querySelector(href);
+    if (!target) return;
+
+    // Get the text content of the footnote (strip back-link)
+    const clone = target.cloneNode(true);
+    clone.querySelector('.footnote-backref, a[href^="#fnref"]')?.remove();
+    const text = clone.textContent.trim();
+    if (!text) return;
+
+    this.tooltip.textContent = text;
+    this.tooltip.style.opacity = '0';
+    document.body.appendChild(this.tooltip); // ensure attached
+
+    // Position near the reference
+    const rect = ref.getBoundingClientRect();
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+    const tipW  = this.tooltip.offsetWidth  || 320;
+    const tipH  = this.tooltip.offsetHeight || 80;
+    const margin = 8;
+
+    let top  = rect.bottom + scrollY + margin;
+    let left = rect.left   + scrollX - 12;
+
+    // Flip up if too close to bottom
+    if (rect.bottom + margin + tipH > window.innerHeight)
+      top = rect.top + scrollY - tipH - margin;
+
+    // Clamp to viewport
+    if (left + tipW > window.innerWidth - 16)
+      left = window.innerWidth - tipW - 16;
+    if (left < 8) left = 8;
+
+    this.tooltip.style.top  = `${top}px`;
+    this.tooltip.style.left = `${left}px`;
+
+    requestAnimationFrame(() => { this.tooltip.style.opacity = '1'; });
+  },
+
+  _hide() {
+    this.hideTimer = setTimeout(() => {
+      this.tooltip.style.opacity = '0';
+    }, 120);
+  }
+};
+
+// ====================================
+// 18. NEW: Callout Block Auto-Icons
+// Scans for .callout elements that don't have a .callout-icon
+// child and injects the appropriate SVG icon based on variant class.
+// ====================================
+
+const CalloutIcons = {
+  icons: {
+    default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    tip:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9 12l2 2 4-4"/></svg>`,
+    warn:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  },
+
+  init() {
+    document.querySelectorAll('.callout').forEach((el) => {
+      if (el.querySelector('.callout-icon')) return;
+
+      let variant = 'default';
+      if (el.classList.contains('callout-tip'))  variant = 'tip';
+      if (el.classList.contains('callout-warn')) variant = 'warn';
+
+      const iconEl = document.createElement('div');
+      iconEl.className = 'callout-icon';
+      iconEl.innerHTML = this.icons[variant];
+      el.insertBefore(iconEl, el.firstChild);
+    });
   }
 };
 
@@ -841,7 +951,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ticking) {
           requestAnimationFrame(() => {
             ReadingProgress.update();
-            ScrollToTop.toggle();   // only place toggle() is called
+            ScrollToTop.toggle();
             ticking = false;
           });
           ticking = true;
@@ -855,13 +965,16 @@ document.addEventListener('DOMContentLoaded', () => {
   CodeCopy.init();
   ImageLightbox.init();
   MermaidSupport.init();
-  RevealOnScroll.init();   // ← new
+  RevealOnScroll.init();
+  CalloutIcons.init();
 
-  // Post-only features (safe to run on all pages — guard is inside each init)
-  AutoNumbering.init();          // must run before PostTableOfContents
-  PostTableOfContents.init();    // must run after AutoNumbering sets IDs
+  // Post-only features
+  AutoNumbering.init();           // must run before PostTableOfContents
+  PostTableOfContents.init();     // must run after AutoNumbering sets IDs
   ReadingTime.init();
   TocHighlight.init();
+  PostShareBar.init();
+  FootnoteTooltips.init();
 
   // Navigation & search
   EnhancedSearch.init();

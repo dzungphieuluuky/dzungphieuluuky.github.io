@@ -30,10 +30,12 @@ const InteractionManager = {
 
 // ====================================
 // 1. Reading Progress Bar
+// Enhanced with anime.js for smooth easing animations
 // ====================================
 
 const ReadingProgress = {
   bar: null,
+  currentRatio: 0,
 
   init() {
     this.bar = document.getElementById('reading-progress');
@@ -46,20 +48,31 @@ const ReadingProgress = {
   },
 
   update() {
-    if (!this.bar) return;
+    if (!this.bar || !window.anime) return;
     const total = document.documentElement.scrollHeight - window.innerHeight;
     const ratio = total > 0 ? Math.min(window.scrollY / total, 1) : 0;
-    this.bar.style.transform = `scaleX(${ratio})`;
+    
+    // Only animate if ratio has changed significantly
+    if (Math.abs(ratio - this.currentRatio) > 0.01) {
+      anime.to(this.bar, {
+        scaleX: ratio,
+        duration: 300,
+        easing: 'easeOutQuad'
+      });
+      this.currentRatio = ratio;
+    }
   }
 };
 
 // ====================================
 // 2. Scroll-To-Top Button
+// Enhanced with anime.js pop-in and fade animations
 // ====================================
 
 const ScrollToTop = {
   btn: null,
   THRESHOLD: 380,
+  isVisible: false,
 
   init() {
     this.btn = document.createElement('button');
@@ -75,8 +88,29 @@ const ScrollToTop = {
   },
 
   toggle() {
-    if (!this.btn) return;
-    this.btn.classList.toggle('visible', window.scrollY > this.THRESHOLD);
+    if (!this.btn || !window.anime) return;
+    const shouldBeVisible = window.scrollY > this.THRESHOLD;
+    
+    if (shouldBeVisible && !this.isVisible) {
+      this.isVisible = true;
+      anime.to(this.btn, {
+        opacity: 1,
+        scale: 1,
+        duration: 380,
+        easing: 'easeOutElastic(1, 0.6)'
+      });
+    } else if (!shouldBeVisible && this.isVisible) {
+      this.isVisible = false;
+      anime.to(this.btn, {
+        opacity: 0,
+        scale: 0.3,
+        duration: 250,
+        easing: 'easeInQuad',
+        complete: () => {
+          this.btn.classList.remove('visible');
+        }
+      });
+    }
   }
 };
 
@@ -167,13 +201,32 @@ const TocHighlight = {
       // Clear previous active states
       document
         .querySelectorAll(this.tocSelectors)
-        .forEach((l) => l.classList.remove('active'));
+        .forEach((l) => {
+          if (window.anime && l.classList.contains('active')) {
+            // Animate out the previous link
+            anime.to(l, {
+              opacity: 0.6,
+              duration: 200,
+              easing: 'easeOutQuad'
+            });
+          }
+          l.classList.remove('active');
+        });
 
-      // Set new active state
+      // Set new active state with animation
       document
         .querySelectorAll(`.inline-toc a[href="#${id}"], .toc-container a[href="#${id}"], .post-toc-box a[href="#${id}"]`)
         .forEach((link) => {
           link.classList.add('active');
+          
+          if (window.anime) {
+            anime.to(link, {
+              opacity: 1,
+              duration: 300,
+              easing: 'easeOutQuad'
+            });
+          }
+          
           this.autoScrollTocContainer(link);
         });
     });
@@ -228,6 +281,16 @@ const CodeCopy = {
           await navigator.clipboard.writeText(codeBlock.textContent);
           btn.textContent = 'Copied!';
           btn.classList.add('copied');
+          
+          if (window.anime) {
+            // Pulse animation on successful copy
+            anime.to(btn, {
+              scale: [1, 1.1, 1],
+              duration: 500,
+              easing: 'easeInOutQuad'
+            });
+          }
+          
           setTimeout(() => {
             btn.textContent = 'Copy';
             btn.classList.remove('copied');
@@ -242,12 +305,13 @@ const CodeCopy = {
 
 // ====================================
 // 6. Image Lightbox
-// Provides full-screen image viewing with caption support.
+// Enhanced with anime.js for sophisticated animations
 // Supports keyboard navigation (Esc to close, Click backdrop to close).
 // ====================================
 
 const ImageLightbox = {
   lightbox: null,
+  isOpen: false,
 
   init() {
     const images = document.querySelectorAll('article img, .post-content img, main img');
@@ -289,27 +353,62 @@ const ImageLightbox = {
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.lightbox?.classList.contains('active')) {
+      if (e.key === 'Escape' && this.isOpen) {
         this.close();
       }
     }, false);
   },
 
   open(img) {
-    if (!this.lightbox) return;
+    if (!this.lightbox || !window.anime) return;
     
     this.lightbox.querySelector('img').src = img.src;
     this.lightbox.querySelector('img').alt = img.alt || 'Image';
     this.lightbox.querySelector('.lightbox-caption').textContent = img.alt || '';
     this.lightbox.classList.add('active');
     document.body.classList.add('overflow-hidden');
+    this.isOpen = true;
+
+    // Animate backdrop and content
+    anime.set(this.lightbox, { opacity: 0 });
+    anime.to(this.lightbox, {
+      opacity: 1,
+      duration: 300,
+      easing: 'easeOutQuad'
+    });
+
+    const content = this.lightbox.querySelector('.lightbox-content');
+    anime.set(content, { scale: 0.7, opacity: 0 });
+    anime.to(content, {
+      scale: 1,
+      opacity: 1,
+      duration: 380,
+      easing: 'easeOutElastic(1, 0.5)'
+    });
   },
 
   close() {
-    if (!this.lightbox) return;
+    if (!this.lightbox || !window.anime || !this.isOpen) return;
     
-    this.lightbox.classList.remove('active');
-    document.body.classList.remove('overflow-hidden');
+    this.isOpen = false;
+    const content = this.lightbox.querySelector('.lightbox-content');
+    
+    anime.to(content, {
+      scale: 0.7,
+      opacity: 0,
+      duration: 250,
+      easing: 'easeInQuad'
+    });
+
+    anime.to(this.lightbox, {
+      opacity: 0,
+      duration: 250,
+      easing: 'easeInQuad',
+      complete: () => {
+        this.lightbox.classList.remove('active');
+        document.body.classList.remove('overflow-hidden');
+      }
+    });
   }
 };
 
@@ -603,15 +702,51 @@ const EnhancedSearch = {
 
   open() {
     this.modal.classList.add('active');
+    
+    if (window.anime) {
+      // Animate modal entrance with slide-up effect
+      anime.set(this.modal, { opacity: 0 });
+      anime.to(this.modal, {
+        opacity: 1,
+        duration: 300,
+        easing: 'easeOutQuad'
+      });
+
+      const searchBox = this.modal.querySelector('.search-box');
+      anime.set(searchBox, { opacity: 0, translateY: 20 });
+      anime.to(searchBox, {
+        opacity: 1,
+        translateY: 0,
+        duration: 380,
+        easing: 'easeOutCubic',
+        delay: 100
+      });
+    }
+    
     setTimeout(() => this.input.focus(), 60);
   },
 
   close() {
-    this.modal.classList.remove('active');
-    this.input.value = '';
-    this.results.classList.remove('active');
-    this.matches  = [];
-    this.selected = -1;
+    if (window.anime && this.modal.classList.contains('active')) {
+      anime.to(this.modal, {
+        opacity: 0,
+        duration: 200,
+        easing: 'easeInQuad',
+        complete: () => {
+          this.modal.classList.remove('active');
+          this.input.value = '';
+          this.results.classList.remove('active');
+          this.matches  = [];
+          this.selected = -1;
+        }
+      });
+    } else {
+      this.modal.classList.remove('active');
+      this.input.value = '';
+      this.results.classList.remove('active');
+      this.matches  = [];
+      this.selected = -1;
+    }
   },
 
   _search(e) {
@@ -766,6 +901,7 @@ const DarkMode = {
 
 // ====================================
 // 15. Reveal-on-Scroll Animations
+// Enhanced with anime.js for staggered entrance effects
 // ====================================
 
 const RevealOnScroll = {
@@ -775,9 +911,21 @@ const RevealOnScroll = {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        entries.forEach((entry, index) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('active');
+            
+            if (window.anime) {
+              // Staggered animation for reveal groups
+              anime.to(entry.target, {
+                opacity: [0, 1],
+                translateY: [40, 0],
+                duration: 600,
+                easing: 'easeOutCubic',
+                delay: index * 100
+              });
+            }
+            
             observer.unobserve(entry.target);
           }
         });
@@ -835,6 +983,26 @@ const PostShareBar = {
     // Append after last child of article
     article.appendChild(bar);
 
+    // Animate share bar entrance with staggered buttons
+    if (window.anime) {
+      anime.set(bar, { opacity: 0 });
+      anime.to(bar, {
+        opacity: 1,
+        duration: 400,
+        easing: 'easeOutQuad'
+      });
+
+      const buttons = bar.querySelectorAll('.share-btn');
+      anime.set(buttons, { opacity: 0, scale: 0.8 });
+      anime.to(buttons, {
+        opacity: 1,
+        scale: 1,
+        duration: 500,
+        easing: 'easeOutElastic(1, 0.5)',
+        delay: anime.stagger(80)
+      });
+    }
+
     // Copy link logic
     document.getElementById('share-copy-link')?.addEventListener('click', async () => {
       const btn = document.getElementById('share-copy-link');
@@ -843,6 +1011,15 @@ const PostShareBar = {
         const original = btn.innerHTML;
         btn.innerHTML = btn.innerHTML.replace('Copy link', 'Copied!');
         btn.classList.add('copied');
+        
+        if (window.anime) {
+          anime.to(btn, {
+            scale: [1, 1.15, 1],
+            duration: 400,
+            easing: 'easeInOutQuad'
+          });
+        }
+        
         setTimeout(() => {
           btn.innerHTML = original;
           btn.classList.remove('copied');
@@ -918,7 +1095,6 @@ const FootnoteTooltips = {
     if (!text) return;
 
     this.tooltip.textContent = text;
-    this.tooltip.style.opacity = '0';
     document.body.appendChild(this.tooltip); // ensure attached
 
     // Position near the reference
@@ -944,12 +1120,28 @@ const FootnoteTooltips = {
     this.tooltip.style.top  = `${top}px`;
     this.tooltip.style.left = `${left}px`;
 
-    requestAnimationFrame(() => { this.tooltip.style.opacity = '1'; });
+    if (window.anime) {
+      anime.to(this.tooltip, {
+        opacity: 1,
+        duration: 220,
+        easing: 'easeOutQuad'
+      });
+    } else {
+      this.tooltip.style.opacity = '1';
+    }
   },
 
   _hide() {
     this.hideTimer = setTimeout(() => {
-      this.tooltip.style.opacity = '0';
+      if (window.anime) {
+        anime.to(this.tooltip, {
+          opacity: 0,
+          duration: 150,
+          easing: 'easeInQuad'
+        });
+      } else {
+        this.tooltip.style.opacity = '0';
+      }
     }, 120);
   }
 };

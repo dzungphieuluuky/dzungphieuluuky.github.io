@@ -1855,17 +1855,17 @@ html.dark-mode .post-toc-box {
   box-shadow: var(--shadow-md);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transform: scale(0.3);
   z-index: 999;
 }
 
-#scroll-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+#scroll-to-top.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
 
 #scroll-to-top:hover {
   background: var(--accent-primary);
   box-shadow: 0 4px 16px rgba(63, 81, 181, 0.25);
   border-color: var(--accent-primary);
+  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 #scroll-to-top svg       { width: 20px; height: 20px; fill: var(--text-tertiary); transition: fill 0.2s ease; }

@@ -12,7 +12,6 @@ Here's a question that's been sitting with me: what if a language model could ho
 Not just predicting what comes next — but keeping a blurry draft of the entire thought, and gradually sharpening it until every word clicks into place. Like a painter who sketches the whole composition before committing pigment to any single corner of the canvas.
 
 That's the quiet revolution behind diffusion language models. And once you see it, you start to notice how strange the familiar way of doing things actually is.
-
 ---
 
 ## The strange ritual of writing left to right
@@ -24,7 +23,6 @@ This is called *autoregressive* generation. And it works. It works astonishingly
 But there's something peculiar about it. The model is permanently blind to its own future. When it writes word forty-seven, it has no idea what word forty-eight will be. It can't revise. It can't hold a half-formed intuition in suspense and wait for the rest to clarify. It commits, word by word, with no going back.
 
 You and I don't write this way. We wander. We write a sentence, delete half of it, change direction. We sometimes know roughly where we're going before we know exactly how we'll get there. The autoregressive model never has that luxury. It walks forward with its eyes fixed on the ground, never looking up to see the horizon.
-
 ---
 
 ## What diffusion brings: the art of iterative refinement
@@ -38,7 +36,6 @@ Now apply that same intuition to language.
 A diffusion language model doesn't generate tokens one by one. Instead, it starts with a sequence of noise — masked or jumbled words, placeholders where meaning should be — and iteratively refines the *entire sequence at once*. Every token can influence every other token at every step. The model isn't marching blindly forward; it's circling its thought, revising the whole thing simultaneously, pass after pass, until the noise resolves into something worth saying.
 
 Imagine trying to remember a dream. At first, only fragments come: a face, a feeling, a room you've never seen. You hold them together, let them sit, and slowly they connect into a scene. That's what diffusion language models do. They don't build the dream from beginning to end — they let it coalesce.
-
 ---
 
 ## The mathematics, without the equations
@@ -48,7 +45,6 @@ Behind this is a training process that feels almost paradoxical at first. You ta
 Many diffusion language models work in a continuous space of word-like vectors rather than on discrete tokens directly. This is a subtle but important shift. Words become points in a landscape, and denoising becomes a kind of navigation — moving those points step by step until they settle into positions that correspond to real words in real sentences.
 
 It's not words being generated anymore. It's meaning, being coaxed into form.
-
 ---
 
 ## LLaDA: when the idea became real
@@ -62,7 +58,6 @@ The result that turned heads: LLaDA performs comparably to LLaMA 3 8B across a w
 But the numbers aren't the most interesting part. What caught my attention is *where* LLaDA excels. It handles reversed text far better than autoregressive models — it doesn't suffer from the *reversal curse*, where models trained on "A implies B" fail to infer "B implies A". It also allows something remarkable: you can tell the model that word five must be "quantum" and word twelve must be "entanglement", and it will build a coherent sentence around those fixed points. Autoregressive models struggle with this kind of constraint. They're built for flow, not for anchors.
 
 These aren't minor differences. They suggest something deeper: that the two architectures aren't just different implementations of the same capability. They have genuinely different kinds of intelligence.
-
 ---
 
 ## Two ways of thinking
@@ -76,7 +71,6 @@ Diffusion models are iterative thinkers. They start with a blur and sharpen. The
 The sampling speed gap is real. An autoregressive model generates one token at a time, but each step is cheap. A diffusion model runs many full passes over the entire sequence. Efficient sampling techniques close this gap somewhat, but it remains a practical consideration.
 
 What's more striking, though, is emerging evidence that diffusion language models may be more data-efficient — able to match autoregressive performance with significantly less training data. If this holds at scale, it changes the economics of language modeling entirely. It suggests that learning to refine might be a more natural path to language than learning to predict.
-
 ---
 
 ## A personal convergence
@@ -90,7 +84,6 @@ There's also a resonance with work I've been following on looped transformers �
 Diffusion language models have bidirectionality built into their bones. Looped models achieve it through iteration. The mechanisms differ, but both are responses to the same insight — that purely linear thinking is not always enough for the hard problems.
 
 I suspect these approaches — diffusion generation, looped refinement, recursive architectures — are converging on something important. They're all, in different ways, about *iterative refinement of a complete thought* rather than linear construction of a sequence. And that pattern resonates because it's how good thinking actually works. We don't think in straight lines. We think in circles, in revisions, in second guesses that turn out to be right.
-
 ---
 
 ## What this opens up

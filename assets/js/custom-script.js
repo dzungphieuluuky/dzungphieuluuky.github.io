@@ -1,5 +1,7 @@
 // ====================================
 // 0. Enable Transitions on First Interaction
+// Defers CSS animations until the user interacts with the page.
+// This eliminates unnecessary animations on page load.
 // ====================================
 
 const InteractionManager = {
@@ -7,10 +9,17 @@ const InteractionManager = {
 
   init() {
     if (this.initialized) return;
+    const body = document.body;
     const enable = () => {
-      if (!document.body.classList.contains('user-interactive')) {
-        document.body.classList.add('user-interactive');
+      if (!body.classList.contains('user-interactive')) {
+        body.classList.add('user-interactive');
         this.initialized = true;
+        // Remove listeners after initialization
+        (listener) => {
+          ['click', 'mousemove', 'scroll', 'keydown'].forEach((evt) =>
+            document.removeEventListener(evt, listener, { passive: true })
+          );
+        };
       }
     };
     ['click', 'mousemove', 'scroll', 'keydown'].forEach((evt) =>
@@ -73,86 +82,118 @@ const ScrollToTop = {
 
 // ====================================
 // 3. Smooth Anchor Navigation
+// Handles hash links with respect to navbar height and smooth scrolling.
 // ====================================
 
 const SmoothAnchors = {
+  navbarHeight: 58,
+
   init() {
-    document.addEventListener('click', (e) => {
-      const anchor = e.target.closest('a[href^="#"]');
-      if (!anchor) return;
-      const id = decodeURIComponent(anchor.getAttribute('href').slice(1));
-      if (!id) return;
-      const target = document.getElementById(id);
-      if (!target) return;
-      e.preventDefault();
-      const navbarH = parseInt(
+    // Cache navbar height on init for better performance
+    this.navbarHeight = Math.max(
+      58,
+      parseInt(
         getComputedStyle(document.documentElement)
           .getPropertyValue('--navbar-height') || '58',
         10
-      );
-      window.scrollTo({
-        top: target.getBoundingClientRect().top + window.scrollY - navbarH - 16,
-        behavior: 'smooth'
-      });
-      history.pushState(null, '', '#' + id);
+      )
+    );
+
+    document.addEventListener('click', (e) => this.handleAnchorClick(e), false);
+  },
+
+  handleAnchorClick(e) {
+    const anchor = e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+
+    const id = decodeURIComponent(anchor.getAttribute('href').slice(1));
+    if (!id) return;
+
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    e.preventDefault();
+    window.scrollTo({
+      top: target.getBoundingClientRect().top + window.scrollY - this.navbarHeight - 16,
+      behavior: 'smooth'
     });
+    // Update URL without triggering navigation
+    history.pushState(null, '', '#' + id);
   }
 };
 
 // ====================================
 // 4. TOC Active Section Highlighting
+// Updates TOC links as user scrolls, with automatic scrolling of TOC
+// container to keep active link visible.
 // ====================================
 
 const TocHighlight = {
   observer: null,
+  tocSelectors: '.inline-toc a, .toc-container a, .post-toc-box a',
+  navbarHeight: 58,
 
   init() {
     const headings = document.querySelectorAll('h1[id], h2[id], h3[id]');
     if (!headings.length) return;
 
-    const navbarH = parseInt(
-      getComputedStyle(document.documentElement)
-        .getPropertyValue('--navbar-height') || '58',
-      10
+    // Cache navbar height for intersection observer margin
+    this.navbarHeight = Math.max(
+      58,
+      parseInt(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--navbar-height') || '58',
+        10
+      )
     );
 
+    // Use Intersection Observer for efficient scroll tracking
     this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const id = entry.target.getAttribute('id');
-
-          document
-            .querySelectorAll('.inline-toc a, .toc-container a, .post-toc-box a')
-            .forEach((l) => l.classList.remove('active'));
-
-          document
-            .querySelectorAll(
-              `.inline-toc a[href="#${id}"],
-               .toc-container a[href="#${id}"],
-               .post-toc-box a[href="#${id}"]`
-            )
-            .forEach((link) => {
-              link.classList.add('active');
-              const toc = link.closest('.inline-toc, .toc-container, .post-toc-box');
-              if (toc) {
-                const tocRect  = toc.getBoundingClientRect();
-                const linkRect = link.getBoundingClientRect();
-                const relative = linkRect.top - tocRect.top;
-                if (relative < 0 || relative > tocRect.height - 40) {
-                  toc.scrollTo({
-                    top: toc.scrollTop + relative - tocRect.height / 2,
-                    behavior: 'smooth'
-                  });
-                }
-              }
-            });
-        });
-      },
-      { rootMargin: `-${navbarH + 20}px 0px -60% 0px`, threshold: 0 }
+      (entries) => this.handleIntersection(entries),
+      { 
+        rootMargin: `-${this.navbarHeight + 20}px 0px -60% 0px`,
+        threshold: 0
+      }
     );
 
     headings.forEach((h) => this.observer.observe(h));
+  },
+
+  handleIntersection(entries) {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const id = entry.target.getAttribute('id');
+
+      // Clear previous active states
+      document
+        .querySelectorAll(this.tocSelectors)
+        .forEach((l) => l.classList.remove('active'));
+
+      // Set new active state
+      document
+        .querySelectorAll(`.inline-toc a[href="#${id}"], .toc-container a[href="#${id}"], .post-toc-box a[href="#${id}"]`)
+        .forEach((link) => {
+          link.classList.add('active');
+          this.autoScrollTocContainer(link);
+        });
+    });
+  },
+
+  autoScrollTocContainer(link) {
+    const toc = link.closest('.inline-toc, .toc-container, .post-toc-box');
+    if (!toc) return;
+
+    const tocRect  = toc.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    const relative = linkRect.top - tocRect.top;
+
+    // Only scroll if link is outside visible TOC area
+    if (relative < 0 || relative > tocRect.height - 40) {
+      toc.scrollTo({
+        top: toc.scrollTop + relative - tocRect.height / 2,
+        behavior: 'smooth'
+      });
+    }
   }
 };
 
@@ -201,6 +242,8 @@ const CodeCopy = {
 
 // ====================================
 // 6. Image Lightbox
+// Provides full-screen image viewing with caption support.
+// Supports keyboard navigation (Esc to close, Click backdrop to close).
 // ====================================
 
 const ImageLightbox = {
@@ -209,44 +252,62 @@ const ImageLightbox = {
   init() {
     const images = document.querySelectorAll('article img, .post-content img, main img');
     if (!images.length) return;
+
+    // Create lightbox only once
     this._create();
-    images.forEach((img) => img.addEventListener('click', () => this.open(img)));
+
+    // Add click listeners to all images
+    images.forEach((img) => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', () => this.open(img), false);
+    });
   },
 
   _create() {
     this.lightbox = document.createElement('div');
     this.lightbox.className = 'lightbox';
+    this.lightbox.role = 'dialog';
+    this.lightbox.ariaLabel = 'Image lightbox';
     this.lightbox.innerHTML = `
-      <div class="lightbox-close" role="button" aria-label="Close">×</div>
+      <div class="lightbox-close" role="button" aria-label="Close image viewer">×</div>
       <div class="lightbox-content">
         <img src="" alt="">
         <div class="lightbox-caption"></div>
       </div>`;
+
     document.body.appendChild(this.lightbox);
 
+    // Event delegation for close button and backdrop
     this.lightbox
       .querySelector('.lightbox-close')
-      .addEventListener('click', () => this.close());
+      .addEventListener('click', () => this.close(), false);
 
     this.lightbox.addEventListener('click', (e) => {
+      // Close only if clicking the backdrop, not the content
       if (e.target === this.lightbox) this.close();
-    });
+    }, false);
 
+    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.lightbox.classList.contains('active'))
+      if (e.key === 'Escape' && this.lightbox?.classList.contains('active')) {
         this.close();
-    });
+      }
+    }, false);
   },
 
   open(img) {
+    if (!this.lightbox) return;
+    
     this.lightbox.querySelector('img').src = img.src;
-    this.lightbox.querySelector('img').alt = img.alt || '';
+    this.lightbox.querySelector('img').alt = img.alt || 'Image';
     this.lightbox.querySelector('.lightbox-caption').textContent = img.alt || '';
     this.lightbox.classList.add('active');
     document.body.classList.add('overflow-hidden');
   },
 
   close() {
+    if (!this.lightbox) return;
+    
     this.lightbox.classList.remove('active');
     document.body.classList.remove('overflow-hidden');
   }
@@ -254,31 +315,27 @@ const ImageLightbox = {
 
 // ====================================
 // 7. Navbar Scroll Effect
+// Uses shared RAF loop for optimal performance (see init section).
 // ====================================
 
 const NavbarScroll = {
+  threshold: 80,
+  
   init() {
-    const navbar = document.querySelector('.navbar');
-    if (!navbar) return;
-    let ticking = false;
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            navbar.classList.toggle('scrolled', window.scrollY > 80);
-            ticking = false;
-          });
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
+    this.navbar = document.querySelector('.navbar');
+    if (!this.navbar) return;
+  },
+
+  update() {
+    if (!this.navbar) return;
+    this.navbar.classList.toggle('scrolled', window.scrollY > this.threshold);
   }
 };
 
 // ====================================
 // 8. Post Table of Contents (Inline Box)
+// Efficiently builds TOC for article headers, avoiding duplicate code
+// through a shared HTML generation function.
 // ====================================
 
 const PostTableOfContents = {
@@ -290,64 +347,50 @@ const PostTableOfContents = {
     if (headers.length < 2) return;
 
     const levelOf = { H1: 1, H2: 2, H3: 3 };
+    
+    // Shared function to build TOC HTML - avoids duplication
+    const buildTocHtml = () => {
+      let html = '<ul class="post-toc-list">';
+      let openChildUl = false;
 
-    let html = `
-      <div class="post-toc-box">
-        <details open>
-          <summary>▼ Table of Contents</summary>
-          <ul class="post-toc-list">`;
+      headers.forEach((header) => {
+        const id    = header.getAttribute('id');
+        const text  = header.textContent.replace(/^\d+\.?\s*/, '').trim();
+        const level = levelOf[header.tagName];
 
-    let openChildUl = false;
+        if (level === 1) {
+          if (openChildUl) { html += '</ul></li>'; openChildUl = false; }
+          html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
+        } else if (level === 2) {
+          if (openChildUl) { html += '</ul></li>'; }
+          html += `<li><a href="#${id}">${text}</a><ul>`;
+          openChildUl = true;
+        } else if (level === 3) {
+          if (!openChildUl) { html += '<li><ul>'; openChildUl = true; }
+          html += `<li><a href="#${id}">${text}</a></li>`;
+        }
+      });
 
-    headers.forEach((header) => {
-      const id    = header.getAttribute('id');
-      const text  = header.textContent.replace(/^\d+\.?\s*/, '').trim();
-      const level = levelOf[header.tagName];
+      if (openChildUl) html += '</ul></li>';
+      html += '</ul>';
+      return html;
+    };
 
-      if (level === 1) {
-        if (openChildUl) { html += '</ul></li>'; openChildUl = false; }
-        html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
-      } else if (level === 2) {
-        if (openChildUl) { html += '</ul></li>'; }
-        html += `<li><a href="#${id}">${text}</a><ul>`;
-        openChildUl = true;
-      } else if (level === 3) {
-        if (!openChildUl) { html += '<li><ul>'; openChildUl = true; }
-        html += `<li><a href="#${id}">${text}</a></li>`;
-      }
-    });
+    // Inject post-level TOC (collapsible box)
+    const tocHtml = buildTocHtml();
+    const postTocHTML = `<div class="post-toc-box">
+      <details open>
+        <summary>▼ Table of Contents</summary>
+        ${tocHtml}
+      </details>
+    </div>`;
+    article.insertAdjacentHTML('afterbegin', postTocHTML);
 
-    if (openChildUl) html += '</ul></li>';
-    html += '</ul></details></div>';
-    article.insertAdjacentHTML('afterbegin', html);
-
-    // Populate sidebar TOC
+    // Populate sidebar TOC (if exists)
     const sidebar = document.querySelector('.inline-toc ul');
-    if (!sidebar) return;
-
-    let sidebarHtml = '';
-    let sidebarOpenChild = false;
-
-    headers.forEach((header) => {
-      const id    = header.getAttribute('id');
-      const text  = header.textContent.replace(/^\d+\.?\s*/, '').trim();
-      const level = levelOf[header.tagName];
-
-      if (level === 1) {
-        if (sidebarOpenChild) { sidebarHtml += '</ul></li>'; sidebarOpenChild = false; }
-        sidebarHtml += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
-      } else if (level === 2) {
-        if (sidebarOpenChild) { sidebarHtml += '</ul></li>'; }
-        sidebarHtml += `<li><a href="#${id}">${text}</a><ul>`;
-        sidebarOpenChild = true;
-      } else if (level === 3) {
-        if (!sidebarOpenChild) { sidebarHtml += '<li><ul>'; sidebarOpenChild = true; }
-        sidebarHtml += `<li><a href="#${id}">${text}</a></li>`;
-      }
-    });
-
-    if (sidebarOpenChild) sidebarHtml += '</ul></li>';
-    sidebar.innerHTML = sidebarHtml;
+    if (sidebar) {
+      sidebar.innerHTML = tocHtml.replace(/post-toc-list/g, '');
+    }
   }
 };
 
@@ -394,6 +437,8 @@ const ReadingTime = {
 
 // ====================================
 // 10. Auto-Numbering Headers
+// Assigns sequential IDs to headers for anchor linking and TOC navigation.
+// Skips headers marked with "subtitle" class. Resets counters on each level change.
 // ====================================
 
 const AutoNumbering = {
@@ -401,21 +446,31 @@ const AutoNumbering = {
     const article = document.querySelector('article');
     if (!article) return;
 
-    let h1n = 0, h2n = 0, h3n = 0;
+    let h1Counter = 0, h2Counter = 0, h3Counter = 0;
 
     article.querySelectorAll('h1, h2, h3').forEach((header) => {
+      // Skip subtitles (e.g., post bylines)
       if (header.classList.contains('subtitle')) return;
 
-      if (header.tagName === 'H1') {
-        h1n++; h2n = 0; h3n = 0;
-        if (!header.id) header.id = `section-${h1n}`;
-      } else if (header.tagName === 'H2') {
-        h2n++; h3n = 0;
-        if (!header.id) header.id = `section-${h1n > 0 ? h1n + '-' : ''}${h2n}`;
-      } else if (header.tagName === 'H3') {
-        h3n++;
-        if (!header.id)
-          header.id = `section-${h1n > 0 ? h1n + '-' : ''}${h2n}-${h3n}`;
+      const tagName = header.tagName;
+
+      // Reset counters and assign ID based on header level
+      if (tagName === 'H1') {
+        h1Counter++;
+        h2Counter = 0;
+        h3Counter = 0;
+        if (!header.id) header.id = `section-${h1Counter}`;
+      } else if (tagName === 'H2') {
+        h2Counter++;
+        h3Counter = 0;
+        if (!header.id) {
+          header.id = `section-${h1Counter > 0 ? h1Counter + '-' : ''}${h2Counter}`;
+        }
+      } else if (tagName === 'H3') {
+        h3Counter++;
+        if (!header.id) {
+          header.id = `section-${h1Counter > 0 ? h1Counter + '-' : ''}${h2Counter}-${h3Counter}`;
+        }
       }
     });
   }
@@ -942,16 +997,23 @@ document.addEventListener('DOMContentLoaded', () => {
   SmoothAnchors.init();
   DarkMode.init();
 
-  // Single shared rAF scroll loop
+  // Performance: Unified scroll RAF loop for critical scroll handlers
+  // This consolidates multiple scroll listeners into one efficient RAF loop
+  // to avoid layout thrashing and improve rendering performance.
   (() => {
     let ticking = false;
+    const scrollHandlers = [
+      () => ReadingProgress.update(),
+      () => ScrollToTop.toggle(),
+      () => NavbarScroll.update()
+    ];
+
     window.addEventListener(
       'scroll',
       () => {
         if (!ticking) {
           requestAnimationFrame(() => {
-            ReadingProgress.update();
-            ScrollToTop.toggle();
+            scrollHandlers.forEach((handler) => handler());
             ticking = false;
           });
           ticking = true;

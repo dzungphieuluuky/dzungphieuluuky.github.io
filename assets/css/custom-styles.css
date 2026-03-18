@@ -1,7 +1,26 @@
 /* ====================================
    Elegant Reading Theme — Refined
-   Color palette: indigo, dark-blue, teal, turquoise, orange, dark-purple
-   Reading aesthetic: Substack-inspired, elevated
+   
+   A modern, typography-focused blog theme inspired by Substack.
+   Designed for long-form reading with elegant visual hierarchy.
+   
+   Color palette: indigo (primary), dark-blue, teal, turquoise, orange, dark-purple
+   Typography: Source Serif 4 (body), Montserrat (headings)
+   
+   STRUCTURE:
+   1. CSS Variables (palette, colors, shadows, transitions, spacing)
+   2. Base & Typography (html, body, headings, links)
+   3. Page Layouts (intro headers, content sections)
+   4. Reading Progress Bar
+   5. Post Content (headings, paragraphs, lists, blockquotes, images)
+   6. Callouts & Footnotes (admonitions and sidenotes)
+   7. Code Blocks (syntax highlighting, copy button)
+   8. Tables (responsive, styled)
+   9. UI Components (cards, post previews, modals)
+   10. Navigation & Buttons
+   11. Dark Mode (CSS custom properties for theme switching)
+   12. Responsive Design (media queries for mobile, tablet, desktop)
+   
    ==================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap');
@@ -60,10 +79,10 @@
   --radius-lg:  12px;
   --radius-xl:  16px;
 
-  /* Reading */
-  --reading-width:       728px;
-  --reading-line-height: 1.85;
-  --reading-font-size:   1.125rem;
+  /* Reading — LessWrong-inspired for comfort */
+  --reading-width:       700px;  /* Slightly narrower for comfort */
+  --reading-line-height: 1.75;   /* Generous line spacing */
+  --reading-font-size:   1.0625rem;  /* 17px default */
   --navbar-height:       58px;
 
   /* Code token colors */
@@ -124,13 +143,13 @@ html {
 
 body {
   font-family: 'Source Serif 4', 'Lora', Georgia, serif;
-  font-size: var(--reading-font-size);
-  line-height: var(--reading-line-height);
+  font-size: 1.0625rem;  /* 17px for better default readability */
+  line-height: 1.75;  /* More generous spacing for comfortable reading */
   color: var(--text-secondary);
   background: var(--bg-primary);
   font-weight: 400;
   overflow-x: hidden;
-  letter-spacing: 0.005em;
+  letter-spacing: 0.003em;  /* Reduce letter-spacing for cleaner appearance */
   overscroll-behavior-y: contain;
 }
 
@@ -145,46 +164,58 @@ h1, h2, h3, h4, h5, h6 {
   scroll-margin-top: calc(var(--navbar-height) + 1.5rem);
 }
 
+/* Heading hierarchy — clear visual breaks for scannability */
 h1 {
-  font-size: 2.4rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 700;  /* 800 was too heavy */
   margin-top: 0;
-  margin-bottom: 1.25rem;
-  letter-spacing: -0.035em;
+  margin-bottom: 1.5rem;  /* More space after title */
+  margin-top: 3rem;  /* Space before if not first */
+  letter-spacing: -0.02em;  /* Slightly less aggressive */
   border-bottom: none;
   padding-bottom: 0;
+  line-height: 1.3;
 }
 
 h2 {
   font-size: 1.5rem;
-  font-weight: 700;
-  margin-top: 2.75rem;
-  margin-bottom: 0.85rem;
+  font-weight: 600;  /* Lighter than before */
+  margin-top: 3rem;  /* More breathing room before sections */
+  margin-bottom: 1.2rem;
   border-bottom: none;
   padding-bottom: 0;
+  line-height: 1.35;
 }
 
 h3 {
-  font-size: 1.175rem;
-  margin-top: 2rem;
+  font-size: 1.15rem;
+  margin-top: 2.5rem;  /* More space */
+  margin-bottom: 1rem;
   font-weight: 600;
+  line-height: 1.35;
 }
 
 h4 {
   font-size: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0.9rem;
   font-weight: 600;
   letter-spacing: 0;
 }
 
-/* Paragraphs */
+/* Paragraphs — generous spacing for readable flow */
 p {
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.8rem;
   orphans: 3;
   widows: 3;
+  letter-spacing: 0.003em;
 }
 
-/* Links */
+/* ====================================
+   Links and Text Selection
+   Style for link underlines and text highlighting.
+   ==================================== */
+
 a {
   color: var(--accent-primary);
   text-decoration: underline;
@@ -199,15 +230,13 @@ a:hover {
   text-decoration-color: var(--accent-hover);
 }
 
-::selection {
-  background: rgba(63, 81, 181, 0.15);
-  color: var(--text-primary);
-}
-
+/* Consolidate selection pseudo-elements for better readability */
+::selection,
 ::-moz-selection {
   background: rgba(63, 81, 181, 0.15);
   color: var(--text-primary);
 }
+
 
 /* ====================================
    Portfolio / Page Layout
@@ -239,46 +268,48 @@ a:hover {
    Page Body Content
    ==================================== */
 
+/* Page content body text — optimized for comfort */
 .page-content,
 .container.role main {
-  max-width: var(--reading-width);
+  max-width: 700px;  /* Match reading width */
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-left: 1.75rem;  /* Slightly more padding */
+  padding-right: 1.75rem;
 }
 
 .page-content h1 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-top: 3rem;
-  margin-bottom: 0.7rem;
+  margin-bottom: 1.2rem;
   font-family: 'Montserrat', sans-serif;
   border-bottom: none;
   padding-bottom: 0;
+  line-height: 1.3;
 }
 
 .page-content p {
   font-family: 'Source Serif 4', 'Lora', serif;
-  font-size: 1.125rem;
-  line-height: 1.85;
+  font-size: 1.0625rem;
+  line-height: 1.75;  /* Generous line height */
   color: var(--text-secondary);
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.8rem;
 }
 
 .page-content ul {
-  padding-left: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+  margin-bottom: 1.8rem;
 }
 
 .page-content ul li {
   font-family: 'Source Serif 4', 'Lora', serif;
-  font-size: 1.125rem;
-  line-height: 1.8;
+  font-size: 1.0625rem;
+  line-height: 1.75;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .page-content ul li strong {
@@ -286,15 +317,9 @@ a:hover {
   font-weight: 700;
 }
 
-.page-content a {
-  color: var(--accent-primary);
-  text-decoration-color: rgba(63, 81, 181, 0.25);
-}
+/* Links in page content inherit base link styles from global rule */
+/* (Standard 'a' and 'a:hover' rules apply to .page-content a elements) */
 
-.page-content a:hover {
-  color: var(--accent-hover);
-  text-decoration-color: var(--accent-hover);
-}
 
 html.dark-mode .page-content p,
 html.dark-mode .page-content li { color: var(--text-secondary); }
@@ -340,109 +365,110 @@ html.dark-mode .page-content h1 { color: var(--text-primary); }
    Post Content — Reading Layout
    ==================================== */
 
+/* Blog post wrapper — comfortable reading width */
 .blog-post {
-  font-size: var(--reading-font-size);
-  line-height: var(--reading-line-height);
-  max-width: var(--reading-width);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  max-width: 700px;  /* Slightly narrower for comfort */
   width: 100%;
-  margin: 2rem auto 4rem;
-  padding: 0;
+  margin: 2rem auto 4rem;  /* Centered with breathing room */
+  padding: 0;  /* No padding on wrapper */
   background: transparent;
   border-radius: 0;
   box-shadow: none;
   border: none;
 }
 
-/* Post h1 headings */
+/* Post h1 headings — clear visual hierarchy */
 .blog-post h1,
 article.blog-post h1 {
-  font-size: 1.75rem;
-  font-weight: 800;
-  margin-top: 3rem;
-  margin-bottom: 0.85rem;
+  font-size: 2rem;
+  font-weight: 700;  /* Not too heavy */
+  margin-top: 0;  /* No margin on first heading */
+  margin-bottom: 1.5rem;
   border-bottom: none;
   padding-bottom: 0;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 
-/* Divider accent before h1 */
+/* Divider accent before h1 — subtle visual marker */
 .blog-post h1::before,
 article.blog-post h1::before {
-  content: '';
-  display: block;
-  width: 36px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--palette-turquoise), var(--palette-indigo));
-  margin-bottom: 1.25rem;
-  border-radius: 2px;
+  display: none;  /* Remove decorative divider for cleaner look */
 }
 
+/* Post paragraphs — optimized for long-form reading */
 .blog-post p,
 article p {
-  font-size: var(--reading-font-size);
-  line-height: var(--reading-line-height);
-  margin-bottom: 1.6rem;
+  font-size: 1.0625rem;  /* 17px for clarity */
+  line-height: 1.75;  /* Extra generous spacing */
+  margin-bottom: 1.8rem;  /* Consistent spacing */
   color: var(--text-secondary);
   text-align: left;
+  letter-spacing: 0.003em;
 }
 
-/* Drop cap */
+/* Drop cap — subtle visual interest without distraction */
 .blog-post > p:first-of-type::first-letter,
 article > p:first-of-type::first-letter {
   float: left;
   font-family: 'Montserrat', sans-serif;
-  font-size: 3.8em;
-  font-weight: 800;
-  line-height: 0.78;
-  margin-right: 0.08em;
-  margin-top: 0.05em;
+  font-size: 3rem;  /* Slightly smaller */
+  font-weight: 700;  /* Lighter weight */
+  line-height: 0.75;
+  margin-right: 0.1em;
+  margin-top: 0.1em;
   color: var(--palette-indigo);
 }
 
+/* Horizontal dividers — subtle section breaks */
 .blog-post hr,
 article hr {
   border: none;
   border-top: 1px solid var(--border-primary);
-  margin: 3.5rem auto;
-  width: 60px;
+  margin: 3rem auto;  /* Generous whitespace */
+  width: 100%;  /* Full width for cleaner look */
+  max-width: 600px;
   opacity: 1;
 }
 
-/* Blockquote */
+/* Blockquote — clear visual distinction */
 .blog-post blockquote,
 article blockquote {
-  border-left: 3px solid var(--palette-turquoise);
-  margin: 2.5rem 0;
-  padding: 0.25rem 1.75rem;
+  border-left: 4px solid var(--palette-indigo);  /* Darker, more visible */
+  margin: 2rem 0;  /* Reduced for cleaner flow */
+  padding: 0.5rem 1.5rem;  /* Balanced padding */
   background: transparent;
   border-radius: 0;
   font-style: italic;
   color: var(--text-tertiary);
-  line-height: 1.8;
-  font-size: 1.1rem;
+  line-height: 1.75;  /* Match body */
+  font-size: 0.98rem;  /* Slightly smaller */
 }
 
 .blog-post blockquote p,
 article blockquote p {
-  margin-bottom: 0;
+  margin-bottom: 0.5rem;  /* Spacing within quote */
+  font-size: 0.98rem;
 }
 
-/* Images */
+/* Images — generous spacing for visual breathing room */
 .blog-post img,
 article img {
   display: block;
   max-width: 100%;
   height: auto;
-  margin: 2.5rem auto;
+  margin: 2.5rem auto;  /* Consistent spacing */
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* More subtle shadow */
   transition: box-shadow var(--transition-base), transform 200ms ease;
   cursor: zoom-in;
 }
 
 .blog-post img:hover,
 article img:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 /* Improved image captions */
@@ -457,33 +483,40 @@ article figure img {
   margin: 0 auto 0.75rem;
 }
 
+/* Figure captions — clear but not distracting */
 .blog-post figcaption,
 article figcaption {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.85rem;  /* Slightly larger for readability */
   color: var(--text-muted);
   font-style: italic;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;  /* Slightly more space */
   line-height: 1.5;
+  margin-top: 0.8rem;
+  text-align: center;
 }
 
 /* Lists */
+/* Lists — better spacing for scannability */
 .blog-post ul,
 .blog-post ol,
 article ul,
 article ol {
-  padding-left: 1.5rem;
-  margin-bottom: 1.6rem;
+  padding-left: 2rem;  /* More indent for clarity */
+  margin-bottom: 1.8rem;  /* Match paragraph spacing */
+  margin-top: 0.5rem;
 }
 
 .blog-post li,
 article li {
-  margin-bottom: 0.5rem;
-  line-height: var(--reading-line-height);
+  margin-bottom: 0.75rem;  /* More breathing room between items */
+  line-height: 1.75;  /* Same as paragraphs */
+  color: var(--text-secondary);
 }
 
 /* ====================================
-   NEW: Callout / Admonition Boxes
+   Callout Boxes - Color Variant System
+   Use .callout-tip or .callout-warn to change appearance
    ==================================== */
 
 .callout {
@@ -506,7 +539,9 @@ article li {
   color: var(--callout-note-border);
 }
 
-.callout-body { flex: 1; }
+.callout-body { 
+  flex: 1; 
+}
 
 .callout-title {
   font-family: 'Montserrat', sans-serif;
@@ -518,27 +553,48 @@ article li {
   margin-bottom: 0.35rem;
 }
 
-.callout-body p { margin-bottom: 0; font-size: 0.97rem; }
+.callout-body p { 
+  margin-bottom: 0; 
+  font-size: 0.97rem; 
+}
 
+/* Tip variant - teal color scheme */
 .callout.callout-tip {
   border-left-color: var(--callout-tip-border);
   background: var(--callout-tip-bg);
 }
-.callout.callout-tip .callout-icon  { color: var(--callout-tip-border); }
-.callout.callout-tip .callout-title { color: var(--callout-tip-border); }
 
+.callout.callout-tip .callout-icon { 
+  color: var(--callout-tip-border); 
+}
+
+.callout.callout-tip .callout-title { 
+  color: var(--callout-tip-border); 
+}
+
+/* Warning variant - orange color scheme */
 .callout.callout-warn {
   border-left-color: var(--callout-warn-border);
   background: var(--callout-warn-bg);
 }
-.callout.callout-warn .callout-icon  { color: var(--callout-warn-border); }
-.callout.callout-warn .callout-title { color: var(--callout-warn-border); }
+
+.callout.callout-warn .callout-icon { 
+  color: var(--callout-warn-border); 
+}
+
+.callout.callout-warn .callout-title { 
+  color: var(--callout-warn-border); 
+}
+
+
 
 /* ====================================
-   NEW: Sidenotes / Footnotes
+   Footnotes - Superscript Links to Notes
+   Provides elegant styling for inline footnote references
+   and the footnotes section at the bottom of posts.
    ==================================== */
 
-/* Inline footnote marker */
+/* Inline footnote marker - appears as superscript number */
 .footnote-ref {
   font-family: 'Montserrat', sans-serif;
   font-size: 0.68em;
@@ -553,7 +609,9 @@ article li {
   transition: color var(--transition-fast);
 }
 
-.footnote-ref:hover { color: var(--accent-hover); }
+.footnote-ref:hover { 
+  color: var(--accent-hover); 
+}
 
 /* Footnotes section at bottom of post */
 .footnotes-section {
@@ -588,6 +646,7 @@ article li {
   line-height: 1.65;
 }
 
+/* Auto-numbered footnotes using CSS counter */
 .footnotes-list li::before {
   content: counter(footnote);
   font-family: 'Montserrat', sans-serif;
@@ -598,8 +657,10 @@ article li {
   padding-top: 0.2em;
 }
 
+
 /* ====================================
-   NEW: Keyboard Shortcut Hints
+   Keyboard Interaction Hints
+   Inline keyboard shortcuts shown to users for better discoverability
    ==================================== */
 
 kbd {
@@ -651,19 +712,20 @@ kbd {
    Code Blocks
    ==================================== */
 
+/* Code blocks — clean, readable syntax highlighting */
 pre {
   position: relative;
-  margin: 2rem 0;
-  padding: 1.5rem;
-  padding-top: 2.75rem;
-  background: #F8F8F6;
+  margin: 2rem 0;  /* More breathing room */
+  padding: 1.25rem;  /* Less aggressive padding */
+  padding-top: 2.5rem;  /* Room for language label */
+  background: #F5F5F3;  /* Lighter background */
   border: 1px solid var(--code-border);
   border-radius: var(--radius-md);
   overflow-x: auto;
-  box-shadow: none;
+  box-shadow: none;  /* No shadow for cleaner look */
   font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
-  font-size: 0.875rem;
-  line-height: 1.7;
+  font-size: 0.85rem;  /* Slightly smaller */
+  line-height: 1.6;  /* Comfortable line height */
   color: var(--text-secondary);
   letter-spacing: 0;
   scrollbar-width: thin;
@@ -765,14 +827,15 @@ pre.line-numbers { padding-left: 3.5rem; }
 .token.bold         { font-weight: 800; color: var(--code-keyword); }
 
 /* Inline Code */
+/* Inline code — subtle styling */
 code:not(pre code) {
   font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
-  font-size: 0.85em;
-  background: rgba(63, 81, 181, 0.06);
+  font-size: 0.88em;  /* Slightly larger for legibility */
+  background: rgba(63, 81, 181, 0.05);  /* More subtle background */
   color: var(--palette-dark-purple);
-  padding: 0.12em 0.38em;
+  padding: 0.15em 0.4em;  /* Slightly more padding */
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(75, 0, 118, 0.1);
+  border: 1px solid rgba(75, 0, 118, 0.08);  /* More subtle border */
 }
 
 code::selection,
@@ -790,9 +853,9 @@ table {
   width: 100% !important;
   background: transparent !important;
   border-collapse: collapse !important;
-  margin: 2rem 0 !important;
-  font-size: 0.93rem;
-  line-height: 1.6;
+  margin: 2rem 0 !important;  /* Generous spacing */
+  font-size: 0.95rem;  /* Slightly larger for readability */
+  line-height: 1.7;  /* Comfortable line height */
   border: 1px solid var(--table-border);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -805,7 +868,7 @@ table tr    { display: table-row !important; background: transparent !important;
 table th,
 table td {
   display: table-cell !important;
-  padding: 0.75rem 1rem !important;
+  padding: 0.9rem 1.1rem !important;  /* More breathing room */
   background: var(--table-cell-bg) !important;
   border: none !important;
   border-bottom: 1px solid var(--table-border) !important;
@@ -822,9 +885,7 @@ table th {
   font-family: 'Montserrat', sans-serif !important;
   font-weight: 600 !important;
   letter-spacing: 0.01em !important;
-  font-size: 0.82rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-size: 0.9rem !important;  /* Slightly larger */
 }
 
 table tbody tr:last-child td { border-bottom: none !important; }
@@ -854,11 +915,11 @@ table tr:hover td { background: var(--table-row-hover) !important; }
   border-radius: var(--radius-lg);
   padding: 2rem;
   margin-bottom: 2rem;
-  transition: box-shadow var(--transition-base), border-color var(--transition-base);
-  box-shadow: var(--shadow-sm);
-  max-width: var(--reading-width);
   margin-left: auto;
   margin-right: auto;
+  max-width: 700px;  /* Match reading width */
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* More subtle shadow */
 }
 
 .glass-card:hover,
@@ -867,21 +928,19 @@ table tr:hover td { background: var(--table-row-hover) !important; }
   border-color: rgba(63, 81, 181, 0.18);
 }
 
-/* ====================================
-   Post Previews
-   ==================================== */
+/* Post Previews — readable listing with comfortable spacing */
 
 .post-preview {
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-rows: auto auto auto auto;
-  gap: 0 1.5rem;
+  gap: 0 1.75rem;  /* More breathing room */
   align-items: start;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--border-primary);
   border-radius: 0;
-  padding: 1.75rem 0;
+  padding: 2rem 0;  /* More vertical spacing */
   margin-bottom: 0;
   cursor: pointer;
   box-shadow: none;
@@ -894,16 +953,16 @@ table tr:hover td { background: var(--table-row-hover) !important; }
 
 .post-preview:hover { background: transparent; }
 
-/* Title */
+/* Title — clear, readable heading */
 .post-preview h2,
 .post-preview h3 {
   grid-column: 1;
   grid-row: 1;
   font-family: 'Source Serif 4', 'Lora', serif;
-  font-size: 1.2rem;
+  font-size: 1.25rem;  /* Slightly larger */
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.5rem;
   border-bottom: none;
   padding-bottom: 0;
   line-height: 1.35;
@@ -919,16 +978,16 @@ table tr:hover td { background: var(--table-row-hover) !important; }
 .post-preview:hover h2,
 .post-preview:hover h3 { color: var(--accent-primary); }
 
-/* Excerpt */
+/* Excerpt — comfortable reading size */
 .post-preview p,
 .post-preview .post-excerpt {
   grid-column: 1;
   grid-row: 2;
   font-family: 'Source Serif 4', 'Lora', serif;
-  font-size: 0.95rem;
+  font-size: 1rem;  /* Larger for better readability */
   color: var(--text-tertiary);
-  line-height: 1.65;
-  margin: 0 0 0.6rem;
+  line-height: 1.7;  /* Generous spacing */
+  margin: 0 0 0.8rem;
   max-width: 100%;
   display: -webkit-box;
   line-clamp: 2;
@@ -936,15 +995,15 @@ table tr:hover td { background: var(--table-row-hover) !important; }
   overflow: hidden;
 }
 
-/* Meta */
+/* Meta information — date and author */
 .post-preview .post-meta {
   grid-column: 1;
   grid-row: 3;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.775rem;
+  font-size: 0.82rem;  /* Slightly larger */
   font-weight: 500;
   color: var(--text-muted);
   margin: 0;
@@ -957,35 +1016,35 @@ table tr:hover td { background: var(--table-row-hover) !important; }
   letter-spacing: 0.01em;
 }
 
-/* Thumbnail */
+/* Thumbnail — subtle visual interest */
 .post-preview .post-thumbnail {
   grid-column: 2;
   grid-row: 1 / 5;
   align-self: center;
-  width: 112px;
-  height: 80px;
+  width: 120px;  /* Slightly larger */
+  height: 85px;
   object-fit: cover;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
   display: block;
   margin: 0;
-  box-shadow: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);  /* Subtle shadow */
   cursor: pointer;
   transition: opacity var(--transition-base);
 }
 
 .post-preview:hover .post-thumbnail { opacity: 0.85; }
 
-/* Month group label */
+/* Month group label — clear section breaks */
 .post-month-group {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin: 2.5rem 0 0;
-  padding-bottom: 0.5rem;
+  margin: 2.5rem 0 1.5rem;
+  padding-bottom: 0.75rem;
 }
 
 .post-month-group:first-child { margin-top: 0.5rem; }
@@ -1740,7 +1799,13 @@ html.dark-mode .post-toc-box {
   border: 1px solid var(--border-primary);
 }
 
-/* Improved reveal animation */
+/* ====================================
+   Scroll-Based Reveal Animations
+   Fade and slide up effect when elements enter viewport.
+   Uses Intersection Observer (JavaScript) to trigger reveal.active class.
+   ==================================== */
+
+/* Single item reveal */
 .reveal {
   opacity: 0;
   transform: translateY(10px);
@@ -1748,15 +1813,25 @@ html.dark-mode .post-toc-box {
               transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.reveal.active { opacity: 1; transform: translateY(0); }
+.reveal.active { 
+  opacity: 1; 
+  transform: translateY(0); 
+}
 
-/* Staggered reveal delays for children */
-.reveal-group > * { opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; }
-.reveal-group.active > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0ms; }
-.reveal-group.active > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 60ms; }
-.reveal-group.active > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 120ms; }
-.reveal-group.active > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 180ms; }
-.reveal-group.active > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 240ms; }
+/* Staggered reveal for grouped items - cascading animations for visual interest */
+.reveal-group > * { 
+  opacity: 0; 
+  transform: translateY(8px); 
+  transition: opacity 0.4s ease, transform 0.4s ease; 
+}
+
+/* Each child in a reveal-group cascades with 60ms delay (max 5 items shown) */
+.reveal-group.active > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+.reveal-group.active > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 60ms; }
+.reveal-group.active > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 120ms; }
+.reveal-group.active > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 180ms; }
+.reveal-group.active > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 240ms; }
+
 
 /* ====================================
    Scroll To Top Button

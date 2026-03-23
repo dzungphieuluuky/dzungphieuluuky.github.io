@@ -535,6 +535,45 @@ const ReadingTime = {
 };
 
 // ====================================
+// 9. Word Count Display
+// Counts total words in article and displays in metadata bar
+// ====================================
+
+const WordCount = {
+  init() {
+    const article = document.querySelector('article');
+    if (!article) return;
+
+    const words = (article.textContent || '').trim().split(/\s+/).length;
+    let metaBar = document.querySelector('.metadata-bar');
+
+    if (!metaBar) {
+      metaBar = document.createElement('div');
+      metaBar.className = 'metadata-bar';
+      const h1 = document.querySelector('h1');
+      if (h1?.parentElement) {
+        h1.parentElement.insertBefore(metaBar, h1.nextSibling);
+      } else {
+        article.insertBefore(metaBar, article.firstChild);
+      }
+    }
+
+    if (!metaBar.querySelector('[data-word-count]')) {
+      metaBar.insertAdjacentHTML(
+        'beforeend',
+        `<div class="metadata-item" data-word-count="true">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+           </svg>
+           <span><strong>${words.toLocaleString()}</strong> words</span>
+         </div>`
+      );
+    }
+  }
+};
+
+// ====================================
 // 10. Auto-Numbering Headers
 // Assigns sequential IDs to headers for anchor linking and TOC navigation.
 // Skips headers marked with "subtitle" class. Resets counters on each level change.
@@ -1793,6 +1832,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Post-only features
   AutoNumbering.init();           // must run before PostTableOfContents
   PostTableOfContents.init();     // must run after AutoNumbering sets IDs
+  WordCount.init();
   ReadingTime.init();
   TocHighlight.init();
   PostShareBar.init();

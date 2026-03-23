@@ -2191,3 +2191,288 @@ html.dark-mode .share-btn {
 
   .callout { padding: 0.875rem 1rem; }
 }
+
+/* ====================================
+   NEW FEATURE STYLES — Features 20–24
+   Add these to the END of custom-styles.css,
+   just before the closing dark-mode block or at the very end.
+   ==================================== */
+
+
+/* ====================================
+   20. Multilingual Translation Widget
+   ==================================== */
+
+#lang-toggle {
+  position: fixed;
+  bottom: 5.5rem;           /* sits above the scroll-to-top button */
+  right: 1.5rem;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: box-shadow var(--transition-base), transform var(--transition-fast);
+}
+
+#lang-toggle:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+  color: var(--accent-primary);
+}
+
+.lang-icon { font-size: 1rem; line-height: 1; }
+.lang-label { letter-spacing: 0.04em; }
+
+#lang-panel {
+  position: fixed;
+  bottom: 8.5rem;
+  right: 1.5rem;
+  z-index: 901;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: 0.4rem;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 170px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+#lang-panel.open { display: flex; }
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: left;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.lang-option:hover { background: var(--accent-subtle); color: var(--accent-primary); }
+.lang-option.active { color: var(--accent-primary); font-weight: 600; }
+.lang-flag { font-size: 1.1rem; }
+
+/* Hide Google Translate bar (we use our own UI) */
+.goog-te-banner-frame, .skiptranslate { display: none !important; }
+body { top: 0 !important; }
+
+
+/* ====================================
+   21. Read Completion Timer
+   (metadata-item styles are inherited; this is a supplement)
+   ==================================== */
+
+[data-completion-timer] strong {
+  color: var(--accent-primary);
+  transition: color var(--transition-fast);
+}
+
+[data-completion-timer] strong:empty::after {
+  content: '—';
+  color: var(--text-muted);
+}
+
+
+/* ====================================
+   22. Keyboard Shortcuts Panel
+   ==================================== */
+
+#kb-shortcuts-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6000;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  width: min(420px, 92vw);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+}
+
+#kb-shortcuts-panel.open { display: flex; }
+
+.kb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.kb-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.kb-close {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 0.2rem;
+  transition: color var(--transition-fast);
+}
+.kb-close:hover { color: var(--text-primary); }
+
+.kb-body {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.kb-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+kbd.kb-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.2rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.kb-desc {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.kb-footer {
+  padding: 0.65rem 1.25rem 0.85rem;
+  border-top: 1px solid var(--border-primary);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.kb-footer kbd {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xs);
+  padding: 0.1rem 0.35rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+
+/* ====================================
+   23. TOC Progress Dots
+   ==================================== */
+
+.toc-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-primary);
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+  transition: background var(--transition-base), transform var(--transition-base);
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+.toc-dot.read {
+  background: var(--accent-primary);
+  transform: scale(1.2);
+}
+
+/* Make TOC links flex so dot aligns nicely */
+.post-toc-box a,
+.toc-container a,
+.inline-toc a {
+  display: flex;
+  align-items: center;
+}
+
+
+/* ====================================
+   24. Ambient Background — no extra CSS needed;
+   the JS drives --bg-primary directly.
+   Add a smooth transition to html so the shift is gentle.
+   ==================================== */
+
+html {
+  transition: background-color 600ms ease;
+}
+
+
+/* ====================================
+   Dark Mode overrides for new features
+   Add these INSIDE your existing .dark-mode block,
+   or append them here and they'll still work via specificity.
+   ==================================== */
+
+.dark-mode #lang-toggle,
+.dark-mode #lang-panel {
+  background: var(--bg-elevated);
+  border-color: var(--border-primary);
+}
+
+.dark-mode .lang-option:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark-mode #kb-shortcuts-panel {
+  background: var(--bg-elevated);
+}
+
+.dark-mode kbd.kb-key {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+}
+
+.dark-mode .toc-dot {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .toc-dot.read {
+  background: var(--accent-primary);
+}

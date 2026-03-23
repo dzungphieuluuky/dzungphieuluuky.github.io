@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Some incomplete ideas over here
+title: Some incomplete ideas
 subtitle: Interesting patterns for architectural innovations
 cover-img: 
 thumbnail-img: 

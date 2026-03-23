@@ -1,6 +1,6 @@
 ---
 layout: post
-title: My favourite terminologies
+title: Fancy concepts
 subtitle: Terminologies make up the fanciness for AI
 cover-img:
 thumbnail-img:

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: But what is a diffusion language model?
+title: Diffusion language model
 subtitle: When language models learn to sketch before they write
 tags: [diffusion, language]
 comments: true

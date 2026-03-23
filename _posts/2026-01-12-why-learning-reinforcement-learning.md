@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Why learning reinforcement learning?
+title: Reinforcement learning
 subtitle: The magic of reinforcement learning
 cover-img:
 thumbnail-img:

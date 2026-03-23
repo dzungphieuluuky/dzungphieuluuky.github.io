@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Make your code run in parallel universe
+title: Distributed computing
 subtitle: Hands on distributed system for machine learning
 tags: [distributed-computing]
 comments: true

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Mastery: Multi‑Agent & OpenCLAW Flashcards</title>
+  <!-- Tailwind CSS (browser build) -->
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <!-- Lucide icons (optional visual polish) -->
+  <script src="https://unpkg.com/lucide-static@latest/dist/lucide.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans flex flex-col items-center min-h-screen p-4">
+
+  <!-- ====================== Controls ====================== -->
+  <section class="w-full max-w-xl mb-6 bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <h1 class="text-xl font-semibold text-blue-600">Multi‑Agent & OpenCLAW Revision</h1>
+
+    <label for="jsonFile" class="cursor-pointer text-sm text-blue-500 underline">Load Custom JSON</label>
+    <input type="file" id="jsonFile" accept=".json" class="hidden">
+    <span id="fileName" class="ml-2 text-sm text-green-600"></span>
+  </section>
+
+  <!-- ====================== Flashcard ====================== -->
+  <section id="flashcard" class="w-full max-w-xl bg-white rounded-2xl shadow-lg p-6 relative flex flex-col gap-4">
+    <!-- Meta info -->
+    <div class="flex justify-between text-sm text-gray-500 font-medium">
+      <span id="qIndex">Question 1/100</span>
+      <span id="qSource">Default Set</span>
+    </div>
+
+    <!-- Question text -->
+    <p id="qText" class="text-lg leading-relaxed min-h-[80px]">Loading question…</p>
+
+    <!-- Hint box -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-3 rounded text-sm">
+      Hint: <span id="charCount">--</span> characters (spaces/symbols excluded)
+    </div>
+
+    <!-- Answer input + Check button -->
+    <div class="flex gap-2">
+      <input type="text"
+             id="userAnswer"
+             placeholder="Type your answer here…"
+             autocomplete="off"
+             class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 outline-none transition-colors">
+      <button id="checkBtn"
+              class="flex items-center gap-1 bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              onclick="checkAnswer()">
+        <img src="https://unpkg.com/lucide-static@latest/icons/check.svg" class="w-5 h-5" alt="check">
+        Check
+      </button>
+    </div>
+
+    <!-- Feedback -->
+    <div id="feedback"
+         class="hidden p-4 rounded-lg font-medium text-sm"
+         role="alert"></div>
+
+    <!-- Next button (hidden until answer checked) -->
+    <button id="nextBtn"
+            class="hidden w-full bg-gray-800 text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-900 transition-colors"
+            onclick="nextQuestion()">
+      Next Question →
+    </button>
+  </section>
+
+  <!-- ====================== Progress Bar ====================== -->
+  <div class="w-full max-w-xl mt-4 bg-gray-200 rounded-full h-2 overflow-hidden">
+    <div id="progressFill" class="bg-blue-600 h-full w-0 transition-width duration-300"></div>
+  </div>
+
+  <!-- ====================== JavaScript ====================== -->
+  <script>
+    // ---------- Data ----------
+    const defaultData = [
+      {"definition":"A fundamental property of a multi‑agent system where the collective outcome of agents interacting exceeds the sum of their individual capabilities. Like individual instruments forming a symphony, the system achieves complex goals no single agent could accomplish alone.","keyword":"Synergy"},
+      {"definition":"The theoretical foundation for multi‑agent reinforcement learning, extending game theory to sequential decision‑making. It defines value functions and optimality conditions (like Nash Equilibrium) when multiple agents act simultaneously in a shared environment.","keyword":"Game Theory"},
+      {"definition":"A state in a multi‑agent game where no player can benefit by changing their strategy while the other players keep theirs unchanged. It represents a stable resting point of the system, though not always the globally optimal outcome.","keyword":"Nash Equilibrium"},
+      {"definition":"A multi‑agent learning approach where agents treat other agents as part of the environment. While simple, it fails in non‑stationary environments because the 'environment' changes as other agents learn, violating the Markov assumption.","keyword":"Independent"},
+      {"definition":"A popular MARL algorithm using centralized training and decentralized execution. During training, a critic network has access to all agents' actions and states to guide learning, but actors only use local observations at deployment.","keyword":"MADDPG"},
+      {"definition":"A value decomposition method ensuring that the global Q‑value is the sum of individual agent Q‑values. It enforces a 'Individual‑Global‑Max' consistency, guaranteeing that decentralized actions selected by agents jointly maximize the team reward.","keyword":"QMIX"},
+      {"definition":"The idea that agents improve their performance by observing and imitating the successful behaviors of other agents. In multi‑agent systems, this accelerates learning by allowing agents to bypass costly trial‑and‑error exploration.","keyword":"Imitation"},
+      {"definition":"A measure of the difficulty of a multi‑agent environment based on how the optimal joint action changes as the state changes. High credit assignment requires complex neural networks to map local rewards to global outcomes.","keyword":"Credit Assignment"},
+      {"definition":"A centralized entity in a multi‑agent system that allocates tasks to agents based on their capabilities, availability, and location. It acts as a conductor, ensuring the right agent handles the right job to maximize efficiency.","keyword":"Task Allocator"},
+      {"definition":"A broad category of MARL where agents cooperate to achieve a shared reward, such as robots moving furniture together. The challenge lies in preventing 'lazy' agents that free‑ride on the efforts of others.","keyword":"Cooperative"},
+      {"definition":"A MARL scenario where agents pursue conflicting goals, often with zero‑sum rewards. Think of a competitive game like Pong or StarCraft, where an improvement in one agent's strategy directly corresponds to a loss for the opponent.","keyword":"Zero‑Sum"},
+      {"definition":"The most general MARL setting where agents have distinct, private rewards and may compete, cooperate, or coexist. This models real‑world complex interactions like autonomous driving or financial markets.","keyword":"General Sum"},
+      {"definition":"The ability of an agent to select a specific sub‑task or goal from a set of options autonomously. In hierarchical multi‑agent systems, high‑level managers perform this to direct low‑level workers.","keyword":"Goal Selection"},
+      {"definition":"A method for organizing complex control problems where a high‑level agent sets abstract goals (sub‑tasks) and low‑level agents execute the specific actions to achieve them. It breaks down long horizons into manageable chunks.","keyword":"HRL"},
+      {"definition":"A technique where agents estimate the intentions, goals, or beliefs of other agents to predict their future actions. This 'Theory of Mind' allows agents to navigate dynamic social environments more effectively.","keyword":"Intention Recognition"},
+      {"definition":"The degree to which agents share a common representation of the world, goals, or communication protocol. In systems with humans and AI, ensuring shared meaning is critical for safe and effective collaboration.","keyword":"Alignment"},
+      {"definition":"The ability of a multi‑agent system to maintain functionality despite the failure of individual agents. Redundancy and decentralized decision‑making are key strategies to achieve robustness against agent loss or corruption.","keyword":"Robustness"},
+      {"definition":"The phenomenon where agents converge to identical behaviors or policies over time, reducing the diversity of the population. While sometimes useful, it can be detrimental if specialized roles are required for the task.","keyword":"Convergence"},
+      {"definition":"A communication paradigm where messages flow from a single sender to many receivers, essential for broadcast coordination. In swarms, this allows one agent to alert the entire group to a threat or resource.","keyword":"Multicast"},
+      {"definition":"A MARL algorithm that extends DDPG with a communication channel. Agents learn not only what action to take but also *what message* to send to their neighbors, optimizing the information flow for the team goal.","keyword":"CommNet"},
+      {"definition":"A method for handling communication where agents dynamically learn *who* to communicate with and *when*, rather than broadcasting constantly. This reduces bandwidth and focuses attention on relevant teammates.","keyword":"Attention"},
+      {"definition":"An emergent behavior in swarms where agents follow simple local rules (e.g., align with neighbors, avoid collision) to produce complex global motion patterns like bird flocks or fish schools without central direction.","keyword":"Flocking"},
+      {"definition":"An algorithm allowing a group of robots to move together in a formation while avoiding obstacles. It uses virtual springs and dampers connecting agents to maintain desired relative distances and orientations.","keyword":"Formation Control"},
+      {"definition":"A process in multi‑agent systems where agents increase their capabilities by competing with each other. Think of a student wrestling with a stronger opponent—the struggle drives rapid improvement.","keyword":"Self‑Play"},
+      {"definition":"A technique in competitive self‑play to prevent cycles where Agent A beats B, B beats C, and C beats A indefinitely. It maintains a pool of diverse historical opponents to ensure robust skills.","keyword":"FSP"},
+      {"definition":"A specific type of self‑play where two instances of the same agent compete against each other. It is the core mechanism behind breakthroughs in AlphaGo Zero and OpenAI Five.","keyword":"PSRO"},
+      {"definition":"A strategy for scaling multi‑agent training by using a fixed set of pre‑trained agents (the league) as opponents for the current agent. This stabilizes training and ensures the agent learns to counter a wide variety of strategies.","keyword":"League"},
+      {"definition":"An approach where agents are initially trained in a simplified version of the environment (curriculum) or with weaker opponents before facing the full complexity. This guides the optimization landscape and avoids local optima.","keyword":"Curriculum Learning"},
+      {"definition":"A neural network architecture trained on a massive dataset of (image, text) pairs to learn a joint embedding space. It can 'understand' images and text together, enabling zero‑shot classification without explicit retraining.","keyword":"CLIP"},
+      {"definition":"The process of feeding image and text inputs into a model (like CLIP) and comparing their vector representations. A high similarity score indicates the text accurately describes the image content.","keyword":"Contrastive"},
+      {"definition":"A framework or environment often associated with research involving open‑ended learning, multi‑agent interactions, or world models. (Note: In specific research contexts, 'OpenCLAW' may refer to a custom benchmark, but broadly implies an Open CLAss for World models or similar agents).","keyword":"OpenCLAW"},
+      {"definition":"The ability of an AI model to correctly classify or handle data it has never seen during training. CLIP excels at this, able to recognize objects it wasn't explicitly taught just by understanding their textual description.","keyword":"Zero‑Shot"},
+      {"definition":"The central neural network in CLIP architectures that encodes images into a fixed‑size vector. It is typically a Vision Transformer (ViT) or ResNet trained to align with the text encoder's output.","keyword":"Image Encoder"},
+      {"definition":"The neural network component in CLIP that converts text prompts into vector representations. It maps language into the same high‑dimensional space as images, allowing for cross‑modal comparison.","keyword":"Text Encoder"},
+      {"definition":"A pre‑training method (Contrastive Language‑Image Pre‑training) that pulls embeddings of matching image‑text pairs closer together while pushing apart non‑matching pairs. This creates a semantically organized vector space.","keyword":"CLIP Training"},
+      {"definition":"A variation of CLIP designed to run efficiently on mobile devices and edge hardware. It distills the knowledge of larger models into a compact form without sacrificing significant accuracy.","keyword":"MobileCLIP"},
+      {"definition":"A family of lightweight, high‑performance CLIP models optimized for zero‑shot classification on resource‑constrained devices. They balance speed and accuracy for real‑time applications.","keyword":"SigLIP"},
+      {"definition":"A mechanism that enables an agent to perceive the environment using multiple senses (sight, sound, text). Multi‑modal agents use CLIP‑like models to fuse these inputs for a richer understanding of the world.","keyword":"Fusion"},
+      {"definition":"The mathematical space where multi‑modal models like CLIP map different data types (images, text) so that semantically similar concepts are close together, regardless of their original form.","keyword":"Embedding"},
+      {"definition":"The gap between performance on training data and new, unseen distributions. Agents relying solely on CLIP embeddings can struggle here if the visual style of the test set differs vastly from the pre‑training data.","keyword":"Domain Gap"},
+      {"definition":"A technique where a pre‑trained model like CLIP is fine‑tuned on a specific downstream task (like medical imaging) to adapt its general knowledge to a specialized domain.","keyword":"Fine‑Tune"},
+      {"definition":"A compact, learnable vector prepended to a sequence of inputs (often in Transformers) that can steer the model's generation or classification toward a specific concept or class without retraining the whole network.","keyword":"Prompt Tuning"},
+      {"definition":"A method optimizing the continuous vector representation of a prompt rather than the discrete text tokens. It is often more effective than hand‑crafting text prompts when using models like CLIP for generation.","keyword":"Prompt Engineering"},
+      {"definition":"A collaboration between agents where a text‑based agent (like an LLM) directs a vision‑based agent (using CLIP) to perform tasks in the physical world, bridging symbolic reasoning and visual perception.","keyword":"Vision Language"},
+      {"definition":"The ability of an agent to navigate and interact within a physical or simulated 3D environment. CLIP enhances this by allowing agents to identify objects based on natural language instructions (e.g., 'Find the red cup').","keyword":"Embodied AI"},
+      {"definition":"The process of an agent building a mental map of its environment using sensory data. Multi‑modal agents fuse visual CLIP features with spatial data to create semantic maps (labeling 'kitchen', 'office').","keyword":"Mapping"},
+      {"definition":"The ability to process and analyze a continuous stream of video rather than static images. CLIP can be applied frame‑by‑frame or adapted to understand temporal dynamics in multi‑agent videos.","keyword":"Video"},
+      {"definition":"An environment or 'world' model that agents interact with. In OpenCLAW contexts, this often refers to a simulation where agents learn physics, social dynamics, or manipulation skills.","keyword":"World Model"},
+      {"definition":"Learning that continues indefinitely as agents encounter new situations, rather than stopping after a fixed training phase. CLIP embeddings provide a stable semantic anchor for agents learning in ever‑changing worlds.","keyword":"Lifelong Learning"},
+      {"definition":"A training signal derived from the environment. In multi‑agent setups using CLIP, rewards can be intrinsic, such as maximizing the similarity between an agent's trajectory and a text description of a goal.","keyword":"Reward"},
+      {"definition":"Giving an agent a goal in the form of a natural language description (e.g., 'Pick up the apple'). CLIP enables this by encoding the text and comparing it to the agent's visual observations to measure progress.","keyword":"Language Goal"},
+      {"definition":"Using a separate, pre‑trained model (the critic) to evaluate the actions of a learning agent. CLIP can serve as a critic to judge if an image generated or an action taken matches a textual intent.","keyword":"Off‑Policy"},
+      {"definition":"A specialized vocabulary or set of tokens relevant to a specific domain. Adapting CLIP with domain‑specific vocabularies improves performance in niche multi‑agent tasks like medical or robotic surgery.","keyword":"Vocab"},
+      {"definition":"The ability of a model to handle inputs of varying lengths, such as images of different resolutions or text of different lengths. CLIP typically handles this via resizing or positional encodings.","keyword":"Variable Length"},
+      {"definition":"A property of embeddings where the distance between vectors corresponds to the semantic similarity of the inputs. Effective multi‑modal agents rely on this to navigate 'concept space'.","keyword":"Semantic Sim"},
+      {"definition":"The practice of using AI to generate synthetic data (images, scenes) to train other agents. CLIP can be used to filter or verify that generated scenes match specific textual criteria.","keyword":"Synthetic Data"},
+      {"definition":"Pre‑training on a diverse set of tasks before fine‑tuning on a specific one. Multi‑modal agents often use this to acquire a general 'understanding' of the world before specializing.","keyword":"Multi‑Task"},
+      {"definition":"A high‑dimensional vector space where data is mapped; often synonymous with embedding space. Agents navigate this space to find the closest match to a query or goal.","keyword":"Latent Space"},
+      {"definition":"A software object representing a specific capability or data stream within an agent architecture. Agents subscribe to topics they are interested in, enabling decoupled communication.","keyword":"Topic"},
+      {"definition":"A paradigm where complex control logic is implemented as a network of interconnected nodes. ROS (Robot Operating System) and modern agent frameworks use this to visualize and manage data flow.","keyword":"Node Graph"},
+      {"definition":"A central component that receives goals from a high‑level planner and breaks them down into executable primitives for a controller. It bridges the gap between AI reasoning and robot actuation.","keyword":"Executive"},
+      {"definition":"The use of language as a universal interface for controlling agents. 'SayCan' is a famous example where an LLM selects robot actions based on both the text prompt and the robot's physical capabilities (affordances).","keyword":"SayCan"},
+      {"definition":"The possibility that an agent takes an action that is physically impossible for it to perform. Grounding language models in visual reality (via CLIP) helps mitigate this by checking against the current state.","keyword":"Hallucination"},
+      {"definition":"A process where agents combine their individual observations to form a more accurate picture of the world. Kalman filters or Bayesian networks are often used to fuse noisy sensor data.","keyword":"Sensor Fusion"},
+      {"definition":"The inverse of the 'mapping' problem; determining one's own position and orientation within a known map. Essential for agents navigating static environments using landmarks.","keyword":"Localization"},
+      {"definition":"Solving both mapping and localization simultaneously in an unknown environment. This is the foundational capability for autonomous exploring robots.","keyword":"SLAM"},
+      {"definition":"A mechanism allowing an agent to maintain a consistent belief about its state over time using control inputs and measurement updates. It predicts where it *should* be and corrects that with sensor data.","keyword":"Filter"},
+      {"definition":"The ability to ignore irrelevant details in the sensory input to focus on the task at hand. In attention‑based agents, this allows them to process high‑resolution images without being overwhelmed.","keyword":"Attention"},
+      {"definition":"A technique where input is processed progressively at multiple scales or resolutions. Vision Transformers often use this to capture both fine details and broad context efficiently.","keyword":"Multi‑Scale"},
+      {"definition":"The physical or virtual characteristics of an environment that determine what actions are possible (e.g., a cup affords 'holding', a door affords 'opening'). Agents must learn these to interact.","keyword":"Affordance"},
+      {"definition":"An AI system that pursues a complex goal by decomposing it into sub‑goals, planning actions, and executing them using tools. It is a step up from simple chatbots, involving agency.","keyword":"Agent"},
+      {"definition":"An agent equipped with tools that allow it to interact with the external world—searching the web, running code, or querying a database. AutoGPT and BabyAGI are early examples.","keyword":"Tool‑Use"},
+      {"definition":"The structured memory of an agent, often used to store conversation history, retrieved knowledge, or intermediate reasoning steps. It prevents the agent from forgetting context in long tasks.","keyword":"Memory"},
+      {"definition":"A framework allowing language models to store and retrieve information from an external vector database. It gives agents 'long‑term memory' beyond the context window of the model.","keyword":"Vector Store"},
+      {"definition":"A specialized AI model designed to control robotic muscles or joints. It takes high‑level commands (like 'move forward') and outputs low‑level motor signals.","keyword":"Policy"},
+      {"definition":"The difference between the distribution of data used for training and the distribution encountered in deployment. Robust agents must be designed to handle this shift gracefully.","keyword":"Covariate Shift"},
+      {"definition":"A type of neural network layer that normalizes inputs across the features, stabilizing the learning process in deep networks used for agent perception.","keyword":"Normalization"},
+      {"definition":"A function that introduces non‑linearity into a neural network, allowing it to learn complex patterns essential for vision and language understanding in agents.","keyword":"Activation"},
+      {"definition":"A technique where the output of one layer is fed back as input to the same or previous layer. This is crucial for processing sequences of data (like video or text) where context matters.","keyword":"Recurrence"},
+      {"definition":"A training technique where the gradient of the loss is computed with respect to a 'frozen' copy of the network's weights. This stabilizes training of deep agents and critics.","keyword":"Target Network"},
+      {"definition":"Storing past experiences (state, action, reward, next state) in a memory buffer to break temporal correlations during training. It is a staple of efficient Deep RL.","keyword":"Replay Buffer"},
+      {"definition":"A strategy prioritizing the replay of experiences that resulted in high 'surprise' or error. This helps agents learn faster from mistakes or rare events.","keyword":"Prioritized Replay"},
+      {"definition":"A simulation environment developed by OpenAI for multi‑agent robotics and physics research. It is often used as a testbed for distributed AI and control algorithms.","keyword":"Gym"},
+      {"definition":"A mechanism that automatically adjusts the learning rate during training based on the validation performance, ensuring the model converges to a minimum.","keyword":"Scheduler"},
+      {"definition":"The total amount of computational resources (FLOPs) or time required to train a model. Efficient agent architectures aim to minimize this while maximizing performance.","keyword":"Compute"},
+      {"definition":"A method of evaluation where the model is tested on data it has never seen before, used to estimate how well the agent will perform in the real world.","keyword":"Validation Set"},
+      {"definition":"A set of weights or parameters derived from a pre‑trained model. In transfer learning, agents use these checkpoints as starting points to save time and compute.","keyword":"Checkpoint"},
+      {"definition":"A standard API for reinforcement learning environments, providing a consistent interface for agents to interact with different simulations (like OpenAI Gym).","keyword":"Environment API"},
+      {"definition":"The function that defines the goal of the agent, mapping a state‑action pair to a scalar value. In multi‑agent settings, defining this function to prevent selfish behavior is difficult.","keyword":"Reward Function"},
+      {"definition":"The set of all possible actions an agent can take in the environment. Designing this space effectively is crucial for the agent to learn complex behaviors.","keyword":"Action Space"},
+      {"definition":"The set of all possible situations or configurations the agent can perceive. Large or continuous spaces pose significant challenges for representation learning.","keyword":"State Space"},
+      {"definition":"The probability of taking a random action instead of the best‑known action. This exploration is necessary for agents to discover new strategies.","keyword":"Epsilon"},
+      {"definition":"The value that balances the importance of immediate rewards versus future rewards in the agent's decision‑making. High values make the agent farsighted.","keyword":"Gamma"},
+      {"definition":"The rate at which an agent updates its policy or value estimates towards the new information. Too high causes instability; too low causes slow learning.","keyword":"Learning Rate"},
+      {"definition":"A computational unit in a neural network that performs a weighted sum of inputs followed by a non‑linear activation. The building block of deep learning agents.","keyword":"Neuron"},
+      {"definition":"A biologically plausible learning rule where the strength of a connection between neurons is adjusted based on the timing of their spikes. Used in neuromorphic agent research.","keyword":"STDP"},
+      {"definition":"A network topology where information flows in one direction, from input to output. Commonly used for processing visual data in agent perception modules.","keyword":"Feedforward"},
+      {"definition":"The field of study concerned with designing intelligent agents. It encompasses logic, planning, learning, perception, and robotics.","keyword":"AI"}
+    ];
+
+    // ---------- State ----------
+    let questions = [];
+    let currentIndex = 0;
+
+    // ---------- DOM shortcuts ----------
+    const els = {
+      index:   document.getElementById('qIndex'),
+      source:  document.getElementById('qSource'),
+      text:    document.getElementById('qText'),
+      hint:    document.getElementById('charCount'),
+      input:   document.getElementById('userAnswer'),
+      feedback:document.getElementById('feedback'),
+      checkBtn:document.getElementById('checkBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      progress:document.getElementById('progressFill'),
+      fileIn:  document.getElementById('jsonFile'),
+      fileName:document.getElementById('fileName')
+    };
+
+    // ---------- Utility ----------
+    const normalize = str => str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    const cleanLength = str => normalize(str).length;
+
+    // ---------- Load data ----------
+    function loadData(source, name) {
+      questions = [];
+      let data = typeof source === 'string' ? JSON.parse(source) : source;
+      if (!Array.isArray(data)) {
+        alert('JSON must be an array of objects.');
+        return;
+      }
+      data.forEach(item => {
+        if (item.definition && item.keyword) {
+          questions.push({def: item.definition, ans: item.keyword});
+        }
+      });
+      if (questions.length) {
+        currentIndex = 0;
+        els.source.textContent = name;
+        renderQuestion();
+      } else {
+        els.text.textContent = 'No valid questions found.';
+      }
+    }
+
+    // ---------- Render ----------
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      els.index.textContent = `Question ${currentIndex + 1}/${questions.length}`;
+      els.text.textContent   = q.def;
+      els.hint.textContent   = cleanLength(q.ans);
+      els.input.value = '';
+      els.input.disabled = false;
+      els.input.focus();
+      els.feedback.style.display = 'none';
+      els.checkBtn.style.display = 'block';
+      els.nextBtn.style.display = 'none';
+      const pct = (currentIndex / questions.length) * 100;
+      els.progress.style.width = `${pct}%`;
+    }
+
+    // ---------- Answer check ----------
+    function checkAnswer() {
+      const q = questions[currentIndex];
+      const user = normalize(els.input.value.trim());
+      const correct = normalize(q.ans);
+      els.feedback.style.display = 'block';
+      els.input.disabled = true;
+      els.checkBtn.style.display = 'none';
+      els.nextBtn.style.display = 'block';
+
+      if (user === correct) {
+        els.feedback.textContent = 'Correct! 🎉';
+        els.feedback.className = 'feedback bg-green-100 text-green-800 border border-green-300 rounded-lg';
+      } else {
+        els.feedback.innerHTML = `Incorrect. The answer is <span class="answer-reveal font-mono bg-gray-200 px-1 rounded">${q.ans}</span>`;
+        els.feedback.className = 'feedback bg-red-100 text-red-800 border border-red-300 rounded-lg';
+      }
+    }
+
+    // ---------- Next ----------
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+      } else {
+        // End of deck
+        els.text.textContent = '🎉 Session Complete! You have reviewed all questions.';
+        els.hint.textContent = '-';
+        els.input.style.display = 'none';
+        els.checkBtn.style.display = 'none';
+        els.nextBtn.style.display = 'none';
+        els.progress.style.width = '100%';
+        els.feedback.style.display = 'none';
+        els.index.textContent = 'Done';
+      }
+    }
+
+    // ---------- Init ----------
+    function init() {
+      loadData(defaultData, 'Default Set (201‑300)');
+
+      // File loader
+      els.fileIn.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          loadData(ev.target.result, file.name);
+          els.fileName.textContent = `Loaded: ${file.name}`;
+        };
+        reader.readAsText(file);
+      });
+
+      // Global Enter handling
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault(); // avoid accidental form submissions
+        if (els.nextBtn.style.display === 'block') {
+          nextQuestion();
+        } else if (!els.input.disabled) {
+          checkAnswer();
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

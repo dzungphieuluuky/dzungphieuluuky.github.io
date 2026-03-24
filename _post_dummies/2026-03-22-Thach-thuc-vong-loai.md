@@ -1,0 +1,30 @@
+---
+layout: post
+title: Recap Thách Thức 2026 vòng loại
+subtitle: Lần đầu tiên vô thách thức luôn nè
+cover-img:
+thumbnail-img:
+share-img:
+tags: [personal]
+author: dzungphieuluuky
+---
+
+# Introduction
+Đây là chiếc recap nho nhỏ cho cuộc thi học thuật Thách Thức do khoa FIT của trường HCMUS tổ chức. Sở dĩ mình viết blog này để recap lại những trải nghiệm của mình sau cuộc thi và quá trình làm quen được thêm 3 bạn mới vô cùng chất lượng của chương trình nổi tiếng lừng danh APCS. Blog này sẽ bao gồm các trải nghiệm từ lúc mình được các bạn trong nhóm rủ tham gia vào nhóm cho đến thời điểm hiện tại mình viết blog, hope là sẽ được cháy hết mình (tất nhiên là nghĩa bóng rồi) đến vòng chung kết.
+
+# Các lần thi trong quá khứ
+
+Well, để mà nói thì thực ra mình đã từng tham gia Thách Thức của năm 2025. Mình không tham gia thi vào năm 2024 vì lúc đó mình chỉ mới là năm nhất và chưa có nhiều kiến thức liên quan tới công nghệ thông tin hay khoa học máy tính nói chung, và tất nhiên cũng chưa có hứng thú gì với trí tuệ nhân tạo nên lúc này cuộc sống của mình lay lắt lắm, bữa nào cũng như bữa nào. Sau đó vào năm 2, tức năm 2024, mình may mắn có 1 nhóm bạn chơi chung tầm 5-6 bạn cũng thân thiết nên mình rủ các bạn đó thi chung với mình cho vui, chủ yếu là để trải nghiệm vì lúc đó thực lực của nhóm cũng bèo. Và đúng là bèo thật, vì mới tham gia vòng sơ tuyển thì nhóm đã tạch. Vòng thi đó riêng mình thì đạt 31 điểm, mọi người còn lại hơi thấp hơn mình, tầm khoảng 19-26 điểm. Cũng như mọi năm, ban tổ chức cuộc thi chọn 18 đội có điểm cao nhất ở vòng này để tham gia vào vòng loại. Do đội mình không đủ điểm nên hành trình đã phải ngừng lại ngay từ vòng gửi xe 🥲. Well, không có cơ hội được đi tiếp nhưng ít ra mình cũng đã biết đề thi sơ tuyển trông như nào cũng như cần những kiến thức nào để có thể đấm nhau được với đề thi.
+
+# Gia nhập
+Một hôm nọ trời đầy nắng và gió, 1 bạn học chung lớp sinh hoạt với mình đã rủ mình tham gia thi chung Thách Thức 2026 với bạn ấy. Bạn ấy đã kiếm được 4 bạn (bao gồm cả bạn đó) nhưng vẫn còn thiếu 2 người nữa (tổng là 6) để đủ tiêu chuẩn của ban tổ chức yêu cầu. Tham gia vào nhóm thì mình phát hiện ra mình có quen 1 bạn khác cũng đang trong nhóm (mà bạn này thực ra còn đang ở chung trọ với mình nữa mà mình đâu biết nó đang trong team này đâu). Ngoài 2 người mình biết thì còn 3 bạn khác là sinh viên của chương trình tiên tiến bằng tuổi mình nên mình nghĩ "Oà, xịn thế. Kèo này chắc được làm quen với mấy bạn từ tầng lớp quý tộc nè". Lúc mới vào nhóm thì mình nghĩ rằng chắc có lẽ mình chỉ đóng góp được phần kiến thức thui vì phần lập trình thi đấu mình hoàn toàn không biết gì cả và cũng không hứng thú lắm với phần này.
+
+# Vòng loại 
+
+## Đợt training đầu tiên: Hồng Giang café
+Đây là lần đầu tiên chúng mình gặp nhau trực tiếp để lên ý tưởng và chiến thuật cho từng bài thi sắp diễn ra trong vòng loại. Nhóm mình đã quyết định gặp nhau tại 1 quán cafe gần nhà mình, mà thực ra lúc chọn quán thì bạn ở chung mình nó chọn quán này mà quên cân nhắc tới khoảng cách đi lại của các bạn khác. Do đó có vài bạn phải chạy đến tận 12km để tới quán nên mình đã đề xuất đi quán khác ở đâu đó trung gian giữa nhóm để chia sẻ tiền xăng với mấy bạn nhà xa. Ở lần training này thì chủ yếu chúng mình lập ra các quy ước kí hiệu cho nhóm truyền tin và nhóm nhận tin cho vòng thi truy tìm lỗi ẩn chứ chưa thể tập trung vào các bài thi khác. Vì các bài thi khác có thể xử lý bằng kiến thức rộng và trình độ lập trình của mọi người, riêng bài này thì lại cần khả năng teamwork rất lớn nên cần phải tập trung nhiều hơn so với các bài thi khác. Suốt 3-4 tiếng ngồi ở quán thì chúng mình đã xem 1 vài trận đấu của năm trước để có thêm mường tượng rõ hơn về các trận đấu sẽ diễn ra như thế nào và các quy định liên quan trong từng bài thi. Đối với vòng khởi động, chúng mình cần chia ra làm 2 nhóm bao gòm nhóm gợi ý và nhóm đoán từ. Các từ cần đoán đều là thuật ngữ chuyên ngành bằng tiếng Anh trong ngành công nghệ thông tin/khoa học máy tính nói chung như cơ sở dữ liệu, hệ điều hành, lý thuyết độ phức tạp thuật toán, công nghệ phần mềm, trí tuệ nhân tạo và vài nhánh nhỏ khác, $\dots$ Đối với phần này thì tụi mình đã soạn được một số từ có tiềm năng kèm theo định nghĩa hoặc gợi ý mà tụi mình nghĩ là phù hợp để đoán ra nó, đa số các từ này được lấy từ các cuộc thi năm trước. Từ đó, chúng mình sẽ dùng LLM để tìm thêm các từ liên quan với độ khó hoặc độ phổ biến xấp xỉ với các từ đã có để bao phủ được nhiều từ vựng hơn. Riêng mình cảm thấy mình khá phù hợp với bài thi này vì mình thường xuyên lang thang khắp internet để học những cái mình thích. Trên hành trình đó thì mình đã tiếp xúc với kha khá từ vựng và khái niệm hay trên nhiều lĩnh vực như đã kể ở trên. Do đó mình đã dự tính sẽ cố gắng lấy điểm cao ngay từ phần này vì đây là phần thi đầu tiên nên nếu lấy được nhiều điểm ngay từ đầu trận sẽ tiếp thêm tinh thần chiến đấu và ổn định tâm lý cho nhóm với các phần thi sau. Đối với phần thi truy tìm lỗi ẩn thì nhóm mình cố gắng xác định các ký tự cần thiết và thường xuyên sử dụng trong code để chuẩn bị tạo quy ước cho chúng bằng ngôn ngữ cơ thể vì phần thi này chúng mình không được giao tiếp bằng ngôn ngữ nói mà phải dùng động tác cơ thể để truyền tin cho nhau. Ngoài ra các bạn chuyên về lập trình thi đấu cũng phấn đấu tìm các câu hỏi đã từng xuất hiện trong các cuộc thi trước để có thêm manh mối về độ khó và cách ra đề. Vì team mình có 3 bạn mạnh về lập trình thi đấu nên phần thi lập trình tiếp sức trông cậy chính vào các bạn này còn các bạn khác sẽ có nhiệm vụ code sẵn template để các bạn chủ chốt code phần logic chính cho bài toán. Riêng đối với phần thi cuối của vòng loại là đối đầu trực tiếp thì nhóm chỉ đơn giản là ai biết câu trả lời sẽ trả lời cho nhóm câu đó, vì kiến thức của phần này rất rộng và có bao gồm tính toán nên chúng mình không có thời gian để training với nhau cho phần này. Kết thúc đợt training đầu tiên thì chúng mình chủ yếu đã gặp được nhau và setup những thứ cơ bản chứ chưa training được gì nhiều.
+
+## Đợt training thứ 2: Okkio coffee
+
+## Đợt training cuối cùng: Dooing Lab coffee
+

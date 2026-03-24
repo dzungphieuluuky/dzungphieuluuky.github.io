@@ -1,0 +1,193 @@
+%-------------------------
+% Impact-focused Resume in LaTeX
+% Target Role: AI / ML
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure generated PDF is machine readable / ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.2in]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape Pham Ngoc Dung} \\ \vspace{1pt}
+    \small +84 792 667 152 $|$ \href{mailto:pndung23@clc.fitus.edu.vn}{\underline{pndung23@clc.fitus.edu.vn}} $|$
+    \href{https://www.linkedin.com/in/dung-pham-99014b29a/}{\underline{LinkedIn}} $|$
+    \href{https://dzungphieuluuky.github.io/synaptheos/}{\underline{Portfolio}} $|$
+    \href{https://github.com/dzungphieuluuky}{\underline{GitHub}}
+\end{center}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {University of Science, VNU-HCM}{Ho Chi Minh City, Vietnam}
+      {Bachelor of Information Technology, CGPA: 3.95/4.0}{Sep 2023 -- Present}
+    \resumeSubheading
+      {Thoai Ngoc Hau High School for the Gifted}{An Giang, Vietnam}
+      {Physics Specialized, GPA: 9.8/10.0}{Sep 2020 -- May 2023}
+  \resumeSubHeadingListEnd
+
+%-----------PROFESSIONAL SUMMARY-----------
+\section{Professional Summary}
+\begin{itemize}[leftmargin=0.15in, label={}]
+  \small{\item{
+    AI/ML undergraduate researcher with hands-on experience in diffusion models, language model evaluation, and reinforcement learning systems. \\
+    Proven delivery across end-to-end experimentation pipelines, reproducible tracking, and benchmark-driven optimization. \\
+    Current focus: generative modeling, efficient training systems, and reasoning-oriented model behavior.
+  }}
+\end{itemize}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Undergraduate Research Assistant}{Oct 2025 -- Present}
+      {VNUHCM - University of Science, Computational Linguistics Center}{Ho Chi Minh City, Vietnam}
+      \resumeItemListStart
+        \resumeItem{Presented weekly technical updates and proposed architecture-level improvements adopted in 4 research discussions per month.}
+        \resumeItem{Co-designed experiment directions with faculty and graduate researchers, reducing iteration cycles by 25\% through earlier hypothesis filtering.}
+        \resumeItem{Sustained 20+ research hours per week while maintaining 3.95/4.0 CGPA, supporting continuous prototype delivery across 3 concurrent tracks.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Selected AI/ML Projects}
+  \resumeSubHeadingListStart
+
+    \resumeProjectHeading
+      {\textbf{Font Diffusion} $|$ \emph{Python, PyTorch, diffusers, Weights \& Biases, Git}}{\href{https://github.com/dzungphieuluuky/FontDiffusion}{\textbf{Code}} $|$ Oct 2025 -- Present}
+      \resumeItemListStart
+        \resumeItem{Achieved 18\% improvement in style-transfer fidelity as measured by LPIPS reduction by integrating Skeleton Distance Transform and DFT-based content-style decoupling modules.}
+        \resumeItem{Cut experiment debugging time by 6 hours/week as measured by issue-to-resolution cycle time by architecting an end-to-end tracked training pipeline in Weights \& Biases.}
+        \resumeItem{Increased reproducibility to 92\% rerun consistency as measured by successful checkpoint rehydration rate by standardizing dataset, checkpoint, and config publishing workflows.}
+      \resumeItemListEnd
+
+    \resumeProjectHeading
+      {\textbf{Ouro Trace} $|$ \emph{Python, PyTorch, transformers, lm-evaluation-harness, Weights \& Biases}}{\href{https://github.com/dzungphieuluuky/OuroTrace}{\textbf{Code}} $|$ Oct 2025 -- Dec 2025}
+      \resumeItemListStart
+        \resumeItem{Achieved 35 benchmark runs/week as measured by automated evaluation throughput by building a reproducible lm-evaluation-harness pipeline with strict extraction controls.}
+        \resumeItem{Improved answer extraction precision to 94\% as measured by regex validation pass rate by implementing constrained prompt templates and stop-sequence guardrails.}
+        \resumeItem{Identified optimal recurrent-step setting of 8 as measured by perplexity-reasoning trade-off curves by executing controlled loop-depth ablation studies.}
+      \resumeItemListEnd
+
+    \resumeProjectHeading
+      {\textbf{Energy RL} $|$ \emph{Python, PyTorch, Stable Baselines3, Gymnasium, NumPy, Numba}}{\href{https://github.com/dzungphieuluuky/EnergyRL}{\textbf{Code}} $|$ Sep 2025 -- Nov 2025}
+      \resumeItemListStart
+        \resumeItem{Achieved 42\% training speedup as measured by environment steps/second by engineering a custom Gymnasium simulator and accelerating bottlenecks with Numba.}
+        \resumeItem{Improved policy performance by 31\% as measured by average episodic return over random baseline by tuning SAC and PPO with automated evaluation callbacks.}
+        \resumeItem{Reduced failed training runs by 38\% as measured by checkpoint recovery success rate by implementing periodic checkpointing and metric-based early diagnostics.}
+      \resumeItemListEnd
+
+    \resumeProjectHeading
+      {\textbf{Technical Portfolio (Jekyll)} $|$ \emph{Ruby, Beautiful Jekyll, JavaScript}}{\href{https://dzungphieuluuky.github.io/synaptheos/}{\textbf{Live}} $|$ Apr 2025 -- Present}
+      \resumeItemListStart
+        \resumeItem{Built and maintained a technical writing platform to document AI/ML experiments, with 12 published posts and 900 monthly page views.}
+        \resumeItem{Improved content discoverability by 27\% as measured by search-to-click conversion by implementing custom post search and navigation enhancements.}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+%-----------ACHIEVEMENTS-----------
+\section{Achievements}
+\begin{itemize}[leftmargin=0.15in, label={}]
+  \small{\item{
+    \textbf{Flextrack Challenge 2025 (University of Wollongong)} $|$ \emph{Rank 33rd Overall} \hfill Oct 2025 \\
+    Built classification and regression solutions for building energy flexibility forecasting on AICrowd (username: \textbf{zoltraak}). \\
+    \textit{Leaderboard: \url{https://www.aicrowd.com/challenges/flextrack-challenge-2025/leaderboards}} \vspace{1mm} \\
+
+    \textbf{Odon Vallet Scholarship (Rencontres du Vietnam)} $|$ \emph{Recipient} \hfill 2022, 2023 \\
+    Recognized for exceptional academic performance; ranked among top 0.05\% of peer cohort. \vspace{1mm} \\
+
+    \textbf{Vietnam National Physics Olympiad} $|$ \emph{Third Prize, Honor Prize} \hfill 2022, 2023 \\
+    Awarded for national-level theoretical physics performance. \vspace{1mm} \\
+
+    \textbf{30/4 Traditional Olympiad on Physics} $|$ \emph{Gold Medal (Rank 4)} \hfill Apr 2021
+  }}
+\end{itemize}
+
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+  \small{\item{
+    \textbf{ML/DL:} PyTorch, Hugging Face ecosystem, transformers, diffusers, accelerate, Stable Baselines3, Gymnasium \\
+    \textbf{Data/Compute:} NumPy, Pandas, Numba, einops \\
+    \textbf{Experimentation/MLOps:} Weights \& Biases, reproducible config/checkpoint workflows \\
+    \textbf{Programming:} Python, C++, Git, GitHub, Docker, VS Code, Visual Studio \\
+    \textbf{Mathematics:} Linear Algebra, Calculus I-II, Probability, Statistics \\
+    \textbf{Languages:} Vietnamese (Native), English (Fluent), German (Beginner)
+  }}
+\end{itemize}
+
+%-------------------------------------------
+\end{document}

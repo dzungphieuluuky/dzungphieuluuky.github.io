@@ -432,9 +432,9 @@ const NavbarScroll = {
 };
 
 // ====================================
-// 8. Post Table of Contents (Inline Box)
-// Efficiently builds TOC for article headers, avoiding duplicate code
-// through a shared HTML generation function.
+// 8. Post Table of Contents (Left Sidebar)
+// Efficiently builds TOC for article headers with minimal styling (LessWrong-inspired).
+// Text-focused, no decorative elements, clean hierarchy through typography only.
 // ====================================
 
 const PostTableOfContents = {
@@ -450,7 +450,8 @@ const PostTableOfContents = {
     // Shared function to build TOC HTML - avoids duplication
     const buildTocHtml = () => {
       let html = '<ul class="post-toc-list">';
-      let openChildUl = false;
+      let currentH1 = null;
+      let h2Open = false;
 
       headers.forEach((header) => {
         const id    = header.getAttribute('id');
@@ -458,33 +459,33 @@ const PostTableOfContents = {
         const level = levelOf[header.tagName];
 
         if (level === 1) {
-          if (openChildUl) { html += '</ul></li>'; openChildUl = false; }
+          if (h2Open) { html += '</ul></li>'; h2Open = false; }
           html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
+          currentH1 = id;
         } else if (level === 2) {
-          if (openChildUl) { html += '</ul></li>'; }
-          html += `<li><a href="#${id}">${text}</a><ul>`;
-          openChildUl = true;
-        } else if (level === 3) {
-          if (!openChildUl) { html += '<li><ul>'; openChildUl = true; }
-          html += `<li><a href="#${id}">${text}</a></li>`;
+          if (h2Open) { html += '</ul></li>'; }
+          html += `<li class="toc-h2"><a href="#${id}">${text}</a>`;
+          h2Open = true;
+        } else if (level === 3 && h2Open) {
+          html += `<li class="toc-h3"><a href="#${id}">${text}</a></li>`;
         }
       });
 
-      if (openChildUl) html += '</ul></li>';
+      if (h2Open) html += '</ul></li>';
       html += '</ul>';
       return html;
     };
 
-    // Inject post-level TOC (collapsible box)
+    // Build TOC HTML
     const tocHtml = buildTocHtml();
+    
+    // Inject top-of-post TOC box
     const postTocHTML = `<div class="post-toc-box">
-      <details open>
-        <summary>▼ Table of Contents</summary>
-        ${tocHtml}
-      </details>
+      <h3 class="post-toc-title">Contents</h3>
+      ${tocHtml}
     </div>`;
     article.insertAdjacentHTML('afterbegin', postTocHTML);
-
+    
     // Populate sidebar TOC (if exists)
     const sidebar = document.querySelector('.inline-toc ul');
     if (sidebar) {
@@ -1781,6 +1782,153 @@ const AmbientBackground = {
   }
 };
 
+
+// ====================================
+// 25. Schema.org JSON-LD Structured Data
+// Injects JSON-LD for Article schema, Author schema, and Organization info.
+// Improves SEO and social media preview cards.
+// ====================================
+
+const SchemaMarkup = {
+  init() {
+    const article = document.querySelector('article');
+    if (!article) return; // Only on post pages
+    
+    const title = document.querySelector('h1[id]')?.textContent || document.title;
+    const url = window.location.href;
+    const description = document.querySelector('meta[name="description"]')?.content || '';
+    const datePublished = document.querySelector('[data-publish-date]')?.dataset.publishDate 
+      || document.querySelector('meta[property="og:article:published_time"]')?.content 
+      || new Date().toISOString();
+    
+    const article_schema = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      'headline': title,
+      'description': description,
+      'url': url,
+      'datePublished': datePublished,
+      'author': {
+        '@type': 'Person',
+        'name': 'dzungphieuluuky',
+        'url': window.location.origin
+      },
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'dzungphieuluuky\'s Blog',
+        'url': window.location.origin
+      }
+    };
+    
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(article_schema);
+    document.head.appendChild(script);
+  }
+};
+
+// ====================================
+// 26. Related Posts Discovery
+// Displays related articles based on shared tags at end of post.
+// Improves internal navigation and time-on-site.
+// ====================================
+
+const RelatedPosts = {
+  init() {
+    const article = document.querySelector('article');
+    if (!article) return;
+    
+    const currentTags = this._getCurrentTags();
+    if (currentTags.length === 0) return;
+    
+    const relatedPosts = this._findRelatedPosts(currentTags);
+    if (relatedPosts.length === 0) return;
+    
+    this._injectRelatedSection(relatedPosts);
+  },
+  
+  _getCurrentTags() {
+    const tagsEl = document.querySelector('.post-preview-tags, [data-tags]');
+    if (!tagsEl) return [];
+    
+    // Try to extract tags from the article metadata
+    if (window.pageData?.tags) return window.pageData.tags;
+    
+    // Fallback: extract from tag elements
+    const tags = [];
+    document.querySelectorAll('.tag-pill, [data-tag]').forEach(el => {
+      const tag = el.textContent?.trim() || el.dataset.tag;
+      if (tag) tags.push(tag.toLowerCase());
+    });
+    return [...new Set(tags)];
+  },
+  
+  _findRelatedPosts(currentTags) {
+    // This is a client-side implementation
+    // For better results, tags would be exposed in page data via Jekyll
+    // For now, return empty - site owner can populate window.pageData.relatedPosts
+    return window.pageData?.relatedPosts || [];
+  },
+  
+  _injectRelatedSection(posts) {
+    const section = document.createElement('section');
+    section.className = 'related-posts-section';
+    section.innerHTML = `
+      <hr>
+      <h3>Related Articles</h3>
+      <div class="related-posts-grid">
+        ${posts.map(post => `
+          <a href="${post.url}" class="related-post-card">
+            <h4>${post.title}</h4>
+            <p>${post.excerpt || ''}</p>
+            <span class="related-post-date">${new Date(post.date).toLocaleDateString()}</span>
+          </a>
+        `).join('')}
+      </div>
+    `;
+    
+    document.querySelector('article')?.appendChild(section);
+  }
+};
+
+// ====================================
+// 27. Breadcrumb Navigation
+// Shows hierarchical path (Home > Category > Post) at top of posts.
+// Improves navigation and SEO through link structure.
+// ====================================
+
+const BreadcrumbNav = {
+  init() {
+    const article = document.querySelector('article');
+    if (!article) return;
+    
+    const breadcrumbs = this._buildBreadcrumbs();
+    if (!breadcrumbs) return;
+    
+    const nav = document.createElement('nav');
+    nav.className = 'breadcrumb-nav';
+    nav.setAttribute('aria-label', 'Breadcrumb');
+    nav.innerHTML = breadcrumbs;
+    
+    article.insertAdjacentElement('beforebegin', nav);
+  },
+  
+  _buildBreadcrumbs() {
+    const isPost = !!document.querySelector('article');
+    if (!isPost) return null;
+    
+    const title = document.querySelector('h1[id]')?.textContent || '';
+    const category = window.pageData?.category || 'Articles';
+    
+    return `
+      <ol class="breadcrumb-list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><span>${title}</span></li>
+      </ol>
+    `;
+  }
+};
 
 // ====================================
 // Main Initialization

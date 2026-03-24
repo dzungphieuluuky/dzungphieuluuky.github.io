@@ -133,6 +133,10 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Enable GPU acceleration for smooth scrolling */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 body {
@@ -352,6 +356,11 @@ html.dark-mode .page-content h1 { color: var(--text-primary); }
   margin: 0;
   padding: 0;
   pointer-events: none;
+  /* Optimize for scroll performance */
+  will-change: transform;
+  backface-visibility: hidden;
+  /* Force GPU layer */
+  transform: translateZ(0) scaleX(0);
 }
 
 /* ====================================
@@ -1160,6 +1169,10 @@ table tr:hover td { background: var(--table-row-hover) !important; }
   z-index: 1000;
   transition: box-shadow var(--transition-base);
   height: var(--navbar-height);
+  /* GPU acceleration for smooth scroll detection */
+  will-change: box-shadow;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .navbar.scrolled {
@@ -2067,9 +2080,14 @@ table tr:hover td { background: var(--table-row-hover) !important; }
   pointer-events: none;
   transform: scale(0.3);
   z-index: 999;
+  transition: all var(--transition-base);
+  /* GPU acceleration for smooth animations */
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  transform: translateZ(0) scale(0.3);
 }
 
-#scroll-to-top.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
+#scroll-to-top.visible { opacity: 1; pointer-events: auto; transform: translateZ(0) scale(1); }
 
 #scroll-to-top:hover {
   background: #000000;

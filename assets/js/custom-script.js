@@ -36,6 +36,7 @@ const InteractionManager = {
 const ReadingProgress = {
   bar: null,
   currentRatio: 0,
+  cachedTotal: 0,
 
   init() {
     this.bar = document.getElementById('reading-progress');
@@ -44,15 +45,23 @@ const ReadingProgress = {
       this.bar.id = 'reading-progress';
       document.body.appendChild(this.bar);
     }
+    this._updateCachedDimensions();
     this.update();
+    // Update cache on resize (debounced via unified RAF)
+    window.addEventListener('resize', () => this._updateCachedDimensions(), { passive: true });
+  },
+
+  _updateCachedDimensions() {
+    // Cache these expensive DOM reads; they rarely change mid-scroll
+    this.cachedTotal = document.documentElement.scrollHeight - window.innerHeight;
   },
 
   update() {
     if (!this.bar || !window.anime) return;
-    const total = document.documentElement.scrollHeight - window.innerHeight;
-    const ratio = total > 0 ? Math.min(window.scrollY / total, 1) : 0;
+    // Use cached dimensions instead of reading DOM on every scroll
+    const ratio = this.cachedTotal > 0 ? Math.min(window.scrollY / this.cachedTotal, 1) : 0;
     
-    // Only animate if ratio has changed significantly
+    // Only animate if ratio has changed significantly (prevents layout thrashing)
     if (Math.abs(ratio - this.currentRatio) > 0.01) {
       anime.to(this.bar, {
         scaleX: ratio,
@@ -88,28 +97,17 @@ const ScrollToTop = {
   },
 
   toggle() {
-    if (!this.btn || !window.anime) return;
+    if (!this.btn) return;
     const shouldBeVisible = window.scrollY > this.THRESHOLD;
     
     if (shouldBeVisible && !this.isVisible) {
       this.isVisible = true;
-      anime.to(this.btn, {
-        opacity: 1,
-        scale: 1,
-        duration: 380,
-        easing: 'easeOutElastic(1, 0.6)'
-      });
+      // Use CSS transitions instead of anime.js for simple visibility toggle
+      // This offloads animation to GPU and is more performant
+      this.btn.classList.add('visible');
     } else if (!shouldBeVisible && this.isVisible) {
       this.isVisible = false;
-      anime.to(this.btn, {
-        opacity: 0,
-        scale: 0.3,
-        duration: 250,
-        easing: 'easeInQuad',
-        complete: () => {
-          this.btn.classList.remove('visible');
-        }
-      });
+      this.btn.classList.remove('visible');
     }
   }
 };
@@ -164,8 +162,9 @@ const SmoothAnchors = {
 
 const TocHighlight = {
   observer: null,
-  tocSelectors: '.inline-toc a, .toc-container a, .post-toc-box a',
+  tocLinkMap: new Map(),  // Cache: id -> Array of link elements
   navbarHeight: 58,
+  updateScheduled: false, // RAF batching flag
 
   init() {
     const headings = document.querySelectorAll('h1[id], h2[id], h3[id]');
@@ -181,11 +180,23 @@ const TocHighlight = {
       )
     );
 
-    // Use Intersection Observer for efficient scroll tracking
+    // Pre-build Map of TOC links by heading ID for O(1) lookups
+    // This avoids expensive querySelectorAll on every intersection
+    document.querySelectorAll('.inline-toc a, .toc-container a, .post-toc-box a')
+      .forEach((link) => {
+        const id = link.getAttribute('href')?.slice(1);
+        if (!id) return;
+        if (!this.tocLinkMap.has(id)) this.tocLinkMap.set(id, []);
+        this.tocLinkMap.get(id).push(link);
+      });
+
+    // Simplified IntersectionObserver: reduce complex rootMargin to decrease callbacks
+    // Original: -${this.navbarHeight + 20}px 0px -60% 0px (causes many triggers)
+    // New: simpler 0px 0px -50% 0px (triggers when section enters top 50% of viewport)
     this.observer = new IntersectionObserver(
       (entries) => this.handleIntersection(entries),
       { 
-        rootMargin: `-${this.navbarHeight + 20}px 0px -60% 0px`,
+        rootMargin: '0px 0px -50% 0px',
         threshold: 0
       }
     );
@@ -194,41 +205,32 @@ const TocHighlight = {
   },
 
   handleIntersection(entries) {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      const id = entry.target.getAttribute('id');
+    // Batch DOM updates with RAF to avoid layout thrashing
+    if (this.updateScheduled) return;
+    this.updateScheduled = true;
 
-      // Clear previous active states
-      document
-        .querySelectorAll(this.tocSelectors)
-        .forEach((l) => {
-          if (window.anime && l.classList.contains('active')) {
-            // Animate out the previous link
-            anime.to(l, {
-              opacity: 0.6,
-              duration: 200,
-              easing: 'easeOutQuad'
-            });
-          }
-          l.classList.remove('active');
+    requestAnimationFrame(() => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.getAttribute('id');
+        if (!id) return;
+
+        // Remove active from all links (cached, not via selector)
+        this.tocLinkMap.forEach((links) => {
+          links.forEach((l) => l.classList.remove('active'));
         });
 
-      // Set new active state with animation
-      document
-        .querySelectorAll(`.inline-toc a[href="#${id}"], .toc-container a[href="#${id}"], .post-toc-box a[href="#${id}"]`)
-        .forEach((link) => {
-          link.classList.add('active');
-          
-          if (window.anime) {
-            anime.to(link, {
-              opacity: 1,
-              duration: 300,
-              easing: 'easeOutQuad'
-            });
-          }
-          
-          this.autoScrollTocContainer(link);
-        });
+        // Set new active state (direct Map lookup, not selector query)
+        const activeLinks = this.tocLinkMap.get(id);
+        if (activeLinks) {
+          activeLinks.forEach((link) => {
+            link.classList.add('active');
+            // Use CSS for opacity animation instead of anime.js to reduce JS overhead
+            this.autoScrollTocContainer(link);
+          });
+        }
+      });
+      this.updateScheduled = false;
     });
   },
 
@@ -704,7 +706,7 @@ const EnhancedSearch = {
     this.trigger = document.getElementById('search-trigger');
     if (!this.input || !this.results || !this.modal || !this.trigger) return;
 
-    this._preload();
+    // Search corpus is lazy-loaded on modal open, not preloaded\n    // this._preload();
 
     this.trigger.addEventListener('click', (e) => { e.preventDefault(); this.open(); });
     this.input.addEventListener('input',   (e) => this._search(e));
@@ -728,19 +730,27 @@ const EnhancedSearch = {
   },
 
   async _preload() {
-    this.loading = true;
-    try {
-      const base = document.querySelector('meta[name="baseurl"]')?.content || '';
-      const res  = await fetch(`${base}/assets/data/searchcorpus.json`);
-      if (res.ok) this.corpus = await res.json();
-    } catch (err) {
-      console.warn('Search corpus unavailable:', err);
-    } finally {
-      this.loading = false;
-    }
+    // LAZY-LOAD: Only fetch search corpus when user opens the modal
+    // This reduces initial page load time and network overhead
+    // Remove automatic preload; will be called from open() instead
+    return;
   },
 
-  open() {
+  async open() {
+    // Lazy-load search corpus on modal open (not during page init)
+    if (!this.corpus && !this.loading) {
+      this.loading = true;
+      try {
+        const base = document.querySelector('meta[name="baseurl"]')?.content || '';
+        const res = await fetch(`${base}/assets/data/searchcorpus.json`);
+        if (res.ok) this.corpus = await res.json();
+      } catch (err) {
+        console.warn('Search corpus unavailable:', err);
+      } finally {
+        this.loading = false;
+      }
+    }
+
     this.modal.classList.add('active');
     
     if (window.anime) {
@@ -1689,11 +1699,19 @@ const KeyboardShortcuts = {
 // ====================================
 
 const TocProgressDots = {
+  tocLinkMap: new Map(),
+  
   init() {
     const tocLinks = document.querySelectorAll('.post-toc-box a, .toc-container a, .inline-toc a');
     if (!tocLinks.length) return;
 
+    // Memoize link references: id -> Array of links (O(1) lookups in observer)
     tocLinks.forEach((link) => {
+      const id = link.getAttribute('href')?.slice(1);
+      if (!id) return;
+      if (!this.tocLinkMap.has(id)) this.tocLinkMap.set(id, []);
+      this.tocLinkMap.get(id).push(link);
+      
       const dot = document.createElement('span');
       dot.className = 'toc-dot';
       link.insertBefore(dot, link.firstChild);
@@ -1703,14 +1721,16 @@ const TocProgressDots = {
       (entries) => {
         entries.forEach((entry) => {
           const id = entry.target.getAttribute('id');
-          const links = document.querySelectorAll(
-            `.post-toc-box a[href="#${id}"], .toc-container a[href="#${id}"], .inline-toc a[href="#${id}"]`
-          );
+          if (!id) return;
+          
+          // Use Map lookup instead of querySelectorAll (much faster)
+          const links = this.tocLinkMap.get(id);
+          if (!links) return;
+          
           links.forEach((link) => {
             const dot = link.querySelector('.toc-dot');
             if (!dot) return;
             if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-              // Section scrolled past → mark as read
               dot.classList.add('read');
             } else {
               dot.classList.remove('read');
@@ -1937,63 +1957,86 @@ const BreadcrumbNav = {
 document.addEventListener('DOMContentLoaded', () => {
   InteractionManager.init();
 
-  // Core UI
+  // ====== CRITICAL: Load immediately (required for user interaction) ======
   ReadingProgress.init();
   ScrollToTop.init();
   NavbarScroll.init();
   SmoothAnchors.init();
   DarkMode.init();
+  EnhancedSearch.init();       // Search modal must be ready
+  PostPreviewClick.init();     // Navigation interactions
 
   // Performance: Unified scroll RAF loop for critical scroll handlers
   // This consolidates multiple scroll listeners into one efficient RAF loop
   // to avoid layout thrashing and improve rendering performance.
+  // Uses passive listeners and requestAnimationFrame for silky-smooth scrolling.
   (() => {
     let ticking = false;
+    let lastScrollY = 0;
+    
     const scrollHandlers = [
       () => ReadingProgress.update(),
       () => ScrollToTop.toggle(),
-      () => NavbarScroll.update()
+      () => NavbarScroll.update(),
+      () => AmbientBackground._onScroll()
     ];
 
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            scrollHandlers.forEach((handler) => handler());
-            ticking = false;
+    const handleScroll = () => {
+      lastScrollY = window.scrollY;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          scrollHandlers.forEach((handler) => {
+            try {
+              handler();
+            } catch (e) {
+              console.error('Scroll handler error:', e);
+            }
           });
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Use passive listener for best scroll performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
   })();
 
-  // Content enhancements
-  CodeCopy.init();
-  ImageLightbox.init();
-  MermaidSupport.init();
-  RevealOnScroll.init();
-  CalloutIcons.init();
+  // ====== BATCH DOM-MUTATING modules in a single RAF frame ======
+  // Wraps all DOM-intensive inits in requestAnimationFrame to batch reflows
+  requestAnimationFrame(() => {
+    // Content enhancements
+    CodeCopy.init();
+    ImageLightbox.init();
+    MermaidSupport.init();
+    CalloutIcons.init();
 
-  // Post-only features
-  AutoNumbering.init();           // must run before PostTableOfContents
-  PostTableOfContents.init();     // must run after AutoNumbering sets IDs
-  WordCount.init();
-  ReadingTime.init();
-  TocHighlight.init();
-  PostShareBar.init();
-  FootnoteTooltips.init();
-  LinkPreview.init();
+    // Post-only features (order matters: AutoNumbering → PostTableOfContents)
+    AutoNumbering.init();
+    PostTableOfContents.init();
+    WordCount.init();
+    ReadingTime.init();
+    TocHighlight.init();
+    PostShareBar.init();
+    FootnoteTooltips.init();
+    LinkPreview.init();
+    RevealOnScroll.init();
+    TocProgressDots.init();
+    AmbientBackground.init();
+  });
 
-  // Navigation & search
-  EnhancedSearch.init();
-  PostPreviewClick.init();
-  MultilingualTranslation.init();
-  ReadCompletionTimer.init();
-  KeyboardShortcuts.init();
-  TocProgressDots.init();
-  AmbientBackground.init();
+  // ====== DEFER: Load idle modules (requestIdleCallback with 2s timeout fallback) ======
+  function initLazyModules() {
+    MultilingualTranslation.init();   // Only used on language button click
+    ReadCompletionTimer.init();       // Supplementary reading timer
+    KeyboardShortcuts.init();         // Keyboard help overlay
+    SchemaMarkup.init();              // JSON-LD for SEO
+    RelatedPosts.init();              // Related articles section
+  }
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(initLazyModules, { timeout: 2000 });
+  } else {
+    setTimeout(initLazyModules, 2000);
+  }
 
 });

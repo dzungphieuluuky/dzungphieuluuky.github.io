@@ -40,7 +40,7 @@ This post will keep growing. I add to it when I notice something new. Consider i
 
 ---
 
-## 1. Where to compute
+# 1. Where to compute
 
 Processing raw inputs is expensive.
 
@@ -70,7 +70,7 @@ A latent space that's good for reconstruction isn't necessarily good for plannin
 
 ---
 
-## 2. Latent spaces
+# 2. Latent spaces
 
 We talk about latent dimensions as if they encode features. As if the first coordinate corresponds to "has wheels" and the second to "is red" and the third to "facing left."
 
@@ -111,7 +111,7 @@ I don't know how to do this at scale. But I keep wishing we could.
 
 ---
 
-## 3. Relative > absolute
+# 3. Relative > absolute
 
 Neural networks are surprisingly sensitive to scale.
 
@@ -150,7 +150,7 @@ Making that baseline explicit and learnable—estimating $V(s)$ instead of assum
 
 ---
 
-## 4. Sparse structure
+# 4. Sparse structure
 
 Standard practice: every parameter, every input, every forward pass.
 
@@ -184,7 +184,7 @@ I don't know. But I suspect this is going to become a primary axis of architectu
 
 ---
 
-## 5. At multiple scales
+# 5. At multiple scales
 
 When you look at a forest, you don't render individual leaves first, then branches, then trees, then the canopy.
 
@@ -211,7 +211,7 @@ Examples already exist, scattered across the literature:
 
 In my own projects, I've found that parallel encoders processing the same image at multiple resolutions consistently outperform single-scale baselines.
 
-Take an input image. Generate downsampled versions at resolutions like [64, 96, 128, 256, 512]. Pass each through a separate encoder stream—or share weights across streams, tied convolutions, something learned. Fuse the resulting representations through concatenation, attention, or learned weights.
+Take an input image. Generate downsampled versions at resolutions like $[64, 96, 128, 256, 512]$. Pass each through a separate encoder stream—or share weights across streams, tied convolutions, something learned. Fuse the resulting representations through concatenation, attention, or learned weights.
 
 The low-resolution stream captures global structure. The high-resolution stream preserves fine details. Together, they provide complementary information that depth alone struggles to reconstruct.
 
@@ -225,7 +225,7 @@ The principle: Don't force your model to reconstruct wide views from narrow inpu
 
 ---
 
-## 6. Zero is an implicit baseline
+# 6. Zero is an implicit baseline
 
 Reinforcement learning taught me this.
 

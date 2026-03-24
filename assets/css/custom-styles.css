@@ -79,7 +79,7 @@
   --radius-xl:  12px;
 
   /* Reading */
-  --reading-width:       70vw;
+  --reading-width:       1200px;
   --reading-line-height: 1.75;
   --reading-font-size:   1.0625rem;
   --navbar-height:       54px;
@@ -209,6 +209,13 @@ p {
   widows: 3;
   letter-spacing: 0.003em;
   color: var(--text-secondary);
+}
+
+/* Strong/Bold text */
+strong,
+b {
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 /* ====================================
@@ -1511,7 +1518,7 @@ table tr:hover td { background: var(--table-row-hover) !important; }
 
 /* Post wrapper: centered, generous whitespace */
 .blog-post {
-  max-width: 680px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -2287,6 +2294,20 @@ html.dark-mode .navbar.scrolled { background: #1A1A1A; }
 html.dark-mode code:not(pre code) {
   background: rgba(255, 255, 255, 0.1);
   color: #E5E5E5;
+}
+html.dark-mode .blog-post p,
+html.dark-mode .blog-post li,
+html.dark-mode article p,
+html.dark-mode article li {
+  color: var(--text-secondary);
+}
+html.dark-mode .blog-post h1,
+html.dark-mode .blog-post h2,
+html.dark-mode .blog-post h3,
+html.dark-mode article h1,
+html.dark-mode article h2,
+html.dark-mode article h3 {
+  color: var(--text-primary);
 }
 html.dark-mode .post-toc-box { background: rgba(255, 255, 255, 0.03); }
 html.dark-mode .post-preview { border-color: rgba(255, 255, 255, 0.08); }

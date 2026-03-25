@@ -462,18 +462,22 @@ const PostTableOfContents = {
 
         if (level === 1) {
           if (h2Open) { html += '</ul></li>'; h2Open = false; }
-          html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
+          // H1 items: no bullet, just a link (no nested structure)
+          html += `<div class="toc-h1"><a href="#${id}">${text}</a></div>`;
           currentH1 = id;
         } else if (level === 2) {
-          if (h2Open) { html += '</ul></li>'; }
-          html += `<li class="toc-h2"><a href="#${id}">${text}</a>`;
-          h2Open = true;
+          if (!h2Open) {
+            html += `<ul class="toc-h2-list">`;
+            h2Open = true;
+          }
+          // H2 items: nested under H1, will get list styling
+          html += `<li class="toc-h2"><a href="#${id}">${text}</a></li>`;
         } else if (level === 3 && h2Open) {
           html += `<li class="toc-h3"><a href="#${id}">${text}</a></li>`;
         }
       });
 
-      if (h2Open) html += '</ul></li>';
+      if (h2Open) html += '</ul>';
       html += '</ul>';
       return html;
     };
@@ -917,35 +921,88 @@ const MermaidSupport = {
 };
 
 // ====================================
-// 14. Dark Mode
+// 14. Dark Mode Toggle with Smooth Transitions
+// Enhanced with icon rotation, color transitions, and better UX
 // ====================================
 
 const DarkMode = {
+  toggle: null,
+  moonIcon: null,
+  sunIcon: null,
+  isTransitioning: false,
+
   init() {
-    const stored      = localStorage.getItem('theme');
+    this.toggle = document.getElementById('theme-toggle');
+    if (!this.toggle) return;
+
+    this.moonIcon = this.toggle.querySelector('.icon-moon');
+    this.sunIcon = this.toggle.querySelector('.icon-sun');
+
+    // Restore saved theme or use system preference
+    const stored = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (stored === 'dark' || (!stored && prefersDark))
+    if (stored === 'dark' || (!stored && prefersDark)) {
       document.documentElement.classList.add('dark-mode');
+    }
 
-    document.getElementById('theme-toggle')
-      ?.addEventListener('click', () => this.toggle());
+    // Click handler with debounce to prevent rapid toggling
+    this.toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      this._handleToggle();
+    });
 
+    // Keyboard shortcut: 'T' to toggle (safe: won't fire in input fields)
     document.addEventListener('keydown', (e) => {
       if (e.key !== 't' && e.key !== 'T') return;
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      this.toggle();
+      e.preventDefault();
+      this._handleToggle();
     });
 
+    // Listen for theme changes from other tabs
     window.addEventListener('storage', (e) => {
-      if (e.key === 'theme')
-        document.documentElement.classList.toggle('dark-mode', e.newValue === 'dark');
+      if (e.key === 'theme') {
+        const isDark = e.newValue === 'dark';
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        this._updateIcon(isDark);
+      }
+    });
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) {
+        // Only apply if user hasn't explicitly set a theme
+        document.documentElement.classList.toggle('dark-mode', e.matches);
+        this._updateIcon(e.matches);
+      }
     });
   },
 
-  toggle() {
+  _handleToggle() {
+    if (this.isTransitioning) return; // Prevent rapid clicks
+    this.isTransitioning = true;
+
     const isDark = document.documentElement.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    this._updateIcon(isDark);
+
+    // Trigger rotation animation
+    const activeIcon = isDark ? this.sunIcon : this.moonIcon;
+    if (activeIcon) {
+      activeIcon.classList.add('icon-rotate');
+      setTimeout(() => {
+        activeIcon.classList.remove('icon-rotate');
+        this.isTransitioning = false;
+      }, 300);
+    } else {
+      this.isTransitioning = false;
+    }
+  },
+
+  _updateIcon(isDark) {
+    if (this.moonIcon) this.moonIcon.style.display = isDark ? 'none' : 'block';
+    if (this.sunIcon) this.sunIcon.style.display = isDark ? 'block' : 'none';
   }
 };
 

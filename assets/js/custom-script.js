@@ -1951,6 +1951,161 @@ const BreadcrumbNav = {
 };
 
 // ====================================
+// 28. Semantic Zoom & Collapsible Sections
+// Implements gwern.net-style progressive disclosure
+// Allows readers to expand only sections they're interested in
+// Improves skimmability while preserving depth for interested readers
+// ====================================
+
+const SemanticZoom = {
+  init() {
+    // Add keyboard support to details elements (already works in modern browsers)
+    // Enhance with click handler for mobile accessibility
+    document.querySelectorAll('details').forEach((details) => {
+      const summary = details.querySelector('summary');
+      if (summary) {
+        summary.addEventListener('keypress', (e) => {
+          // Allow Enter/Space to toggle on summary (already works, but ensure it does)
+          if (e.key === ' ' || e.key === 'Enter') {
+            // Let native behavior handle it
+            return;
+          }
+        }, false);
+
+        // Track expansion state in sessionStorage for persistence
+        const detailsId = details.id || `details-${Math.random().toString(36).substr(2, 9)}`;
+        if (!details.id) details.id = detailsId;
+
+        const savedState = sessionStorage.getItem(`${detailsId}-expanded`);
+        if (savedState === 'true') {
+          details.open = true;
+        }
+
+        details.addEventListener('toggle', () => {
+          sessionStorage.setItem(`${detailsId}-expanded`, details.open.toString());
+        }, false);
+      }
+    });
+
+    // Support for .summary-text class - show summary on collapsed, hide on expanded
+    this._initSummaryToggle();
+  },
+
+  _initSummaryToggle() {
+    document.querySelectorAll('details').forEach((details) => {
+      const summary = details.querySelector('summary');
+      if (!summary) return;
+
+      // Check for summary text element
+      const summaryText = summary.querySelector('.summary-text');
+      if (!summaryText) return;
+
+      // Hide summary text when details are open, show when closed
+      const updateSummaryVisibility = () => {
+        if (details.open) {
+          summaryText.style.display = 'none';
+        } else {
+          summaryText.style.display = 'inline';
+        }
+      };
+
+      updateSummaryVisibility();
+      details.addEventListener('toggle', updateSummaryVisibility, false);
+    });
+  }
+};
+
+// ====================================
+// 29. Section Depth Indicator
+// Shows reading depth at current scroll position
+// Visual indicator of how deep reader is exploring sections
+// ====================================
+
+const SectionDepthIndicator = {
+  init() {
+    // Create depth indicator element
+    const indicator = document.createElement('div');
+    indicator.id = 'section-depth-indicator';
+    indicator.setAttribute('aria-label', 'Section depth indicator');
+    document.body.appendChild(indicator);
+
+    // Update depth on scroll
+    window.addEventListener('scroll', () => this._updateDepth(), { passive: true });
+    this._updateDepth();
+  },
+
+  _updateDepth() {
+    const indicator = document.getElementById('section-depth-indicator');
+    if (!indicator) return;
+
+    // Find all headings and details that are currently visible
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    let currentDepth = 0;
+    let visibleHeadings = 0;
+
+    headings.forEach((h) => {
+      const rect = h.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        visibleHeadings++;
+        // Get heading level (h1 = 1, h2 = 2, etc.)
+        const level = parseInt(h.tagName[1]);
+        currentDepth = Math.max(currentDepth, level);
+      }
+    });
+
+    // Count expanded details in viewport
+    const expandedDetails = Array.from(
+      document.querySelectorAll('details[open]')
+    ).filter((d) => {
+      const rect = d.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    }).length;
+
+    const depthLevel = currentDepth + (expandedDetails > 0 ? 1 : 0);
+
+    // Store depth for potential styling/analytics
+    indicator.dataset.depth = depthLevel;
+    indicator.dataset.expandedSections = expandedDetails;
+  }
+};
+
+// ====================================
+// 30. Progressive Enhancement Check
+// Verifies that core content is readable without JavaScript
+// Logs warnings if JavaScript-dependent content exists without fallback
+// ====================================
+
+const ProgressiveEnhancementCheck = {
+  init() {
+    // This runs after DOM is ready to verify progressive enhancement
+    this._checkInteractiveFallbacks();
+  },
+
+  _checkInteractiveFallbacks() {
+    // Check for modals without native HTML equivalents
+    const modals = document.querySelectorAll('.modal, [role="dialog"]');
+    modals.forEach((modal) => {
+      if (!modal.querySelector('details') && !modal.querySelector('summary')) {
+        // Modal exists but has no details/summary equivalent - log warning
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Modal found without details/summary fallback:', modal);
+        }
+      }
+    });
+
+    // Verify that all interactive controls have keyboard support
+    const interactiveElements = document.querySelectorAll('[onclick], .clickable, [role="button"]');
+    interactiveElements.forEach((el) => {
+      if (el.tagName !== 'BUTTON' && el.tagName !== 'A' && !el.hasAttribute('tabindex')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Interactive element missing keyboard support:', el);
+        }
+      }
+    });
+  }
+};
+
+// ====================================
 // Main Initialization
 // ====================================
 
@@ -2011,6 +2166,11 @@ document.addEventListener('DOMContentLoaded', () => {
     MermaidSupport.init();
     CalloutIcons.init();
 
+    // Semantic zoom & progressive enhancement (gwern.net principles)
+    SemanticZoom.init();
+    SectionDepthIndicator.init();
+    ProgressiveEnhancementCheck.init();
+
     // Post-only features (order matters: AutoNumbering → PostTableOfContents)
     AutoNumbering.init();
     PostTableOfContents.init();
@@ -2038,5 +2198,4 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     setTimeout(initLazyModules, 2000);
   }
-
 });

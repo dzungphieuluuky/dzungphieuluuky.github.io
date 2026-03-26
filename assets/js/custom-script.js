@@ -445,7 +445,7 @@ const PostTableOfContents = {
     if (!article) return;
 
     const headers = article.querySelectorAll('h1[id], h2[id], h3[id]');
-    if (headers.length < 2) return;
+    if (headers.length < 1) return;
 
     const levelOf = { H1: 1, H2: 2, H3: 3 };
     
@@ -756,6 +756,7 @@ const EnhancedSearch = {
     }
 
     this.modal.classList.add('active');
+    document.body.classList.add('search-modal-open');
     
     if (window.anime) {
       // Animate modal entrance with slide-up effect
@@ -788,6 +789,7 @@ const EnhancedSearch = {
         easing: 'easeInQuad',
         complete: () => {
           this.modal.classList.remove('active');
+          document.body.classList.remove('search-modal-open');
           this.input.value = '';
           this.results.classList.remove('active');
           this.matches  = [];
@@ -796,6 +798,7 @@ const EnhancedSearch = {
       });
     } else {
       this.modal.classList.remove('active');
+      document.body.classList.remove('search-modal-open');
       this.input.value = '';
       this.results.classList.remove('active');
       this.matches  = [];
@@ -820,17 +823,77 @@ const EnhancedSearch = {
       this.results.classList.add('active');
       return;
     }
+
+    // Score and rank results by relevance
     this.matches = this.corpus
-      .filter((item) =>
-        item.title.toLowerCase().includes(q)    ||
-        item.excerpt.toLowerCase().includes(q)  ||
-        item.content.toLowerCase().includes(q)  ||
-        item.category.toLowerCase().includes(q)
-      )
+      .map((item) => ({
+        ...item,
+        score: this._scoreMatch(q, item)
+      }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
       .slice(0, 10);
+
     this.selected = -1;
     this._render();
     this.results.classList.add('active');
+  },
+
+  _scoreMatch(query, item) {
+    let score = 0;
+    const words = query.split(/\s+/).filter(w => w.length > 0);
+    
+    // Score individual words and check all match
+    let allWordsFound = true;
+    words.forEach((word) => {
+      const titleLower = item.title.toLowerCase();
+      const excerptLower = item.excerpt.toLowerCase();
+      const contentLower = item.content.toLowerCase();
+      const categoryLower = (item.category || '').toLowerCase();
+
+      // Check if word appears in each field
+      const inTitle = titleLower.includes(word);
+      const inExcerpt = excerptLower.includes(word);
+      const inContent = contentLower.includes(word);
+      const inCategory = categoryLower.includes(word);
+
+      if (!inTitle && !inExcerpt && !inContent && !inCategory) {
+        allWordsFound = false;
+        return;
+      }
+
+      // Score based on field (title > category > excerpt > content)
+      if (inTitle) {
+        // Bonus for exact title match or word boundary match
+        if (titleLower === word) score += 100;
+        else if (this._isWordBoundaryMatch(titleLower, word)) score += 50;
+        else if (titleLower.startsWith(word)) score += 40;
+        else score += 30;
+      }
+      if (inCategory) {
+        if (categoryLower === word) score += 80;
+        else if (this._isWordBoundaryMatch(categoryLower, word)) score += 40;
+        else if (categoryLower.startsWith(word)) score += 25;
+        else score += 15;
+      }
+      if (inExcerpt) {
+        if (this._isWordBoundaryMatch(excerptLower, word)) score += 20;
+        else if (excerptLower.startsWith(word)) score += 12;
+        else score += 8;
+      }
+      if (inContent) {
+        score += 2; // Lowest priority but still counts
+      }
+    });
+
+    // Return 0 if not all words are found (AND search)
+    return allWordsFound ? score : 0;
+  },
+
+  _isWordBoundaryMatch(text, word) {
+    // Check if word appears at word boundaries (e.g., " word" or "word " or start/end)
+    const regex = new RegExp(`(^|\\s|[^a-z])${word}($|\\s|[^a-z])`);
+    return regex.test(text);
   },
 
   _render() {
@@ -1655,7 +1718,7 @@ const ReadCompletionTimer = {
     metaBar.appendChild(this.el);
 
     this._update();
-    window.addEventListener('scroll', () => this._update(), { passive: true });
+    // NOTE: Scroll listener removed - now consolidated in unified RAF loop for better performance
   },
 
   _update() {
@@ -1824,7 +1887,7 @@ const AmbientBackground = {
   init() {
     // Only active on post/article pages for subtlety
     if (!document.querySelector('article')) return;
-    window.addEventListener('scroll', () => this._onScroll(), { passive: true });
+    // NOTE: Scroll listener removed - now consolidated in unified RAF loop for better performance
     this._apply(0);
   },
 
@@ -2086,8 +2149,7 @@ const SectionDepthIndicator = {
     indicator.setAttribute('aria-label', 'Section depth indicator');
     document.body.appendChild(indicator);
 
-    // Update depth on scroll
-    window.addEventListener('scroll', () => this._updateDepth(), { passive: true });
+    // NOTE: Scroll listener removed - now consolidated in unified RAF loop for better performance
     this._updateDepth();
   },
 
@@ -2190,7 +2252,11 @@ document.addEventListener('DOMContentLoaded', () => {
       () => ReadingProgress.update(),
       () => ScrollToTop.toggle(),
       () => NavbarScroll.update(),
-      () => AmbientBackground._onScroll()
+      () => AmbientBackground._onScroll(),
+      // Consolidated scroll handlers from individual listeners:
+      () => TocProgressDots._onScroll && TocProgressDots._onScroll(),
+      () => SectionDepthIndicator._updateDepth && SectionDepthIndicator._updateDepth(),
+      () => ReadCompletionTimer._update && ReadCompletionTimer._update()
     ];
 
     const handleScroll = () => {

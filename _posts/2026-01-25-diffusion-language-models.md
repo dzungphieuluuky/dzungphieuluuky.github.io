@@ -15,7 +15,7 @@ That's the quiet revolution behind diffusion language models. And once you see i
 
 ---
 
-## The strange ritual of writing left to right
+# The strange ritual of writing left to right
 
 Every major language model you've used — GPT, Gemini, Claude — shares the same hidden rhythm. It reads your prompt, then begins its answer one token at a time, marching from left to right, each new word leaning on everything that came before.
 
@@ -27,7 +27,7 @@ You and I don't write this way. We wander. We write a sentence, delete half of i
 
 ---
 
-## What diffusion brings: the art of iterative refinement
+# What diffusion brings: the art of iterative refinement
 
 Diffusion models were born in the world of images. The idea is simple enough to feel like a kind of magic: take a photograph and slowly add noise until it becomes pure static — then train a neural network to reverse that process, to find the image hidden in the noise.
 
@@ -41,7 +41,7 @@ Imagine trying to remember a dream. At first, only fragments come: a face, a fee
 
 ---
 
-## The mathematics, without the equations
+# The mathematics, without the equations
 
 Behind this is a training process that feels almost paradoxical at first. You take a clean sentence, corrupt it with noise, and ask the model to predict what you've done — to see through the static and recognize the signal beneath. Over and over, across millions of examples, the model learns what clean language looks like, and more importantly, it learns the path from noise back to meaning.
 
@@ -51,7 +51,7 @@ It's not words being generated anymore. It's meaning, being coaxed into form.
 
 ---
 
-## LLaDA: when the idea became real
+# LLaDA: when the idea became real
 
 For years, diffusion language models were a curiosity — elegant in theory, but never quite able to keep up with the brute efficiency of autoregressive generation. They belonged in papers, not in products.
 
@@ -65,7 +65,7 @@ These aren't minor differences. They suggest something deeper: that the two arch
 
 ---
 
-## Two ways of thinking
+# Two ways of thinking
 
 The contrast is worth sitting with.
 
@@ -79,7 +79,7 @@ What's more striking, though, is emerging evidence that diffusion language model
 
 ---
 
-## A personal convergence
+# A personal convergence
 
 I come to this from an unusual angle. My own research lives at the intersection of reinforcement learning and diffusion models for physical simulation. For a long time, language modeling felt like a separate continent — relevant, but distant.
 
@@ -93,7 +93,7 @@ I suspect these approaches — diffusion generation, looped refinement, recursiv
 
 ---
 
-## What this opens up
+# What this opens up
 
 For years, autoregressive models were the only game in town. They defined what it meant to generate language. Their limitations became invisible, simply because there was nothing to compare them to.
 

@@ -11,7 +11,7 @@ author: dzungphieuluuky
 
 In this post, I would like to talk about some terminologies in artifical intelligence or machine learning in general that I find them most interesting and fancy enough to drive our attention towards this fast-pacing field of study. Whoever you are, undergraduate students, graduates, professor or just an independent researcher, you will find these terminologies ubiquitous and nearly everywhere you go, ranging from textbooks, tech reports, blogs to research papers.
 
-# Latent – hidden architecture
+# Latent
 
 The term latent is derived from the Latin word latere, meaning to lie hidden. It refers to elements that are concealed and not directly measurable, yet are fundamentally more significant than what is immediately perceptible.
 
@@ -19,7 +19,7 @@ In the context of variational autoencoders, diffusion models, and other modern g
 
 These ideas remind me of the time while I was preparing for my physics olympiad competition, in thermodynamics dealing with phase changes of ideal gas and real gas from a state to another. We never tracked every particle since it is impossible, pointless and meaningless to do calculations rigorously for every particles in a block of air. Instead we worked with macroscopic summaries: temperature, pressure, entropy. These statistical properties act as the representatives of the whole gas and can give us meaningful information about the particles and the interaction between them without requiring us to dissect everything in details. Temperature gives us information about the kinetic energy of all particles as a whole rather than bothering ourselves with individual velocity of each particle. Since velocity itself is a vector, not a simple scalar like volume or area. Dissecting every single velocities in the block of air of every particles is impossible, and meaningless because the size of each particle is too small to make any great influence or impact even if we know exactly (which is impossible) how much its velocity are. Pressure and entropy describe how those particles interact with each other and how disorder the system currently is. Pressure helps us to avoid the bitterness of researching on each force created by the change in momentum of each particle, instead, we survey that same property through the lens of pressure of the whole gas. This workaround technique enables us to look into the total dynamics of the whole, how they are affecting and pushing the container on the outside and interaction with other gases. Latent variables do the same for images or trajectories. They're the thermodynamic potentials of the pixel world, free us from the hell of dissecting everything in details with little meanings obtained.
 
-# Representation & Embedding – hidden geometry
+# Representation
 
 **Representation** is the internal language a network invents for itself. Hierarchical features learned through exposure: edges, then textures, then parts, then objects, then scenes. Each layer abstracts further from the pixel, closer to the concept. The deeper we go into the model, the further it is from machine understanding, the closer it is to human's understanding.
 
@@ -31,7 +31,7 @@ CLIP takes it further, and this is where it gets properly wondrous: images and c
 
 Embeddings turn discrete symbols into continuous geometry. That shift—from one-hot sparsity to dense, meaningful vectors—still feels revolutionary to me, years after I first encountered it. It suggests that meaning itself might be fundamentally geometric, that the universe of concepts has a shape we're only beginning to map.
 
-# Manifold – surface that holds most of the meanings
+# Manifold
 
 The **manifold hypothesis** is one of those ideas that seems obvious once you've heard it, and impossible before: high-dimensional data (a 512×512 image = 262,144 dimensions) actually lies on a much lower-dimensional curved surface embedded in that vast space.
 
@@ -45,7 +45,7 @@ Visual intuition: data points tracing spirals or sheets, never uniformly filling
 
 The manifold reminds me of general relativity, another love from those library nights. Spacetime tells matter how to move; matter tells spacetime how to curve. Here, the data distribution tells the model where to go; the model's traversal tells us the shape of the distribution. Geometry and information, entangled.
 
-# Attractor – the destination
+# Attractor
 
 Borrowed from dynamical systems, an **attractor** is a set of states that nearby trajectories converge to over time. Drop a pendulum with friction anywhere in its swing, and it ends at rest hanging straight down—that point is an attractor. The Lorenz system's butterfly wings are a *strange attractor*—a set the system never leaves but never exactly repeats.
 
@@ -57,7 +57,7 @@ During training, we sculpt the loss landscape so good solutions become strong at
 
 The same mathematics appears in chaos theory, in reinforcement learning value functions, in the dynamics of ecosystems and economies. The system "wants" to settle there. Not through intention, but through structure.
 
-# Disentanglement – independent meanings
+# Disentanglement
 
 **Disentanglement** is the quest for latent representations where each dimension controls one meaningful, independent factor of variation. In β-VAEs or FactorVAEs trained on faces, one dimension might handle smile intensity, another glasses presence, another hair color—each knob turns one thing, and only one thing.
 
@@ -67,7 +67,7 @@ Disentanglement remains stubbornly hard. Real-world factors are correlated—smi
 
 It's Plato's cave, upgraded for the deep learning age. The shadows on the wall are the entangled pixels; the disentangled factors are the Forms—the pure ideas casting those shadows. We're trying to learn the Forms from the shadows alone.
 
-# Emergence – quantity leads to quality
+# Emergence
 
 **Emergence**: stack enough simple rules (neurons, gradients, next-token prediction), scale compute and data, and suddenly capabilities appear that no one explicitly programmed. Multi-step reasoning. Few-shot learning. Theory-of-mind-like behavior in large language models. Translation between languages never seen together in training.
 
@@ -76,13 +76,3 @@ Philip Anderson's 1972 essay "More Is Different" said it first: at each level of
 Scaling laws in AI show the same phenomenon: abrupt jumps once certain thresholds are crossed. Performance doesn't improve smoothly; it plateaus, then leaps. The phase transitions of intelligence.
 
 The philosophical weight here is considerable. If minds are emergent from neurons following electrochemical rules—if consciousness itself is an emergent property of enough simple processors interacting—then what are we witnessing in these models? Not claiming sentience, not yet. But the analogy demands pause. When enough complexity accumulates, new things become possible. Always has. Why would this stop now?
-
-# Convergence & Divergence – eternal tension
-
-**Convergence** is the optimizer descending into minima, loss flattening, training curves plateauing. Relief, then anxiety about overfitting, about whether the model has learned the data or just memorized it.
-
-**Divergence** measures distance between distributions—KL, JS, Wasserstein—quantifying how far the generated world strays from the real one. Generative training minimizes divergence to the data, pulling the model's outputs toward the manifold of reality.
-
-Yet exploration wants divergence. Reinforcement learning pushes policies away from safe-but-suboptimal attractors, seeking better performance in uncharted territory. The optimizer wants convergence; the explorer wants divergence. The whole training process is a negotiation between these opposing forces.
-
-I feel the same tension in my own learning. Converge on fundamentals—master the basics until they're automatic, until the equations flow without conscious effort. Then diverge into new rabbit holes: category theory, neuroscience, generative audio, whatever looks interesting. Converge again. Diverge again. Without both, stagnation.

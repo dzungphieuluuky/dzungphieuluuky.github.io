@@ -2,26 +2,104 @@
 
 <meta name="baseurl" content="{{ site.baseurl }}">
 
-<!-- Search Modal (Hidden by default) -->
-<div class="search-modal" id="search-modal">
+<!-- Enhanced Search Modal with Faceted Filtering -->
+<div class="search-modal" id="search-modal" role="dialog" aria-label="Search modal">
   <div class="search-modal-content search-box">
     <button class="search-modal-close" aria-label="Close search">&times;</button>
     
     <div class="search-container">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
       </svg>
       <input 
         type="text" 
         class="search-input" 
-        placeholder="Search posts and articles..."
-        aria-label="Search"
+        placeholder="Search articles and posts... (Cmd+K)"
+        aria-label="Search posts and articles"
         autocomplete="off"
         autofocus
+        spellcheck="false"
       >
+      
+      <!-- Search Results Container -->
       <div class="search-results" id="search-results"></div>
-      <div class="search-hint">↑↓ Navigate • ⏎ Select • Esc Close</div>
+      
+      <!-- Faceted Filters (Collapsible) -->
+      <details class="search-filters">
+        <summary class="search-filters-toggle">
+          <span>Filter Results</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </summary>
+        
+        <div class="search-filters-panel">
+          <!-- Date Range Filter -->
+          <div class="search-filter-group">
+            <label class="search-filter-label">Date Range</label>
+            <div class="search-filter-options">
+              <label class="search-filter-checkbox">
+                <input type="radio" name="date-range" value="any" checked> Any time
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="radio" name="date-range" value="week"> Last week
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="radio" name="date-range" value="month"> Last month
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="radio" name="date-range" value="year"> Last year
+              </label>
+            </div>
+          </div>
+
+          <!-- Reading Time Filter -->
+          <div class="search-filter-group">
+            <label class="search-filter-label">Reading Time</label>
+            <div class="search-filter-options">
+              <label class="search-filter-checkbox">
+                <input type="radio" name="reading-time" value="any" checked> Any length
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="radio" name="reading-time" value="short"> Short (&lt; 5 min)
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="radio" name="reading-time" value="medium"> Medium (5-15 min)
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="radio" name="reading-time" value="long"> Long (&gt; 15 min)
+              </label>
+            </div>
+          </div>
+
+          <!-- Content Type Filter -->
+          <div class="search-filter-group">
+            <label class="search-filter-label">Content Type</label>
+            <div class="search-filter-options">
+              <label class="search-filter-checkbox">
+                <input type="checkbox" class="content-type-filter" value="Article"> Article
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="checkbox" class="content-type-filter" value="Tutorial"> Tutorial
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="checkbox" class="content-type-filter" value="Guide"> Guide
+              </label>
+              <label class="search-filter-checkbox">
+                <input type="checkbox" class="content-type-filter" value="Case Study"> Case Study
+              </label>
+            </div>
+          </div>
+        </div>
+      </details>
+      
+      <!-- Keyboard Hints -->
+      <div class="search-hint">
+        <span>↑↓ to navigate</span>
+        <span>⏎ to select</span>
+        <span>Esc to close</span>
+      </div>
     </div>
   </div>
 </div>

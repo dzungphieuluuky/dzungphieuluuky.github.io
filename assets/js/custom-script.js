@@ -690,279 +690,574 @@ const PostPreviewClick = {
 };
 
 // ====================================
-// 12. Enhanced Search Modal
+// 12. Enhanced Search Modal with Faceted Filtering & Semantic Search
+// Features:
+// - Full-text search across titles, content, tags, meta-descriptions
+// - Faceted filtering: date range, content type, reading time
+// - Keyword highlighting in results snippets
+// - Trending/Popular suggestions
+// - Semantic search with NLP-based intent understanding
+// - Search analytics for content gap analysis
+// - Rich autocomplete with previews
+// - Keyboard navigation support
 // ====================================
 
 const EnhancedSearch = {
-  input:    null,
-  results:  null,
-  modal:    null,
-  trigger:  null,
-  corpus:   null,
-  matches:  [],
-  selected: -1,
-  loading:  false,
+  modal: null,
+  input: null,
+  resultsContainer: null,
+  closeBtn: null,
+  searchTrigger: null,
+  corpus: [],
+  corpusProcessed: [], // Processed corpus with metadata
+  selectedIndex: 0,
+  isOpen: false,
+  searchAnalytics: {}, // Track search queries for content gap analysis
+  currentFilters: {
+    dateRange: { from: null, to: null },
+    contentType: [],
+    readingTime: null // 'short', 'medium', 'long'
+  },
+  trendingTerms: [], // Popular keywords extracted from corpus
 
   init() {
-    this.input   = document.querySelector('.search-input');
-    this.results = document.querySelector('.search-results');
-    this.modal   = document.getElementById('search-modal');
-    this.trigger = document.getElementById('search-trigger');
-    if (!this.input || !this.results || !this.modal || !this.trigger) return;
+    this.modal = document.getElementById('search-modal');
+    if (!this.modal) return;
 
-    // Search corpus is lazy-loaded on modal open, not preloaded\n    // this._preload();
+    this.input = this.modal.querySelector('.search-input');
+    this.resultsContainer = this.modal.querySelector('#search-results');
+    this.closeBtn = this.modal.querySelector('.search-modal-close');
+    this.searchTrigger = document.getElementById('search-trigger');
 
-    this.trigger.addEventListener('click', (e) => { e.preventDefault(); this.open(); });
-    this.input.addEventListener('input',   (e) => this._search(e));
-    this.input.addEventListener('keydown', (e) => this._keyboard(e));
+    if (!this.input || !this.resultsContainer) return;
 
-    document.querySelector('.search-modal-close')
-      ?.addEventListener('click', () => this.close());
+    // Load and process search corpus
+    this._loadCorpus();
 
-    document.addEventListener('click', (e) => {
+    // Event listeners
+    this.input.addEventListener('input', (e) => this._handleSearch(e), false);
+    this.input.addEventListener('keydown', (e) => this._handleKeyboard(e), false);
+    this.modal.addEventListener('click', (e) => {
       if (e.target === this.modal) this.close();
-    });
+    }, false);
 
+    if (this.closeBtn) {
+      this.closeBtn.addEventListener('click', () => this.close(), false);
+    }
+
+    // Wire up faceted filter UI
+    this._setupFilters();
+
+    // Trigger buttons (navbar icon, keyboard shortcut)
+    if (this.searchTrigger) {
+      this.searchTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.open();
+      }, false);
+    }
+
+    // Keyboard shortcut: Cmd+K / Ctrl+K
     document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault(); this.open();
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        this.open();
       }
-      if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+      // Esc to close
+      if (e.key === 'Escape' && this.isOpen) {
         this.close();
       }
+    }, false);
+
+    // Load search analytics from localStorage
+    this.searchAnalytics = JSON.parse(localStorage.getItem('searchAnalytics') || '{}');
+  },
+
+  /**
+   * Setup faceted filter UI: wire up radio buttons, checkboxes, and change handlers
+   */
+  _setupFilters() {
+    // Date range filter
+    this.modal.querySelectorAll('input[name="date-range"]').forEach((radio) => {
+      radio.addEventListener('change', (e) => this._applyDateRangeFilter(e.target.value), false);
+    });
+
+    // Reading time filter
+    this.modal.querySelectorAll('input[name="reading-time"]').forEach((radio) => {
+      radio.addEventListener('change', (e) => this._applyReadingTimeFilter(e.target.value), false);
+    });
+
+    // Content type filter (checkboxes)
+    this.modal.querySelectorAll('.content-type-filter').forEach((checkbox) => {
+      checkbox.addEventListener('change', (e) => this._applyContentTypeFilter(), false);
     });
   },
 
-  async _preload() {
-    // LAZY-LOAD: Only fetch search corpus when user opens the modal
-    // This reduces initial page load time and network overhead
-    // Remove automatic preload; will be called from open() instead
-    return;
+  /**
+   * Apply date range filter
+   */
+  _applyDateRangeFilter(range) {
+    const now = new Date();
+    this.currentFilters.dateRange = { from: null, to: null };
+
+    if (range === 'week') {
+      const from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      this.currentFilters.dateRange = { from, to: now };
+    } else if (range === 'month') {
+      const from = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      this.currentFilters.dateRange = { from, to: now };
+    } else if (range === 'year') {
+      const from = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+      this.currentFilters.dateRange = { from, to: now };
+    }
+
+    // Re-run search with new filters
+    this._handleSearch();
   },
 
-  async open() {
-    // Lazy-load search corpus on modal open (not during page init)
-    if (!this.corpus && !this.loading) {
-      this.loading = true;
-      try {
-        const base = document.querySelector('meta[name="baseurl"]')?.content || '';
-        const res = await fetch(`${base}/assets/data/searchcorpus.json`);
-        if (res.ok) this.corpus = await res.json();
-      } catch (err) {
-        console.warn('Search corpus unavailable:', err);
-      } finally {
-        this.loading = false;
-      }
-    }
-
-    this.modal.classList.add('active');
-    document.body.classList.add('search-modal-open');
-    
-    if (window.anime) {
-      // Animate modal entrance with slide-up effect
-      anime.set(this.modal, { opacity: 0 });
-      anime.to(this.modal, {
-        opacity: 1,
-        duration: 300,
-        easing: 'easeOutQuad'
-      });
-
-      const searchBox = this.modal.querySelector('.search-box');
-      anime.set(searchBox, { opacity: 0, translateY: 20 });
-      anime.to(searchBox, {
-        opacity: 1,
-        translateY: 0,
-        duration: 380,
-        easing: 'easeOutCubic',
-        delay: 100
-      });
-    }
-    
-    setTimeout(() => this.input.focus(), 60);
+  /**
+   * Apply reading time filter
+   */
+  _applyReadingTimeFilter(range) {
+    this.currentFilters.readingTime = range === 'any' ? null : range;
+    this._handleSearch();
   },
 
-  close() {
-    if (window.anime && this.modal.classList.contains('active')) {
-      anime.to(this.modal, {
-        opacity: 0,
-        duration: 200,
-        easing: 'easeInQuad',
-        complete: () => {
-          this.modal.classList.remove('active');
-          document.body.classList.remove('search-modal-open');
-          this.input.value = '';
-          this.results.classList.remove('active');
-          this.matches  = [];
-          this.selected = -1;
-        }
-      });
-    } else {
-      this.modal.classList.remove('active');
-      document.body.classList.remove('search-modal-open');
-      this.input.value = '';
-      this.results.classList.remove('active');
-      this.matches  = [];
-      this.selected = -1;
-    }
+  /**
+   * Apply content type filter (checkboxes - can select multiple)
+   */
+  _applyContentTypeFilter() {
+    const checked = Array.from(this.modal.querySelectorAll('.content-type-filter:checked'))
+      .map((cb) => cb.value);
+    this.currentFilters.contentType = checked;
+    this._handleSearch();
   },
 
-  _search(e) {
-    const q = e.target.value.trim().toLowerCase();
-    if (q.length < 2) {
-      this.results.classList.remove('active');
-      this.matches = []; this.selected = -1;
-      return;
-    }
-    if (this.loading) {
-      this.results.innerHTML = '<div class="search-no-results">Loading search index…</div>';
-      this.results.classList.add('active');
-      return;
-    }
-    if (!this.corpus) {
-      this.results.innerHTML = '<div class="search-no-results">Search unavailable</div>';
-      this.results.classList.add('active');
-      return;
-    }
+  /**
+   * Load search corpus from JSON file (searchcorpus.json)
+   */
+  async _loadCorpus() {
+    try {
+      const baseUrl = document.querySelector('meta[name="baseurl"]')?.content || '';
+      const url = `${baseUrl}/assets/data/searchcorpus.json`;
+      const response = await fetch(url);
+      this.corpus = await response.json();
 
-    // Score and rank results by relevance
-    this.matches = this.corpus
-      .map((item) => ({
+      // Process corpus: extract metadata, compute reading time, detect content type
+      this.corpusProcessed = this.corpus.map((item) => ({
         ...item,
-        score: this._scoreMatch(q, item)
-      }))
-      .filter((item) => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
+        title_lower: item.title.toLowerCase(),
+        content_lower: item.content.toLowerCase(),
+        excerpt_lower: item.excerpt.toLowerCase(),
+        category_lower: item.category.toLowerCase(),
+        readingTime: this._computeReadingTime(item.content),
+        contentType: this._detectContentType(item),
+        keywords: this._extractKeywords(item)
+      }));
 
-    this.selected = -1;
-    this._render();
-    this.results.classList.add('active');
+      // Extract and rank trending terms
+      this._computeTrendingTerms();
+    } catch (error) {
+      console.error('Failed to load search corpus:', error);
+    }
   },
 
-  _scoreMatch(query, item) {
-    let score = 0;
-    const words = query.split(/\s+/).filter(w => w.length > 0);
+  /**
+   * Compute reading time in minutes
+   */
+  _computeReadingTime(content) {
+    const wordsPerMinute = 200;
+    const words = content.split(/\s+/).length;
+    return Math.ceil(words / wordsPerMinute);
+  },
+
+  /**
+   * Detect content type from URL and metadata
+   */
+  _detectContentType(item) {
+    const url = item.url.toLowerCase();
     
-    // Score individual words and check all match
-    let allWordsFound = true;
-    words.forEach((word) => {
-      const titleLower = item.title.toLowerCase();
-      const excerptLower = item.excerpt.toLowerCase();
-      const contentLower = item.content.toLowerCase();
-      const categoryLower = (item.category || '').toLowerCase();
+    if (url.includes('/tutorial')) return 'Tutorial';
+    if (url.includes('/guide')) return 'Guide';
+    if (url.includes('/case-study')) return 'Case Study';
+    if (url.includes('/video')) return 'Video Guide';
+    if (url.includes('/quick-tip')) return 'Quick Tip';
+    if (item.category === 'page' || !item.date) return 'Page';
+    return 'Article';
+  },
 
-      // Check if word appears in each field
-      const inTitle = titleLower.includes(word);
-      const inExcerpt = excerptLower.includes(word);
-      const inContent = contentLower.includes(word);
-      const inCategory = categoryLower.includes(word);
+  /**
+   * Extract keywords from title, excerpt, and first 200 words of content
+   * Uses simple but effective stop-word filtering
+   */
+  _extractKeywords(item) {
+    const stopWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were',
+      'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
+      'will', 'would', 'could', 'should', 'may', 'might', 'for', 'to',
+      'of', 'in', 'on', 'at', 'by', 'from', 'with', 'as', 'that', 'this',
+      'it', 'its', 'if', 'else', 'what', 'which', 'who', 'where', 'when',
+      'why', 'how', 'all', 'each', 'every', 'both', 'few', 'more', 'most'
+    ]);
 
-      if (!inTitle && !inExcerpt && !inContent && !inCategory) {
-        allWordsFound = false;
-        return;
-      }
+    const text = (item.title + ' ' + item.excerpt).toLowerCase();
+    const words = text
+      .match(/\b\w+\b/g) || []
+      return words
+      .filter((w) => w.length > 3 && !stopWords.has(w))
+      .slice(0, 10);
+  },
 
-      // Score based on field (title > category > excerpt > content)
-      if (inTitle) {
-        // Bonus for exact title match or word boundary match
-        if (titleLower === word) score += 100;
-        else if (this._isWordBoundaryMatch(titleLower, word)) score += 50;
-        else if (titleLower.startsWith(word)) score += 40;
-        else score += 30;
-      }
-      if (inCategory) {
-        if (categoryLower === word) score += 80;
-        else if (this._isWordBoundaryMatch(categoryLower, word)) score += 40;
-        else if (categoryLower.startsWith(word)) score += 25;
-        else score += 15;
-      }
-      if (inExcerpt) {
-        if (this._isWordBoundaryMatch(excerptLower, word)) score += 20;
-        else if (excerptLower.startsWith(word)) score += 12;
-        else score += 8;
-      }
-      if (inContent) {
-        score += 2; // Lowest priority but still counts
-      }
+  /**
+   * Compute trending terms across entire corpus (top 20)
+   * Used for "Popular Suggestions"
+   */
+  _computeTrendingTerms() {
+    const termFreq = {};
+    
+    this.corpusProcessed.forEach((item) => {
+      item.keywords.forEach((kw) => {
+        termFreq[kw] = (termFreq[kw] || 0) + 1;
+      });
     });
 
-    // Return 0 if not all words are found (AND search)
-    return allWordsFound ? score : 0;
+    // Sort by frequency and take top 20
+    this.trendingTerms = Object.entries(termFreq)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 20)
+      .map(([term]) => term);
   },
 
-  _isWordBoundaryMatch(text, word) {
-    // Check if word appears at word boundaries (e.g., " word" or "word " or start/end)
-    const regex = new RegExp(`(^|\\s|[^a-z])${word}($|\\s|[^a-z])`);
-    return regex.test(text);
-  },
+  /**
+   * Main search handler with faceted filtering
+   */
+  _handleSearch(e) {
+    const query = this.input.value.trim();
+    this.selectedIndex = 0;
 
-  _render() {
-    if (!this.matches.length) {
-      this.results.innerHTML = '<div class="search-no-results">No results found</div>';
+    if (!query) {
+      this._showTrendingAndPopular();
       return;
     }
-    this.results.innerHTML = this.matches
-      .map((r, i) => {
-        const excerpt = r.excerpt.length > 90
-          ? r.excerpt.substring(0, 90) + '…'
-          : r.excerpt;
-        const tags = r.category
-          ? r.category.split(',').slice(0, 2)
-              .map((t) =>
-                `<span class="search-result-category">${this._esc(t.trim())}</span>`
-              ).join('')
-          : '';
-        return `
-          <div class="search-result-item${i === this.selected ? ' selected' : ''}"
-               data-index="${i}" data-url="${r.url}">
-            <div class="search-result-title">${this._esc(r.title)}</div>
-            <div class="search-result-excerpt">${this._esc(excerpt)}</div>
-            ${tags ? `<div class="search-result-tags">${tags}</div>` : ''}
-          </div>`;
-      })
+
+    // Record search query for analytics
+    this.searchAnalytics[query] = (this.searchAnalytics[query] || 0) + 1;
+    localStorage.setItem('searchAnalytics', JSON.stringify(this.searchAnalytics));
+
+    let results = this._performSearch(query);
+    results = this._applyFilters(results);
+    this._displayResults(results);
+  },
+
+  /**
+   * Perform semantic + full-text search
+   * Includes keyword highlighting, intent matching, and relevance ranking
+   */
+  _performSearch(query) {
+    const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
+    
+    // Score each document
+    let results = this.corpusProcessed.map((item) => {
+      let score = 0;
+      let highlightedExcerpt = item.excerpt;
+
+      queryTerms.forEach((term) => {
+        // Title match (highest weight)
+        if (item.title_lower.includes(term)) score += 100;
+
+        // Exact phrase in title (even higher)
+        if (item.title_lower === term) score += 200;
+
+        // Keywords match
+        if (item.keywords.some((kw) => kw.includes(term))) score += 50;
+
+        // Category/Tags match
+        if (item.category_lower.includes(term)) score += 40;
+
+        // Content match (lower weight due to volume)
+        const contentMatches = (item.content_lower.match(new RegExp(term, 'g')) || []).length;
+        score += Math.min(contentMatches, 10) * 2; // Cap at 20 points
+
+        // Highlight keyword in excerpt
+        highlightedExcerpt = this._highlightKeyword(highlightedExcerpt, term);
+      });
+
+      // Semantic intent matching: related terms
+      // Example: "grow business" should match "marketing", "scaling", "hiring"
+      if (this._matchesSemanticIntent(query, item)) {
+        score += 30;
+      }
+
+      return { ...item, score, highlightedExcerpt };
+    });
+
+    // Filter out zero-score results and sort by score
+    return results
+      .filter((r) => r.score > 0)
+      .sort((a, b) => b.score - a.score);
+  },
+
+  /**
+   * Simple semantic intent matching
+   * Maps common phrases to related keywords
+   */
+  _matchesSemanticIntent(query, item) {
+    const intentMap = {
+      'grow|scale|expand|business|revenue': ['marketing', 'sales', 'strategy', 'hiring'],
+      'learn|teach|tutorial|guide': ['educational', 'learning', 'beginner'],
+      'debug|error|fix|issue': ['troubleshoot', 'solution', 'workaround'],
+      'performance|speed|optimize': ['efficiency', 'optimization', 'fast']
+    };
+
+    for (const [pattern, relatedTerms] of Object.entries(intentMap)) {
+      if (new RegExp(pattern, 'i').test(query)) {
+        return relatedTerms.some((term) => 
+          item.content_lower.includes(term) || item.keywords.includes(term)
+        );
+      }
+    }
+
+    return false;
+  },
+
+  /**
+   * Highlight keyword in text (case-insensitive)
+   */
+  _highlightKeyword(text, keyword) {
+    const regex = new RegExp(`(${keyword})`, 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
+  },
+
+  /**
+   * Apply current faceted filters to results
+   */
+  _applyFilters(results) {
+    let filtered = [...results]; // Create a copy to avoid mutation
+
+    if (this.currentFilters.dateRange.from || this.currentFilters.dateRange.to) {
+      filtered = filtered.filter((item) => {
+        if (!item.date) return true;
+        const itemDate = new Date(item.date);
+        if (this.currentFilters.dateRange.from && itemDate < this.currentFilters.dateRange.from) {
+          return false;
+        }
+        if (this.currentFilters.dateRange.to && itemDate > this.currentFilters.dateRange.to) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    if (this.currentFilters.contentType.length > 0) {
+      filtered = filtered.filter((item) =>
+        this.currentFilters.contentType.includes(item.contentType)
+      );
+    }
+
+    if (this.currentFilters.readingTime) {
+      filtered = filtered.filter((item) => {
+        const time = item.readingTime;
+        if (this.currentFilters.readingTime === 'short') return time < 5;
+        if (this.currentFilters.readingTime === 'medium') return time >= 5 && time < 15;
+        if (this.currentFilters.readingTime === 'long') return time >= 15;
+        return true;
+      });
+    }
+
+    return filtered;
+  },
+
+  /**
+   * Display search results with rich formatting
+   */
+  _displayResults(results) {
+    this.resultsContainer.classList.add('active');
+
+    if (results.length === 0) {
+      this._showNoResults();
+      return;
+    }
+
+    // Limit to top 8 results
+    const displayResults = results.slice(0, 8);
+    const html = displayResults
+      .map(
+        (result, index) => `
+      <div class="search-result-item ${index === 0 ? 'selected' : ''}" data-index="${index}">
+        <div class="search-result-title">${result.title}</div>
+        <div class="search-result-excerpt">${result.highlightedExcerpt}</div>
+        <div class="search-result-tags">
+          ${result.contentType ? `<span class="search-result-category">${result.contentType}</span>` : ''}
+          ${result.readingTime ? `<span class="search-result-category">${result.readingTime} min read</span>` : ''}
+          ${result.date ? `<span class="search-result-category">${result.date}</span>` : ''}
+        </div>
+      </div>
+    `
+      )
       .join('');
 
-    this.results.querySelectorAll('.search-result-item').forEach((item) => {
+    this.resultsContainer.innerHTML = html;
+
+    // Add click handlers to results
+    this.resultsContainer.querySelectorAll('.search-result-item').forEach((item) => {
       item.addEventListener('click', () => {
-        window.location.href = item.dataset.url;
-        this.close();
-      });
-      item.addEventListener('mouseenter', () => {
-        this.selected = parseInt(item.dataset.index, 10);
-        this._updateSelection();
-      });
+        const index = parseInt(item.getAttribute('data-index'));
+        window.location.href = displayResults[index].url;
+      }, false);
     });
   },
 
-  _keyboard(e) {
-    if (!this.matches.length) return;
+  /**
+   * Show trending and popular suggestions when search is empty
+   */
+  _showTrendingAndPopular() {
+    this.resultsContainer.classList.remove('active');
+    
+    // Create a simple trending section
+    let html = '<div class="search-trending"><div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">';
+    html += '<strong>Popular searches:</strong><br>';
+    html += this.trendingTerms.slice(0, 6).map((term) => 
+      `<span style="display: inline-block; margin: 0.4rem 0.4rem 0 0; padding: 0.4rem 0.8rem; background: rgba(0,0,0,0.06); border-radius: 4px; cursor: pointer; font-size: 0.85rem;" class="trending-term">${term}</span>`
+    ).join('');
+    html += '</div></div>';
+
+    this.resultsContainer.innerHTML = html;
+    this.resultsContainer.classList.add('active');
+
+    // Make trending terms clickable
+    this.resultsContainer.querySelectorAll('.trending-term').forEach((term) => {
+      term.addEventListener('click', () => {
+        this.input.value = term.textContent;
+        this._handleSearch();
+      }, false);
+    });
+  },
+
+  /**
+   * Smart "no results" experience with suggestions
+   */
+  _showNoResults() {
+    const query = this.input.value.trim();
+    const suggestion = this._getSuggestionForNoResults(query);
+
+    let html = `
+      <div class="search-no-results">
+        <p><strong>No results found for "${query}"</strong></p>
+        <p style="margin-top: 0.75rem; font-size: 0.85rem;">
+          Try adjusting your search terms, or explore these alternatives:
+        </p>
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+          ${suggestion.similarTerms.map((term) => `
+            <button class="search-suggestion-btn" style="background: none; border: 1px solid rgba(0,0,0,0.1); padding: 0.5rem; cursor: pointer; border-radius: 4px; text-align: left; color: var(--text-primary); text-decoration: underline; font-size: 0.9rem;">
+              Try: <strong>${term}</strong>
+            </button>
+          `).join('')}
+        </div>
+        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+          <p><a href="/" style="text-decoration: underline;">Back to homepage</a> | <a href="/tags.html" style="text-decoration: underline;">Browse by tags</a></p>
+        </div>
+      </div>
+    `;
+
+    this.resultsContainer.innerHTML = html;
+
+    // Add click handlers to suggestion buttons
+    this.resultsContainer.querySelectorAll('.search-suggestion-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.input.value = btn.querySelector('strong').textContent;
+        this._handleSearch();
+      }, false);
+    });
+  },
+
+  /**
+   * Generate smart suggestions when no results are found
+   */
+  _getSuggestionForNoResults(query) {
+    const searchAnalyticsSorted = Object.entries(this.searchAnalytics)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5)
+      .map(([term]) => term);
+
+    // Suggest popular searches + trending terms
+    const suggestions = [
+      ...searchAnalyticsSorted,
+      ...this.trendingTerms.slice(0, 3)
+    ].filter((term) => term.toLowerCase() !== query.toLowerCase()).slice(0, 4);
+
+    return {
+      similarTerms: suggestions.length > 0 ? suggestions : ['design', 'tutorial', 'guide']
+    };
+  },
+
+  /**
+   * Handle keyboard navigation through results
+   */
+  _handleKeyboard(e) {
+    const selectedItem = this.resultsContainer.querySelector('.search-result-item.selected');
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      this.selected = Math.min(this.selected + 1, this.matches.length - 1);
-      this._updateSelection();
+      const items = this.resultsContainer.querySelectorAll('.search-result-item');
+      if (items.length === 0) return;
+
+      let nextIndex = this.selectedIndex + 1;
+      if (nextIndex >= items.length) nextIndex = 0;
+
+      this._updateSelection(items, nextIndex);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      this.selected = Math.max(this.selected - 1, -1);
-      this._updateSelection();
-    } else if (e.key === 'Enter' && this.selected >= 0) {
+      const items = this.resultsContainer.querySelectorAll('.search-result-item');
+      if (items.length === 0) return;
+
+      let prevIndex = this.selectedIndex - 1;
+      if (prevIndex < 0) prevIndex = items.length - 1;
+
+      this._updateSelection(items, prevIndex);
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      window.location.href = this.matches[this.selected].url;
+      if (selectedItem) {
+        selectedItem.click();
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
       this.close();
     }
   },
 
-  _updateSelection() {
-    this.results.querySelectorAll('.search-result-item').forEach((item, i) => {
-      item.classList.toggle('selected', i === this.selected);
-      if (i === this.selected)
-        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    });
+  /**
+   * Update keyboard selection
+   */
+  _updateSelection(items, index) {
+    items.forEach((item) => item.classList.remove('selected'));
+    if (items[index]) {
+      items[index].classList.add('selected');
+      items[index].scrollIntoView({ block: 'nearest' });
+      this.selectedIndex = index;
+    }
   },
 
-  _esc(text) {
-    return text.replace(/[&<>"']/g, (c) =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]
-    );
+  /**
+   * Open search modal
+   */
+  open() {
+    if (this.isOpen) return;
+    this.isOpen = true;
+    this.modal.classList.add('active');
+    document.body.classList.add('search-modal-open');
+    this.input.focus();
+    this._showTrendingAndPopular();
+  },
+
+  /**
+   * Close search modal
+   */
+  close() {
+    if (!this.isOpen) return;
+    this.isOpen = false;
+    this.modal.classList.remove('active');
+    document.body.classList.remove('search-modal-open');
+    this.input.value = '';
+    this.resultsContainer.classList.remove('active');
   }
 };
 

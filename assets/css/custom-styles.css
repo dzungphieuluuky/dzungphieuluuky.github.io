@@ -1997,6 +1997,175 @@ body.search-modal-open {
 }
 
 /* ====================================
+   NEW: Faceted Search Filters
+   ==================================== */
+
+/* Filter Panel (Collapsible with <details>) */
+.search-modal .search-filters {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-primary);
+  padding-top: 1rem;
+}
+
+.search-modal .search-filters-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin: -0.5rem -0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-base);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+.search-modal .search-filters-toggle:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.search-modal .search-filters-toggle svg {
+  transition: transform var(--transition-base);
+  opacity: 0.6;
+}
+
+.search-modal .search-filters[open] .search-filters-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* Filter Panel Content */
+.search-modal .search-filters-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+
+/* Individual Filter Group */
+.search-modal .search-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.search-modal .search-filter-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  display: block;
+}
+
+/* Filter Options Container */
+.search-modal .search-filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Individual Filter Checkbox/Radio */
+.search-modal .search-filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-base);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.search-modal .search-filter-checkbox:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.search-modal .search-filter-checkbox input[type="radio"],
+.search-modal .search-filter-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent-primary);
+}
+
+/* Keyword Highlighting in Results */
+.search-modal .search-result-excerpt mark {
+  background: rgba(92, 138, 60, 0.25);
+  color: inherit;
+  padding: 0.1em 0.2em;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+/* Trending Terms Display */
+.search-modal .search-trending {
+  padding: 1rem;
+}
+
+.search-modal .trending-term {
+  display: inline-block;
+  margin: 0.5rem 0.4rem 0 0;
+  padding: 0.4rem 0.8rem;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all var(--transition-base);
+  user-select: none;
+}
+
+.search-modal .trending-term:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+}
+
+/* No Results Suggestions */
+.search-modal .search-suggestion-btn {
+  background: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.6rem;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  text-align: left;
+  color: var(--text-primary);
+  text-decoration: underline;
+  font-size: 0.9rem;
+  font-family: 'Source Serif 4', serif;
+  transition: all var(--transition-base);
+}
+
+.search-modal .search-suggestion-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Print styles: expand details for search filters */
+@media print {
+  .search-modal .search-filters[open] {
+    border: 1px solid var(--border-primary);
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-modal .search-filters-toggle::after {
+    content: " (Filters applied)";
+  }
+
+  .search-modal .search-filters-panel {
+    display: flex !important;
+  }
+}
+
+/* ====================================
    Tags
    ==================================== */
 

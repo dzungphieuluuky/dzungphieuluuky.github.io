@@ -27,8 +27,168 @@ const CONFIG = {
   // Animations
   ANIMATION_DURATION_FAST: 150,
   ANIMATION_DURATION_NORMAL: 300,
-  ANIMATION_DURATION_SLOW: 500
+  ANIMATION_DURATION_SLOW: 500,
+  
+  // Theme
+  THEME_STORAGE_KEY: 'sjbz-theme-preference',
+  PREFER_DARK_MEDIA: '(prefers-color-scheme: dark)'
 };
+
+// ====================================
+// 0.1 Dark Mode / Light Mode Toggle
+// Handles system theme detection, localStorage persistence, and smooth transitions
+// ====================================
+
+const DarkMode = {
+  isDark: false,
+  toggleBtn: null,
+  mediaQuery: null,
+
+  init() {
+    // Detect system preference or load stored preference
+    const stored = localStorage.getItem(CONFIG.THEME_STORAGE_KEY);
+    
+    if (stored) {
+      this.isDark = stored === 'dark';
+    } else {
+      // Use system preference as default
+      this.mediaQuery = window.matchMedia(CONFIG.PREFER_DARK_MEDIA);
+      this.isDark = this.mediaQuery.matches;
+      
+      // Listen for system theme changes
+      if (this.mediaQuery.addEventListener) {
+        this.mediaQuery.addEventListener('change', (e) => {
+          if (!localStorage.getItem(CONFIG.THEME_STORAGE_KEY)) {
+            this.setTheme(e.matches);
+          }
+        });
+      }
+    }
+
+    // Apply theme immediately (prevents FOUC - flash of unstyled content)
+    this.applyTheme();
+
+    // Find or create toggle button in navbar
+    this._setupToggleButton();
+  },
+
+  _setupToggleButton() {
+    // Select the existing theme toggle button in navbar
+    this.toggleBtn = document.querySelector('#theme-toggle');
+    
+    if (this.toggleBtn) {
+      this.toggleBtn.addEventListener('click', () => this.toggle());
+      this._updateToggleState();
+    }
+  },
+
+  _updateToggleState() {
+    if (!this.toggleBtn) return;
+    
+    this.toggleBtn.setAttribute('aria-label', this.isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    this.toggleBtn.setAttribute('aria-pressed', this.isDark.toString());
+    
+    // Add rotation animation to icons
+    const icons = this.toggleBtn.querySelectorAll('svg');
+    icons.forEach((icon) => {
+      icon.classList.add('icon-rotate');
+      setTimeout(() => icon.classList.remove('icon-rotate'), 300);
+    });
+  },
+
+  /**
+   * Apply theme to document
+   */
+  applyTheme() {
+    const root = document.documentElement;
+    
+    if (this.isDark) {
+      root.classList.add('dark-mode');
+      root.classList.remove('light-mode');
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
+    } else {
+      root.classList.add('light-mode');
+      root.classList.remove('dark-mode');
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
+    }
+  },
+
+  /**
+   * Toggle between dark and light mode
+   */
+  toggle() {
+    this.setTheme(!this.isDark);
+  },
+
+  /**
+   * Set theme to specific mode
+   * @param {boolean} isDark - true for dark mode, false for light mode
+   */
+  setTheme(isDark) {
+    this.isDark = isDark;
+    
+    // Persist preference
+    localStorage.setItem(CONFIG.THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+    
+    // Apply theme with smooth transition
+    if (window.anime) {
+      // Fade transition using anime.js
+      anime.to(document.documentElement, {
+        opacity: [1, 0.7, 1],
+        duration: CONFIG.ANIMATION_DURATION_FAST,
+        easing: 'easeInOutQuad',
+        begin: () => this.applyTheme(),
+      });
+    } else {
+      // Immediate transition if anime.js not available
+      this.applyTheme();
+    }
+
+    // Update toggle button state
+    this._updateToggleState();
+
+    // Announce to screen readers
+    if (CONFIG.ANNOUNCE_TO_SCREEN_READERS) {
+      const announcement = isDark ? 'Switched to dark mode' : 'Switched to light mode';
+      this._announceToScreenReader(announcement);
+    }
+    
+    // Dispatch custom event for other modules to listen to
+    document.dispatchEvent(new CustomEvent('theme-changed', { 
+      detail: { isDark, theme: isDark ? 'dark' : 'light' } 
+    }));
+  },
+
+  /**
+   * Announce theme change to screen readers
+   */
+  _announceToScreenReader(message) {
+    const announcement = document.createElement('div');
+    announcement.className = 'sr-only';
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.textContent = message;
+    document.body.appendChild(announcement);
+    
+    // Remove after announcement
+    setTimeout(() => announcement.remove(), 1000);
+  }
+};
+
+// Apply initial theme as early as possible to prevent flash
+(() => {
+  const stored = localStorage.getItem(CONFIG.THEME_STORAGE_KEY);
+  const isDark = stored ? stored === 'dark' : window.matchMedia(CONFIG.PREFER_DARK_MEDIA).matches;
+  const root = document.documentElement;
+  
+  if (isDark) {
+    root.classList.add('dark-mode');
+  } else {
+    root.classList.add('light-mode');
+  }
+})();
 
 // ====================================
 // 1. Enable Transitions on First Interaction
@@ -1056,6 +1216,13 @@ const EnhancedSearch = {
     // Filter out zero-score results and sort by score
     return results
       .filter((r) => r.score > 0)
+      .map((r) => {
+        // Truncate excerpt to reduce visual density (max 120 characters)
+        if (r.highlightedExcerpt.length > 120) {
+          r.highlightedExcerpt = r.highlightedExcerpt.substring(0, 120).trim() + '…';
+        }
+        return r;
+      })
       .sort((a, b) => b.score - a.score);
   },
 
@@ -1309,8 +1476,16 @@ const EnhancedSearch = {
   open() {
     if (this.isOpen) return;
     this.isOpen = true;
+    
+    // Preserve scroll position when modal opens
+    this.scrollPosition = window.scrollY;
+    this.bodyScrollTop = document.body.scrollTop;
+    
     this.modal.classList.add('active');
     document.body.classList.add('search-modal-open');
+    
+    // Restore scroll position to prevent jump (CSS will disable scrolling)
+    window.scrollTo(0, this.scrollPosition);
     
     // Focus management: trap focus in modal
     if (CONFIG.FOCUS_TRAP_ENABLED) {
@@ -1338,6 +1513,11 @@ const EnhancedSearch = {
     document.body.classList.remove('search-modal-open');
     this.input.value = '';
     this.resultsContainer.classList.remove('active');
+    
+    // Restore scroll position after modal closes
+    if (this.scrollPosition !== undefined) {
+      window.scrollTo(0, this.scrollPosition);
+    }
     
     // Return focus to trigger element
     if (this.searchTrigger) {
@@ -1401,109 +1581,6 @@ const MermaidSupport = {
       pre.parentNode.replaceChild(div, pre);
     });
     if (window.mermaid) mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-  }
-};
-
-// ====================================
-// 14. Dark Mode Toggle with Smooth Transitions
-// Enhanced with icon rotation, color transitions, and better UX
-// ====================================
-
-const DarkMode = {
-  toggle: null,
-  moonIcon: null,
-  sunIcon: null,
-  isTransitioning: false,
-
-  init() {
-    this.toggle = document.getElementById('theme-toggle');
-    if (!this.toggle) return;
-    
-    // Add proper ARIA label
-    this.toggle.setAttribute('aria-label', 'Toggle dark mode');
-    this.toggle.setAttribute('aria-pressed', 'false');
-
-    this.moonIcon = this.toggle.querySelector('.icon-moon');
-    this.sunIcon = this.toggle.querySelector('.icon-sun');
-
-    // Restore saved theme or use system preference
-    const stored = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (stored === 'dark' || (!stored && prefersDark)) {
-      document.documentElement.classList.add('dark-mode');
-      this.toggle.setAttribute('aria-pressed', 'true');
-    }
-
-    // Click handler with debounce to prevent rapid toggling
-    this.toggle.addEventListener('click', (e) => {
-      e.preventDefault();
-      this._handleToggle();
-      // Update aria-pressed state
-      const isDark = document.documentElement.classList.contains('dark-mode');
-      this.toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-    });
-
-    // Keyboard shortcut: 'T' to toggle (safe: won't fire in input fields)
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 't' && e.key !== 'T') return;
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      e.preventDefault();
-      this._handleToggle();
-    });
-
-    // Listen for theme changes from other tabs
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'theme') {
-        const isDark = e.newValue === 'dark';
-        document.documentElement.classList.toggle('dark-mode', isDark);
-        this._updateIcon(isDark);
-      }
-    });
-
-    // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      if (!localStorage.getItem('theme')) {
-        // Only apply if user hasn't explicitly set a theme
-        document.documentElement.classList.toggle('dark-mode', e.matches);
-        this._updateIcon(e.matches);
-      }
-    });
-  },
-
-  _handleToggle() {
-    if (this.isTransitioning) return; // Prevent rapid clicks
-    this.isTransitioning = true;
-
-    const isDark = document.documentElement.classList.toggle('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    this._updateIcon(isDark);
-    
-    // Announce theme change to screen readers
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.className = 'sr-only';
-    announcement.textContent = isDark ? 'Dark mode enabled' : 'Light mode enabled';
-    document.body.appendChild(announcement);
-    setTimeout(() => announcement.remove(), 1000);
-
-    // Trigger rotation animation
-    const activeIcon = isDark ? this.sunIcon : this.moonIcon;
-    if (activeIcon) {
-      activeIcon.classList.add('icon-rotate');
-      setTimeout(() => {
-        activeIcon.classList.remove('icon-rotate');
-        this.isTransitioning = false;
-      }, 300);
-    } else {
-      this.isTransitioning = false;
-    }
-  },
-
-  _updateIcon(isDark) {
-    if (this.moonIcon) this.moonIcon.style.display = isDark ? 'none' : 'block';
-    if (this.sunIcon) this.sunIcon.style.display = isDark ? 'block' : 'none';
   }
 };
 
@@ -2239,7 +2316,13 @@ const KeyboardShortcuts = {
     document.addEventListener('keydown', (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === '?') this.isOpen ? this.close() : this.open();
+      
+      if (e.key === '?') {
+        this.isOpen ? this.close() : this.open();
+      } else if (e.key === 't' || e.key === 'T') {
+        // Toggle dark mode
+        DarkMode.toggle();
+      }
     });
   },
 

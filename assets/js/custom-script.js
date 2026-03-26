@@ -1,5 +1,37 @@
 // ====================================
-// 0. Enable Transitions on First Interaction
+// 0. CENTRALIZED CONFIGURATION
+// Performance, accessibility, and behavior constants
+// ==================================== 
+
+const CONFIG = {
+  // Performance
+  WORDS_PER_MINUTE: 238,
+  SCROLL_TO_TOP_THRESHOLD: 380,
+  NAVBAR_HEIGHT: 58,
+  TOC_ITEM_MARGIN: 40,
+  
+  // Accessibility
+  FOCUS_TRAP_ENABLED: true,
+  ANNOUNCE_TO_SCREEN_READERS: true,
+  
+  // Search
+  SEARCH_MAX_RESULTS: 8,
+  SEARCH_TRENDING_COUNT: 6,
+  SEARCH_CORPUS_LAZY_LOAD: true,
+  
+  // Tooltips & Previews
+  TOOLTIP_OFFSET: 8,
+  LINK_PREVIEW_TIMEOUT: 5000,
+  LINK_PREVIEW_DEBOUNCE: 300,
+  
+  // Animations
+  ANIMATION_DURATION_FAST: 150,
+  ANIMATION_DURATION_NORMAL: 300,
+  ANIMATION_DURATION_SLOW: 500
+};
+
+// ====================================
+// 1. Enable Transitions on First Interaction
 // Defers CSS animations until the user interacts with the page.
 // This eliminates unnecessary animations on page load.
 // ====================================
@@ -80,15 +112,20 @@ const ReadingProgress = {
 
 const ScrollToTop = {
   btn: null,
-  THRESHOLD: 380,
+  THRESHOLD: CONFIG.SCROLL_TO_TOP_THRESHOLD,
   isVisible: false,
 
   init() {
     this.btn = document.createElement('button');
     this.btn.id = 'scroll-to-top';
     this.btn.setAttribute('aria-label', 'Scroll to top');
-    this.btn.innerHTML =
-      '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z');
+    svg.appendChild(path);
+    this.btn.appendChild(svg);
     document.body.appendChild(this.btn);
 
     this.btn.addEventListener('click', () =>
@@ -314,6 +351,7 @@ const CodeCopy = {
 const ImageLightbox = {
   lightbox: null,
   isOpen: false,
+  lastFocusedElement: null,
 
   init() {
     const images = document.querySelectorAll('article img, .post-content img, main img');
@@ -362,7 +400,10 @@ const ImageLightbox = {
   },
 
   open(img) {
-    if (!this.lightbox || !window.anime) return;
+    if (!this.lightbox) return;
+    
+    // Store focus to return later
+    this.lastFocusedElement = document.activeElement;
     
     this.lightbox.querySelector('img').src = img.src;
     this.lightbox.querySelector('img').alt = img.alt || 'Image';
@@ -371,6 +412,15 @@ const ImageLightbox = {
     document.body.classList.add('overflow-hidden');
     this.isOpen = true;
 
+    // Focus close button for accessibility
+    const closeBtn = this.lightbox.querySelector('.lightbox-close');
+    setTimeout(() => closeBtn.focus(), 300);
+
+    // Continue with animations only if anime.js is available
+    if (!window.anime) {
+      return; // Just show the lightbox without animation
+    }
+    
     // Animate backdrop and content
     anime.set(this.lightbox, { opacity: 0 });
     anime.to(this.lightbox, {
@@ -390,27 +440,43 @@ const ImageLightbox = {
   },
 
   close() {
-    if (!this.lightbox || !window.anime || !this.isOpen) return;
+    if (!this.lightbox || !this.isOpen) return;
     
     this.isOpen = false;
-    const content = this.lightbox.querySelector('.lightbox-content');
     
-    anime.to(content, {
-      scale: 0.7,
-      opacity: 0,
-      duration: 250,
-      easing: 'easeInQuad'
-    });
+    if (window.anime) {
+      // Animate out if anime.js is available
+      const content = this.lightbox.querySelector('.lightbox-content');
+      
+      anime.to(content, {
+        scale: 0.7,
+        opacity: 0,
+        duration: 250,
+        easing: 'easeInQuad'
+      });
 
-    anime.to(this.lightbox, {
-      opacity: 0,
-      duration: 250,
-      easing: 'easeInQuad',
-      complete: () => {
-        this.lightbox.classList.remove('active');
-        document.body.classList.remove('overflow-hidden');
+      anime.to(this.lightbox, {
+        opacity: 0,
+        duration: 250,
+        easing: 'easeInQuad',
+        complete: () => {
+          this.lightbox.classList.remove('active');
+          document.body.classList.remove('overflow-hidden');
+          // Return focus to the image that was clicked
+          if (this.lastFocusedElement) {
+            this.lastFocusedElement.focus();
+          }
+        }
+      });
+    } else {
+      // Graceful fallback without anime.js
+      this.lightbox.classList.remove('active');
+      document.body.classList.remove('overflow-hidden');
+      // Return focus
+      if (this.lastFocusedElement) {
+        this.lastFocusedElement.focus();
       }
-    });
+    }
   }
 };
 
@@ -452,7 +518,6 @@ const PostTableOfContents = {
     // Shared function to build TOC HTML - avoids duplication
     const buildTocHtml = () => {
       let html = '<ul class="post-toc-list">';
-      let currentH1 = null;
       let h2Open = false;
 
       headers.forEach((header) => {
@@ -464,7 +529,6 @@ const PostTableOfContents = {
           if (h2Open) { html += '</ul></li>'; h2Open = false; }
           // H1 items: no bullet, just a link (no nested structure)
           html += `<div class="toc-h1"><a href="#${id}">${text}</a></div>`;
-          currentH1 = id;
         } else if (level === 2) {
           if (!h2Open) {
             html += `<ul class="toc-h2-list">`;
@@ -505,7 +569,7 @@ const PostTableOfContents = {
 // ====================================
 
 const ReadingTime = {
-  WPM: 238,
+  WPM: CONFIG.WORDS_PER_MINUTE,
 
   init() {
     const article = document.querySelector('article');
@@ -680,8 +744,8 @@ const PostPreviewClick = {
       if (preview.querySelector('.post-thumbnail')) return;
       const existingImg = preview.querySelector('img');
       if (existingImg) {
+        // Add class without moving the element (preserve layout)
         existingImg.classList.add('post-thumbnail');
-        preview.appendChild(existingImg);
         return;
       }
       preview.style.gridTemplateColumns = '1fr';
@@ -900,11 +964,10 @@ const EnhancedSearch = {
     ]);
 
     const text = (item.title + ' ' + item.excerpt).toLowerCase();
-    const words = text
-      .match(/\b\w+\b/g) || []
-      return words
+    const words = (text.match(/\b\w+\b/g) || [])
       .filter((w) => w.length > 3 && !stopWords.has(w))
       .slice(0, 10);
+    return words;
   },
 
   /**
@@ -1021,9 +1084,12 @@ const EnhancedSearch = {
 
   /**
    * Highlight keyword in text (case-insensitive)
+   * Escapes regex special characters to prevent ReDoS attacks
    */
   _highlightKeyword(text, keyword) {
-    const regex = new RegExp(`(${keyword})`, 'gi');
+    // Escape special regex characters to prevent injection
+    const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escapedKeyword})`, 'gi');
     return text.replace(regex, '<mark>$1</mark>');
   },
 
@@ -1068,6 +1134,7 @@ const EnhancedSearch = {
 
   /**
    * Display search results with rich formatting
+   * Sanitizes title to prevent XSS, uses safe HTML for highlighted excerpt
    */
   _displayResults(results) {
     this.resultsContainer.classList.add('active');
@@ -1078,17 +1145,17 @@ const EnhancedSearch = {
     }
 
     // Limit to top 8 results
-    const displayResults = results.slice(0, 8);
+    const displayResults = results.slice(0, CONFIG.SEARCH_MAX_RESULTS);
     const html = displayResults
       .map(
         (result, index) => `
       <div class="search-result-item ${index === 0 ? 'selected' : ''}" data-index="${index}">
-        <div class="search-result-title">${result.title}</div>
+        <div class="search-result-title">${this._sanitizeHTML(result.title)}</div>
         <div class="search-result-excerpt">${result.highlightedExcerpt}</div>
         <div class="search-result-tags">
-          ${result.contentType ? `<span class="search-result-category">${result.contentType}</span>` : ''}
+          ${result.contentType ? `<span class="search-result-category">${this._sanitizeHTML(result.contentType)}</span>` : ''}
           ${result.readingTime ? `<span class="search-result-category">${result.readingTime} min read</span>` : ''}
-          ${result.date ? `<span class="search-result-category">${result.date}</span>` : ''}
+          ${result.date ? `<span class="search-result-category">${this._sanitizeHTML(result.date)}</span>` : ''}
         </div>
       </div>
     `
@@ -1115,7 +1182,7 @@ const EnhancedSearch = {
     // Create a simple trending section
     let html = '<div class="search-trending"><div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">';
     html += '<strong>Popular searches:</strong><br>';
-    html += this.trendingTerms.slice(0, 6).map((term) => 
+    html += this.trendingTerms.slice(0, CONFIG.SEARCH_TRENDING_COUNT).map((term) => 
       `<span style="display: inline-block; margin: 0.4rem 0.4rem 0 0; padding: 0.4rem 0.8rem; background: rgba(0,0,0,0.06); border-radius: 4px; cursor: pointer; font-size: 0.85rem;" class="trending-term">${term}</span>`
     ).join('');
     html += '</div></div>';
@@ -1244,8 +1311,21 @@ const EnhancedSearch = {
     this.isOpen = true;
     this.modal.classList.add('active');
     document.body.classList.add('search-modal-open');
+    
+    // Focus management: trap focus in modal
+    if (CONFIG.FOCUS_TRAP_ENABLED) {
+      this._trapFocus();
+    }
+    
     this.input.focus();
     this._showTrendingAndPopular();
+    
+    // Lazy-load corpus only when modal opens (avoid blocking page load)
+    if (CONFIG.SEARCH_CORPUS_LAZY_LOAD && 
+        this.corpusProcessed.length === 0 && 
+        this.corpus.length === 0) {
+      this._loadCorpus();
+    }
   },
 
   /**
@@ -1258,6 +1338,52 @@ const EnhancedSearch = {
     document.body.classList.remove('search-modal-open');
     this.input.value = '';
     this.resultsContainer.classList.remove('active');
+    
+    // Return focus to trigger element
+    if (this.searchTrigger) {
+      this.searchTrigger.focus();
+    }
+  },
+
+  /**
+   * Enable focus trap: prevent focus from leaving the modal
+   */
+  _trapFocus() {
+    const focusableElements = this.modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusableElements.length === 0) return;
+    
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    
+    this.modal.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      
+      if (e.shiftKey) {
+        // Shift+Tab on first element → focus last
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab on last element → focus first
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    });
+  },
+
+  /**
+   * Sanitize HTML to prevent XSS attacks
+   * Escapes HTML special characters
+   */
+  _sanitizeHTML(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 };
 
@@ -1292,6 +1418,10 @@ const DarkMode = {
   init() {
     this.toggle = document.getElementById('theme-toggle');
     if (!this.toggle) return;
+    
+    // Add proper ARIA label
+    this.toggle.setAttribute('aria-label', 'Toggle dark mode');
+    this.toggle.setAttribute('aria-pressed', 'false');
 
     this.moonIcon = this.toggle.querySelector('.icon-moon');
     this.sunIcon = this.toggle.querySelector('.icon-sun');
@@ -1301,12 +1431,16 @@ const DarkMode = {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (stored === 'dark' || (!stored && prefersDark)) {
       document.documentElement.classList.add('dark-mode');
+      this.toggle.setAttribute('aria-pressed', 'true');
     }
 
     // Click handler with debounce to prevent rapid toggling
     this.toggle.addEventListener('click', (e) => {
       e.preventDefault();
       this._handleToggle();
+      // Update aria-pressed state
+      const isDark = document.documentElement.classList.contains('dark-mode');
+      this.toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
     });
 
     // Keyboard shortcut: 'T' to toggle (safe: won't fire in input fields)
@@ -1344,6 +1478,15 @@ const DarkMode = {
     const isDark = document.documentElement.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     this._updateIcon(isDark);
+    
+    // Announce theme change to screen readers
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.textContent = isDark ? 'Dark mode enabled' : 'Light mode enabled';
+    document.body.appendChild(announcement);
+    setTimeout(() => announcement.remove(), 1000);
 
     // Trigger rotation animation
     const activeIcon = isDark ? this.sunIcon : this.moonIcon;
@@ -1468,14 +1611,23 @@ const PostShareBar = {
       });
     }
 
-    // Copy link logic
+    // Copy link logic with improved error handling and accessibility
     document.getElementById('share-copy-link')?.addEventListener('click', async () => {
       const btn = document.getElementById('share-copy-link');
+      if (!btn) return;
+      
+      // Announce to screen readers
+      const liveRegion = document.createElement('div');
+      liveRegion.setAttribute('aria-live', 'polite');
+      liveRegion.className = 'sr-only';
+      
       try {
         await navigator.clipboard.writeText(window.location.href);
-        const original = btn.innerHTML;
-        btn.innerHTML = btn.innerHTML.replace('Copy link', 'Copied!');
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
         btn.classList.add('copied');
+        btn.setAttribute('aria-label', 'Link copied to clipboard');
+        liveRegion.textContent = 'Link copied to clipboard';
         
         if (window.anime) {
           anime.to(btn, {
@@ -1485,18 +1637,33 @@ const PostShareBar = {
           });
         }
         
+        document.body.appendChild(liveRegion);
         setTimeout(() => {
-          btn.innerHTML = original;
+          btn.textContent = original;
           btn.classList.remove('copied');
+          btn.setAttribute('aria-label', 'Copy link');
+          liveRegion.remove();
         }, 2000);
-      } catch {
-        // Fallback: select + copy
+      } catch (err) {
+        // Fallback: select + copy (older browsers)
+        console.warn('Clipboard API failed, using fallback:', err);
         const el = document.createElement('textarea');
         el.value = window.location.href;
+        el.style.position = 'fixed';
+        el.style.opacity = '0';
         document.body.appendChild(el);
         el.select();
-        document.execCommand('copy');
+        try {
+          document.execCommand('copy');
+          liveRegion.textContent = 'Link copied to clipboard';
+          btn.setAttribute('aria-label', 'Link copied to clipboard');
+        } catch {
+          liveRegion.textContent = 'Failed to copy link';
+          btn.setAttribute('aria-label', 'Failed to copy link');
+        }
         document.body.removeChild(el);
+        document.body.appendChild(liveRegion);
+        setTimeout(() => liveRegion.remove(), 2000);
       }
     });
   }
@@ -1650,8 +1817,10 @@ const CalloutIcons = {
 const LinkPreview = {
   tooltip:    null,
   hideTimer:  null,
+  showTimer:  null,
   cache:      new Map(),
   isLoading:  false,
+  debounceWait: CONFIG.LINK_PREVIEW_DEBOUNCE,
 
   init() {
     const article = document.querySelector('article');
@@ -1709,8 +1878,15 @@ const LinkPreview = {
 
     try {
       this.isLoading = true;
-      // Fetch preview using Microlink API (no CORS issues, free tier available)
-      const response = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=true`);
+      // Fetch preview using Microlink API with timeout (no CORS issues, free tier available)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
+      const response = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=true`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
       if (!response.ok) throw new Error('Preview fetch failed');
 
       const data = await response.json();
@@ -1722,6 +1898,7 @@ const LinkPreview = {
       }
     } catch (err) {
       console.warn('Link preview error:', err);
+      // Show graceful fallback instead of just error
       this._renderFallback(url, link);
     } finally {
       this.isLoading = false;
@@ -1887,15 +2064,24 @@ const MultilingualTranslation = {
     document.body.appendChild(div);
 
     window.googleTranslateElementInit = () => {
-      new window.google.translate.TranslateElement(
-        { pageLanguage: 'en', autoDisplay: false },
-        'google_translate_element'
-      );
+      if (!window.google || !window.google.translate) {
+        console.warn('Google Translate library failed to load');
+        return;
+      }
+      try {
+        new window.google.translate.TranslateElement(
+          { pageLanguage: 'en', autoDisplay: false },
+          'google_translate_element'
+        );
+      } catch (err) {
+        console.error('Google Translate initialization failed:', err);
+      }
     };
 
     const script = document.createElement('script');
     script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
     script.async = true;
+    script.onerror = () => console.warn('Failed to load Google Translate script');
     document.head.appendChild(script);
   },
 
@@ -1989,7 +2175,7 @@ const MultilingualTranslation = {
 const ReadCompletionTimer = {
   el: null,
   totalWords: 0,
-  WPM: 238,
+  WPM: CONFIG.WORDS_PER_MINUTE,
 
   init() {
     const article = document.querySelector('article');
@@ -2037,6 +2223,7 @@ const ReadCompletionTimer = {
 const KeyboardShortcuts = {
   panel: null,
   isOpen: false,
+  lastFocusedElement: null,
 
   SHORTCUTS: [
     { key: '?',        desc: 'Show / hide this shortcuts panel' },
@@ -2086,7 +2273,15 @@ const KeyboardShortcuts = {
 
   open() {
     this.isOpen = true;
+    this.lastFocusedElement = document.activeElement;
     this.panel.classList.add('open');
+    
+    // Focus close button for accessibility
+    const closeBtn = this.panel.querySelector('.kb-close');
+    if (closeBtn) {
+      setTimeout(() => closeBtn.focus(), 100);
+    }
+    
     if (window.anime) {
       anime.set(this.panel, { opacity: 0, scale: 0.95 });
       anime.to(this.panel, { opacity: 1, scale: 1, duration: 280, easing: 'easeOutCubic' });
@@ -2098,10 +2293,20 @@ const KeyboardShortcuts = {
     if (window.anime) {
       anime.to(this.panel, {
         opacity: 0, scale: 0.95, duration: 200, easing: 'easeInQuad',
-        complete: () => this.panel.classList.remove('open')
+        complete: () => {
+          this.panel.classList.remove('open');
+          // Return focus to trigger element
+          if (this.lastFocusedElement) {
+            this.lastFocusedElement.focus();
+          }
+        }
       });
     } else {
       this.panel.classList.remove('open');
+      // Return focus immediately if anime.js not available
+      if (this.lastFocusedElement) {
+        this.lastFocusedElement.focus();
+      }
     }
   }
 };
@@ -2541,21 +2746,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Uses passive listeners and requestAnimationFrame for silky-smooth scrolling.
   (() => {
     let ticking = false;
-    let lastScrollY = 0;
     
+    // Bind methods to their objects to preserve context
     const scrollHandlers = [
       () => ReadingProgress.update(),
       () => ScrollToTop.toggle(),
       () => NavbarScroll.update(),
-      () => AmbientBackground._onScroll(),
+      () => AmbientBackground._onScroll.call(AmbientBackground),
       // Consolidated scroll handlers from individual listeners:
-      () => TocProgressDots._onScroll && TocProgressDots._onScroll(),
-      () => SectionDepthIndicator._updateDepth && SectionDepthIndicator._updateDepth(),
-      () => ReadCompletionTimer._update && ReadCompletionTimer._update()
+      () => SectionDepthIndicator._updateDepth.call(SectionDepthIndicator),
+      () => ReadCompletionTimer._update.call(ReadCompletionTimer)
     ];
 
     const handleScroll = () => {
-      lastScrollY = window.scrollY;
       if (!ticking) {
         requestAnimationFrame(() => {
           scrollHandlers.forEach((handler) => {

@@ -257,7 +257,7 @@ a:hover {
 /* Consolidate selection pseudo-elements for better readability */
 ::selection,
 ::-moz-selection {
-  background: rgba(92, 138, 60, 0.15);
+  background: rgba(107, 107, 107, 0.25);
   color: var(--text-primary);
 }
 
@@ -1542,7 +1542,7 @@ html.dark-mode .share-btn:hover {
   max-width: 850px;
   margin: 0 auto;
   padding: 0 1.5rem;
-  font-size: 1.0625rem;
+  font-size: 1.25rem;
 }
 
 /* Post headings: clean, minimal with generous spacing */
@@ -2143,7 +2143,7 @@ html.dark-mode .search-modal .search-result-item.selected .search-result-title {
 
 /* Keyword Highlighting in Results */
 .search-modal .search-result-excerpt mark {
-  background: rgba(92, 138, 60, 0.25);
+  background: rgba(107, 107, 107, 0.3);
   color: inherit;
   padding: 0.1em 0.2em;
   border-radius: 2px;

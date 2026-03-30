@@ -972,21 +972,21 @@ const EnhancedSearch = {
     // Wire up faceted filter UI
     this._setupFilters();
 
-    // Trigger buttons (navbar icon, keyboard shortcut)
+    // Trigger buttons (navbar icon) — navigate to dedicated search page
     if (this.searchTrigger) {
       this.searchTrigger.addEventListener('click', (e) => {
         e.preventDefault();
-        this.open();
+        window.location.href = '/search/';
       }, false);
     }
 
-    // Keyboard shortcut: Cmd+K / Ctrl+K
+    // Keyboard shortcut: Cmd+K / Ctrl+K — navigate to search page
     document.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        this.open();
+        window.location.href = '/search/';
       }
-      // Esc to close
+      // Esc to close (only close if modal is open, which is now disabled)
       if (e.key === 'Escape' && this.isOpen) {
         this.close();
       }
@@ -1477,15 +1477,12 @@ const EnhancedSearch = {
     if (this.isOpen) return;
     this.isOpen = true;
     
-    // Preserve scroll position when modal opens
+    // Preserve scroll position when modal opens (CSS overflow:hidden prevents scrolling)
     this.scrollPosition = window.scrollY;
     this.bodyScrollTop = document.body.scrollTop;
     
     this.modal.classList.add('active');
     document.body.classList.add('search-modal-open');
-    
-    // Restore scroll position to prevent jump (CSS will disable scrolling)
-    window.scrollTo(0, this.scrollPosition);
     
     // Focus management: trap focus in modal
     if (CONFIG.FOCUS_TRAP_ENABLED) {
@@ -1566,6 +1563,9 @@ const EnhancedSearch = {
     return div.innerHTML;
   }
 };
+
+// Expose EnhancedSearch globally for search results page
+window.EnhancedSearch = EnhancedSearch;
 
 // ====================================
 // 13. Mermaid Diagram Support

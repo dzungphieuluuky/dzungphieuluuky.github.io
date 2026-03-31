@@ -42,11 +42,11 @@
   --palette-light-gray:  #E5E5E5;
   --palette-lighter-gray: #F9F9F9;
   
-  /* Substack Signature Orange Accent */
-  --accent-primary:      #FF6719;
-  --accent-hover:        #E55B14;
-  --accent-light:        #FF8C4D;
-  --accent-subtle:       rgba(255, 103, 25, 0.08);
+  /* Grayscale Accent */
+  --accent-primary:      #333333;
+  --accent-hover:        #000000;
+  --accent-light:        #777777;
+  --accent-subtle:       rgba(0, 0, 0, 0.05);
 
   /* Backgrounds */
   --bg-primary:    #FFFFFF;
@@ -89,19 +89,19 @@
   --reading-font-size:   1.1875rem; /* ~19px - large and readable */
   --navbar-height:       60px;
 
-  /* Code token colors — clean, Github/Substack inspired light mode */
+  /* Code token colors — grayscale minimalist */
   --code-bg:                #F9F9F9;
-  --code-text:              #24292E;
-  --code-keyword:           #D73A49;
-  --code-fn:                #6F42C1;
-  --code-class:             #6F42C1;
-  --code-module:            #032F62;
-  --code-argument:          #E36209;
-  --code-string:            #032F62;
-  --code-number:            #005CC5;
-  --code-comment:           #6A737D;
-  --code-operator:          #D73A49;
-  --code-builtin:           #005CC5;
+  --code-text:              #333333;
+  --code-keyword:           #444444;
+  --code-fn:                #555555;
+  --code-class:             #555555;
+  --code-module:            #222222;
+  --code-argument:          #666666;
+  --code-string:            #444444;
+  --code-number:            #333333;
+  --code-comment:           #888888;
+  --code-operator:          #444444;
+  --code-builtin:           #333333;
 
   /* Table */
   --table-border:        #E5E5E5;
@@ -114,10 +114,10 @@
   /* Callouts - Substack uses very subtle gray boxes */
   --callout-note-bg:     #F9F9F9;
   --callout-note-border: #E5E5E5;
-  --callout-tip-bg:      #F0F7FF;
-  --callout-tip-border:  #CCE0FF;
-  --callout-warn-bg:     #FFF5F0;
-  --callout-warn-border: #FFD6C2;
+  --callout-tip-bg:      #F5F5F5;
+  --callout-tip-border:  #CCCCCC;
+  --callout-warn-bg:     #F0F0F0;
+  --callout-warn-border: #BBBBBB;
 }
 
 /* ====================================

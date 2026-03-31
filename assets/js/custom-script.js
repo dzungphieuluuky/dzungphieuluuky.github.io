@@ -225,10 +225,24 @@ const InteractionManager = {
 // Enhanced with anime.js for smooth easing animations
 // ====================================
 
+const ScrollCache = {
+  total: 0,
+  innerHeight: 0,
+  update() {
+    this.total = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    this.innerHeight = window.innerHeight;
+  },
+  init() {
+    this.update();
+    window.addEventListener('resize', () => {
+      requestAnimationFrame(() => this.update());
+    }, { passive: true });
+  }
+};
+
 const ReadingProgress = {
   bar: null,
   currentRatio: 0,
-  cachedTotal: 0,
 
   init() {
     this.bar = document.getElementById('reading-progress');
@@ -237,21 +251,12 @@ const ReadingProgress = {
       this.bar.id = 'reading-progress';
       document.body.appendChild(this.bar);
     }
-    this._updateCachedDimensions();
     this.update();
-    // Update cache on resize (debounced via unified RAF)
-    window.addEventListener('resize', () => this._updateCachedDimensions(), { passive: true });
-  },
-
-  _updateCachedDimensions() {
-    // Cache these expensive DOM reads; they rarely change mid-scroll
-    this.cachedTotal = document.documentElement.scrollHeight - window.innerHeight;
   },
 
   update() {
     if (!this.bar || !window.anime) return;
-    // Use cached dimensions instead of reading DOM on every scroll
-    const ratio = this.cachedTotal > 0 ? Math.min(window.scrollY / this.cachedTotal, 1) : 0;
+    const ratio = ScrollCache.total > 0 ? Math.min(window.scrollY / ScrollCache.total, 1) : 0;
     
     // Only animate if ratio has changed significantly (prevents layout thrashing)
     if (Math.abs(ratio - this.currentRatio) > 0.01) {
@@ -473,31 +478,39 @@ const CodeCopy = {
       btn.type = 'button';
       btn.textContent = 'Copy';
       pre.appendChild(btn);
+    });
 
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        try {
-          await navigator.clipboard.writeText(codeBlock.textContent);
-          btn.textContent = 'Copied!';
-          btn.classList.add('copied');
-          
-          if (window.anime) {
-            // Pulse animation on successful copy
-            anime.to(btn, {
-              scale: [1, 1.1, 1],
-              duration: 500,
-              easing: 'easeInOutQuad'
-            });
-          }
-          
-          setTimeout(() => {
-            btn.textContent = 'Copy';
-            btn.classList.remove('copied');
-          }, 1600);
-        } catch {
-          btn.textContent = 'Error';
+    // Event delegation for copy buttons
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.copy-btn');
+      if (!btn) return;
+      
+      const pre = btn.parentElement;
+      const codeBlock = pre.querySelector('code');
+      if (!codeBlock) return;
+
+      e.stopPropagation();
+      try {
+        await navigator.clipboard.writeText(codeBlock.textContent);
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        
+        if (window.anime) {
+          // Pulse animation on successful copy
+          anime.to(btn, {
+            scale: [1, 1.1, 1],
+            duration: 500,
+            easing: 'easeInOutQuad'
+          });
         }
-      });
+        
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1600);
+      } catch {
+        btn.textContent = 'Error';
+      }
     });
   }
 };
@@ -520,11 +533,20 @@ const ImageLightbox = {
     // Create lightbox only once
     this._create();
 
-    // Add click listeners to all images
+    // Add class to all images
     images.forEach((img) => {
+      img.classList.add('lightbox-img');
       img.style.cursor = 'zoom-in';
-      img.addEventListener('click', () => this.open(img), false);
     });
+
+    // Event delegation on document
+    document.addEventListener('click', (e) => {
+      const img = e.target.closest('article img, .post-content img, main img');
+      // Don't open if it's already in the lightbox
+      if (img && !img.closest('.lightbox')) {
+        this.open(img);
+      }
+    }, false);
   },
 
   _create() {
@@ -959,7 +981,12 @@ const EnhancedSearch = {
     this._loadCorpus();
 
     // Event listeners
-    this.input.addEventListener('input', (e) => this._handleSearch(e), false);
+    let debounceTimer;
+    this.input.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => this._handleSearch(e), 250);
+    }, false);
+    
     this.input.addEventListener('keydown', (e) => this._handleKeyboard(e), false);
     this.modal.addEventListener('click', (e) => {
       if (e.target === this.modal) this.close();
@@ -1782,16 +1809,39 @@ const FootnoteTooltips = {
     });
     document.body.appendChild(this.tooltip);
 
-    refs.forEach((ref) => {
-      ref.addEventListener('mouseenter', (e) => this._show(e, ref));
-      ref.addEventListener('mouseleave', ()  => this._hide());
-      ref.addEventListener('focus',      (e) => this._show(e, ref));
-      ref.addEventListener('blur',       ()  => this._hide());
-    });
+    // Event delegation
+    document.addEventListener('mouseover', (e) => {
+      const ref = e.target.closest('.footnote-ref');
+      if (ref) {
+        clearTimeout(this.hideTimer);
+        this._show(e, ref);
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseout', (e) => {
+      const ref = e.target.closest('.footnote-ref');
+      if (ref && !ref.contains(e.relatedTarget)) {
+        this._hide();
+      }
+    }, { passive: true });
+
+    document.addEventListener('focusin', (e) => {
+      const ref = e.target.closest('.footnote-ref');
+      if (ref) {
+        clearTimeout(this.hideTimer);
+        this._show(e, ref);
+      }
+    }, { passive: true });
+
+    document.addEventListener('focusout', (e) => {
+      const ref = e.target.closest('.footnote-ref');
+      if (ref && !ref.contains(e.relatedTarget)) {
+        this._hide();
+      }
+    }, { passive: true });
   },
 
   _show(e, ref) {
-    clearTimeout(this.hideTimer);
     const href   = ref.getAttribute('href');
     if (!href) return;
     const target = document.querySelector(href);
@@ -1928,17 +1978,45 @@ const LinkPreview = {
     });
     document.body.appendChild(this.tooltip);
 
-    // Attach hover listeners to links
-    links.forEach((link) => {
-      link.addEventListener('mouseenter', (e) => this._show(e, link));
-      link.addEventListener('mouseleave', ()  => this._hide());
-      link.addEventListener('focus',      (e) => this._show(e, link));
-      link.addEventListener('blur',       ()  => this._hide());
-    });
+    // Use event delegation for better performance
+    document.addEventListener('mouseover', (e) => {
+      const link = e.target.closest('article a[href^="http"]');
+      if (link) {
+        // Clear hide timer if we re-enter
+        clearTimeout(this.hideTimer);
+        // Debounce show
+        clearTimeout(this.showTimer);
+        this.showTimer = setTimeout(() => this._show(e, link), this.debounceWait);
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseout', (e) => {
+      const link = e.target.closest('article a[href^="http"]');
+      if (link && !link.contains(e.relatedTarget)) {
+        clearTimeout(this.showTimer);
+        this._hide();
+      }
+    }, { passive: true });
+
+    document.addEventListener('focusin', (e) => {
+      const link = e.target.closest('article a[href^="http"]');
+      if (link) {
+        clearTimeout(this.hideTimer);
+        clearTimeout(this.showTimer);
+        this.showTimer = setTimeout(() => this._show(e, link), this.debounceWait);
+      }
+    }, { passive: true });
+
+    document.addEventListener('focusout', (e) => {
+      const link = e.target.closest('article a[href^="http"]');
+      if (link && !link.contains(e.relatedTarget)) {
+        clearTimeout(this.showTimer);
+        this._hide();
+      }
+    }, { passive: true });
   },
 
   async _show(e, link) {
-    clearTimeout(this.hideTimer);
     const url = link.getAttribute('href');
     if (!url) return;
 
@@ -2281,8 +2359,7 @@ const ReadCompletionTimer = {
 
   _update() {
     if (!this.el) return;
-    const total   = document.documentElement.scrollHeight - window.innerHeight;
-    const ratio   = total > 0 ? window.scrollY / total : 0;
+    const ratio   = ScrollCache.total > 0 ? window.scrollY / ScrollCache.total : 0;
     const wordsLeft = Math.round(this.totalWords * (1 - ratio));
     const minsLeft  = Math.max(0, Math.ceil(wordsLeft / this.WPM));
     const el        = document.getElementById('time-left');
@@ -2475,14 +2552,8 @@ const AmbientBackground = {
   },
 
   _onScroll() {
-    if (this.ticking) return;
-    requestAnimationFrame(() => {
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      const ratio = total > 0 ? Math.min(window.scrollY / total, 1) : 0;
-      this._apply(ratio);
-      this.ticking = false;
-    });
-    this.ticking = true;
+    const ratio = ScrollCache.total > 0 ? Math.min(window.scrollY / ScrollCache.total, 1) : 0;
+    this._apply(ratio);
   },
 
   _apply(ratio) {
@@ -2725,12 +2796,22 @@ const SemanticZoom = {
 // ====================================
 
 const SectionDepthIndicator = {
+  headingsCache: [],
+
   init() {
     // Create depth indicator element
     const indicator = document.createElement('div');
     indicator.id = 'section-depth-indicator';
     indicator.setAttribute('aria-label', 'Section depth indicator');
     document.body.appendChild(indicator);
+
+    // Cache headings to avoid DOM queries in scroll loop
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
+      this.headingsCache.push({
+        el: h,
+        level: parseInt(h.tagName[1])
+      });
+    });
 
     // NOTE: Scroll listener removed - now consolidated in unified RAF loop for better performance
     this._updateDepth();
@@ -2740,18 +2821,15 @@ const SectionDepthIndicator = {
     const indicator = document.getElementById('section-depth-indicator');
     if (!indicator) return;
 
-    // Find all headings and details that are currently visible
-    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
     let currentDepth = 0;
     let visibleHeadings = 0;
 
-    headings.forEach((h) => {
-      const rect = h.getBoundingClientRect();
+    // Use cached headings instead of querySelectorAll
+    this.headingsCache.forEach((hObj) => {
+      const rect = hObj.el.getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.bottom > 0) {
         visibleHeadings++;
-        // Get heading level (h1 = 1, h2 = 2, etc.)
-        const level = parseInt(h.tagName[1]);
-        currentDepth = Math.max(currentDepth, level);
+        currentDepth = Math.max(currentDepth, hObj.level);
       }
     });
 
@@ -2815,6 +2893,7 @@ document.addEventListener('DOMContentLoaded', () => {
   InteractionManager.init();
 
   // ====== CRITICAL: Load immediately (required for user interaction) ======
+  ScrollCache.init();
   ReadingProgress.init();
   ScrollToTop.init();
   NavbarScroll.init();

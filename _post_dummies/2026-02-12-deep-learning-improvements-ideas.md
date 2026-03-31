@@ -9,105 +9,29 @@ tags: [personal, machine-learning]
 author: dzungphieuluuky
 ---
 
-I’ve spent the past year teaching myself deep learning and reinforcement learning outside of coursework.
-
-Around February 2025, while taking Operating Systems as one of my courses at that time, I decided to finally work through Reinforcement Learning: An Introduction by Sutton and Barto. At the same time, I was taking a probability theory course. It turned out to be perfect timing to learn about distributions and what will they look like in the real world of world class research, rather than some toy problems we meet in textbooks.
-
-RL, at its core, is a sea of distributions.
-
-There are state distributions that describe how the environment behaves—what configurations it can be in, what it tends to do. From these states, the agent selects actions. Sometimes deterministically, sometimes stochastically. Once it acts, we get a next-state distribution: given where we were and what we did, where do we land? Which states become more likely in the vast space of possible states that the environment contains? Which become unreachable? Then the environment returns a reward, which is also a draw from some distribution—sometimes fixed, sometimes random, always informative. This reward value is regularly a deterministic value and it is usually notated as $$R(s, a, s')$$
-Notice that $s, a, s'$ are the current state the agent was in, the action that the agent selected and the result next state depending on this selection. Writing these 3 concepts in that order from left to right feels natural to read and easier to remember what are their roles.
-
-The reward is the learning signal. It's the compass that guides the agent toward better decisions, toward states that are more valuable, toward behaviors that persist.
-
-Distributions all the way down. State distributions, action distributions, next-state distributions, reward distributions, return distributions. Learning RL while wrestling with probability theory wasn't an extra burden. It was symbiotic. The math I learned in one place gave me language for the other.
+# Introduction
+Most state-of-the-art deep leanring architectures sometimes won't be the one to suggest an entireyl different and novel architecture that has never appear in history, but rather try in some vey simple, minimalistic ways that effectively increase performance the effectiveness of feature sextraction to the extent that we might not imagine. For example, people usually believe that **Attention is all you need** paper is the cornerstone paper that create the biggest breakthroughs in language modeling and give birth to popular LLM that we use on a regular basis: ChatGPT, Gemini, Claude, etc. I don't want to say that I'm opposed to this point of view, but rather I think that the biggest point that such paper make is not what the architecture they propose, because literally attention mechanism has  been proposed earlier in a 2015 paper. Other normalization layers (LayerNorm) and encoder layers have also bene under massive research for a few years. The biggest thing I think about this paper is that they bravely remove unnecessary modules from RNN and LSTM from the old days, to only rely on attention mechanism to do its work. Perhaps, the biggest improvements in some scenarios may not be driven from a novel idea, but from a brave decision of removing something that are not too fit with our problem. In this blog, I would like to reflect myself some of the innovation ideas in deep learning architectures that I find useful and fascinating.I’ve spent the past year teaching myself deep learning and reinforcement learning outside of coursework. Yes, somehow I feel that I'm kind of opposed to the learning process at uni, rather I'm more inclined to random things on the Internet that I find fascinating.Around February 2025, while taking Operating Systems as one of my courses at that time, I decided to finally work through **Reinforcement Learning: An Introduction** by Sutton and Barto. At the same time, I was taking a probability theory course. It turned out to be perfect timing to learn about distributions and what will they actually look like in AI research, rather than toy problems with overly idealistic settings we have met in textbooks.
 
 ---
+Most of my time spending reading a lot of articles, blog posts from popular researchers in textbooks in several disciplines in AI such as: representaiton learning, reinforcement learning, mathematics and deep learning, both in principles and practices, some papers that I find interesting on ArXiv. Throughout the journey, I found that several innovations are ubiquitous. They appear nearly everywhere I come, inferring their importance through their appearance in some of the most groundbreaking research breakthroughs in the field. In this post, I would like to share some of the ideas that I find them universal and so general that we can nearly apply them almost everywhere in our AI systems. this post are expected to be continuing, with more and more ideas being appended to the post along my learning journey.
 
-Most of my time this past year hasn't been spent building things that work. It's been spent absorbing.
+# 1. High and low dimension
 
-Reading papers. Running experiments that fail. Staring at loss curves that refuse to descend—or descend for a while and then spike violently, erasing hours of training in seconds. The instability of deep RL is infamous. It's always around the corner, waiting to sabotage a promising run. You learn to recognize the signs. The gradient norm suddenly inflating. The value estimate diverging to infinity. The policy collapsing to deterministic stupidity.
+## High-dimensional data distribution
 
-But lately, I've started noticing patterns.
+In this first section, I would like to talk about the simplest approach in deep leanring architecture design for processing inputs data. There is a harsh truth in generative modeling field of deep learning that every researcher know is that the data we gather from our real world lies on a very high-dimensional space. Although we live in a 3D geometrical space, but the real data that come from this space is usually built from very little pieces such as pixel (for vision tasks), tokens (for language modeling), etc. To articulate what I want to say, let's first examine the data distribution in images processing. Suppose we have an image of size 1024 * 1024, each pixel in the image has RGB format with 256 different values for each indices in the tuple. Therefore the total combinations that one pixel has is 256^3, and since we have 1024 * 1024 ones like that, we have a total of (256^3)^{1024^2} different combinations. Although there are a vast space of total possible images can be generated using this settings, only a very small amount of them are real meaningful image containing something that actually exists in the real world. We can use a short piece of code with `numpy` library to see this if we wish to see its visualization. Because of this phenomenon, we have a quite popular theory in machine learning disciplines, which is the **Manifold Hypotheses**. This theory said that most natural images (images that have real meaning and can be interpreted as some objects rather than just pure noise) lie on a much lower dimensional manifold (subspace) in the real high dimensional space of all possible images. From this perspective, we can interpret training a generateive model (text, images, videos, actions, etc.) is equivalent to fitting our machine learning model to this low dimensional manifold, i.e, learn this distributions that we can sample real data from.
 
-Not in the results—most of my results are still garbage. But in the design. Certain architectural choices keep appearing in systems that feel right. Clean. Stable. Scalable. Not the systems that achieve SOTA on some benchmark and then vanish, but the ones that persist. The ones that get reused, repurposed, absorbed into the collective toolbox.
+## Representations
 
-These aren't research claims. They're small tips and tricks. Intuitions that crystallized during late-night debugging sessions, while waiting for another run to crash.
+Now we look into how deep learning models especially neural network based model extracts information from the training data to find this distribution. Coming from our assumption that those meaningful data lies on a very low dimensional distribution compare to the total space, it's a straightforward idea to build an encoder that gradually fewer neurons as we deep dive into the network. The first layer may contains a large number of input neurons: 748 (grayscale images of size 28*28) or 2048 neurons depending on the size of our input data. Then, as we move deeper into the network, this size gradually becomes smaller, likely 2048, 1024, 512, 256, 128, 64, 32. Researchers in this field have an intangible interest with any numbers that are exponentials of two. Conventionally, each time we move one step deeper, we double the number of channels and half the size of height and width of our images. This approach create the chance for the model to learn a much more compact representation (or embeddings, although they are still quite different) of the original data input, hopefully to represent these messy data in some more meaningful ways rather than raw pixels. There are several problems and approaches under research in representation learning to hopefully yield better results on this manner.
 
-I'm writing them down to clarify my own thinking. Maybe they spark something for you too. Maybe they're completely wrong. Either way, writing helps. Actually, "you" I'm talking about here is actualy my future-self.
+## Latent diffusion model
 
-This post will keep growing. I add to it when I notice something new. Consider it permanently in to be continued mode.
-
----
-
-# 1. Where to compute
-
-Processing raw inputs is expensive.
-
-An image is millions of pixels. Most of those pixels are redundant—adjacent values, repeated textures, irrelevant backgrounds. A text sequence is thousands of tokens, but the information density is low. The meaning of a sentence doesn't live in every character; it lives in the relationships between words, in syntax, in semantics.
-
-Yet most of what matters for a task can be represented in far fewer dimensions than the raw input occupies. This is not a coincidence. It's a property of the world we model. Natural data is compressible.
-
-Diffusion models make this painfully clear. Generating images by processing every pixel through every denoising step is computationally brutal. Each step requires a full forward pass through a U-Net operating on tens of thousands of pixels. There are all kinds of blocks inside U-Net: downsampling, upsampling, average pooling, max poling, convolutional layers with many different strides, dilations and kernel sizes.
-
-The solution? Don't.
-
-Encode the image into a lower-dimensional latent vector. Do the heavy lifting there—the denoising, the sampling, the iterative refinement. Decode at the end, once, when you're done. This is how Stable Diffusion works. It's why latent diffusion models replaced pixel-based ones almost overnight. The insight wasn't that latents are better representations. It was that computation should happen where the data is smallest.
-
-We don't fully understand the geometry of latent spaces. They're high-dimensional and weird—curved manifolds with non-intuitive distance metrics, directions that don't align with semantic axes, regions that map to gibberish. But we can still use them as compact encodings. Bottlenecks that condense what matters into something processable.
-
-The idea: Move the core computation—planning, reasoning, simulation, search—into latent space. Use the encoder to get there, the decoder to leave, and do everything important in between on compressed representations.
-
-This already works for generation. Could it work for other things?
-
-- Robot policies that operate on perceptual latents instead of raw camera feeds, so they can reason about scenes without rendering every pixel.
-- World models that plan entirely in learned latent dynamics, simulating trajectories not in ground truth state space but in a compressed approximation of it.
-- Multimodal systems that reason in a shared compressed space, translating between modalities without leaving the manifold.
-
-The hard part isn't compression. We know how to compress. The hard part is: what makes a latent space good for computation, not just compression?
-
-A latent space that's good for reconstruction isn't necessarily good for planning. A latent space that's good for classification isn't necessarily good for control. We don't yet know what properties matter when we want to manipulate representations rather than just decode them.
+This is perhaps one of the most prominent manifestation of this optimizatoin approach, latent diffusion model. Generative AI, especially, generative models for vision tasks have been thoroughly researched and discussed throughout decades, with improvements from GAN to VAE, to naive diffusion model at its infancy to this high-end approach that is mainly the core for state-of-the-art diffusion model for image generation (Stable Diffusion 3, for example). 
 
 ---
 
 # 2. Latent spaces
-
-We talk about latent dimensions as if they encode features. As if the first coordinate corresponds to "has wheels" and the second to "is red" and the third to "facing left."
-
-There's no guarantee of this. None.
-
-Multiple dimensions might capture variations of the same attribute, redundantly encoding the same information because the loss found a local optimum that spreads representations across many coordinates. A single dimension might entangle several concepts—color, orientation, and category all mixed together in a single float that resists interpretation.
-
-We comfort ourselves by saying compression saves compute. True. But we still don't know which coordinate corresponds to which property. Color? Shape? Texture? Something we haven't even named because our language doesn't have categories for the kinds of features neural networks discover? We can't dissect it. We can probe it, intervene on it, measure its effect on outputs—but we're always guessing, always reverse-engineering something that was never designed to be legible.
-
-This bothers me.
-
-In linear algebra, a basis spans a space with no redundancy. Every vector contributes something unique. Together, they form a minimal generating set—you can't remove any vector without losing the ability to represent some part of the space.
-
-A generating set can also span the space. It contains enough vectors to represent everything. But it contains overlap. Redundancy. Waste.
-
-Our latent representations are generating sets.
-
-They work, but they're messy. Some redundancy is fine—it can even help with robustness, providing backup pathways when some dimensions are corrupted or noisy. But uncontrolled redundancy means we're using more dimensions than necessary, and we can't interpret what those dimensions actually represent.
-
-What would less redundant latents look like?
-
-Not strict orthogonality. Enforcing orthogonal weight matrices kills expressivity—it's too rigid, too constrained. But soft pressure toward dimensions that capture distinct, minimally overlapping factors of variation? That's attractive.
-
-People have tried this before, in various forms:
-
-- Sparse coding, where each input is represented by a small subset of basis vectors.
-- Independent component analysis, which seeks statistically independent components.
-- β-VAE and other disentanglement losses, which penalize dependence between latent dimensions.
-- Information bottleneck methods, which compress away task-irrelevant variation.
-
-None of these have scaled successfully to large modern architectures. Not really. The losses are unstable, the trade-offs are harsh, and the benefits often disappear at scale. But the goal is still attractive:
-
-- More interpretable latents. Dimensions that actually correspond to something we can name.
-- More compact representations. Same representational power with fewer dimensions.
-- More controllable generation. Targeted edits without collateral damage to unrelated attributes.
-
-I don't know how to do this at scale. But I keep wishing we could.
 
 ---
 
@@ -125,9 +49,7 @@ Raw rewards are noisy. High-variance. Environment-dependent. A reward of +1 in o
 
 The solution is the advantage function:
 
-$$
 A(s,a) = Q(s,a) - V(s)
-$$
 
 Instead of learning from the raw reward, learn from how much better things went than expected. Center the signal around a baseline. The baseline doesn't have to be perfect—it just has to be correlated enough with the true expectation to reduce variance.
 
@@ -137,16 +59,16 @@ Absolute values are brittle. They depend on arbitrary scales, arbitrary offsets,
 
 The same pattern shows up everywhere:
 
-- Residual networks learn deviations from identity. The default behavior—the baseline—is to pass the input through unchanged. The network only needs to learn the delta.
-- Reward normalization rescales returns to have zero mean and unit variance, removing environment-specific scaling.
-- Contrastive losses compare relative similarity, not absolute labels. An image is more similar to its augmented version than to a different image.
-- Centered activations shift distributions to have zero mean, improving gradient flow through saturating nonlinearities.
+-   Residual networks learn deviations from identity. The default behavior—the baseline—is to pass the input through unchanged. The network only needs to learn the delta.
+-   Reward normalization rescales returns to have zero mean and unit variance, removing environment-specific scaling.
+-   Contrastive losses compare relative similarity, not absolute labels. An image is more similar to its augmented version than to a different image.
+-   Centered activations shift distributions to have zero mean, improving gradient flow through saturating nonlinearities.
 
 Zero is the default baseline everywhere. It's convenient. It requires no computation, no estimation, no learning.
 
 But it's rarely optimal.
 
-Making that baseline explicit and learnable—estimating $V(s)$ instead of assuming it's zero, learning the residual instead of the full mapping—almost always helps. It's not about the specific mathematical form. It's about the principle: tell the network what's normal, so it can focus on what's surprising.
+Making that baseline explicit and learnable—estimating V(s) instead of assuming it's zero, learning the residual instead of the full mapping—almost always helps. It's not about the specific mathematical form. It's about the principle: tell the network what's normal, so it can focus on what's surprising.
 
 ---
 
@@ -204,14 +126,14 @@ Not an emergent property of deep stacking. Not something the network has to lear
 
 Examples already exist, scattered across the literature:
 
-- Feature pyramids and U-Net skip connections, which combine coarse semantic features with fine spatial details.
-- Parallel encoders operating at different resolutions, their outputs concatenated or attentively fused.
-- Cross-scale attention, where tokens at one scale attend to tokens at another.
-- Hierarchical transformers with nested context windows.
+-   Feature pyramids and U-Net skip connections, which combine coarse semantic features with fine spatial details.
+-   Parallel encoders operating at different resolutions, their outputs concatenated or attentively fused.
+-   Cross-scale attention, where tokens at one scale attend to tokens at another.
+-   Hierarchical transformers with nested context windows.
 
 In my own projects, I've found that parallel encoders processing the same image at multiple resolutions consistently outperform single-scale baselines.
 
-Take an input image. Generate downsampled versions at resolutions like $[64, 96, 128, 256, 512]$. Pass each through a separate encoder stream—or share weights across streams, tied convolutions, something learned. Fuse the resulting representations through concatenation, attention, or learned weights.
+Take an input image. Generate downsampled versions at resolutions like [64, 96, 128, 256, 512]. Pass each through a separate encoder stream—or share weights across streams, tied convolutions, something learned. Fuse the resulting representations through concatenation, attention, or learned weights.
 
 The low-resolution stream captures global structure. The high-resolution stream preserves fine details. Together, they provide complementary information that depth alone struggles to reconstruct.
 
@@ -235,7 +157,7 @@ Optimizing policy gradients directly against raw returns is painful. The varianc
 
 The fix: subtract a baseline.
 
-Learn what you expect to happen—the value function $V(s)$, the average return from this state. Then learn from the gap between expectation and reality. The advantage. The residual. The surprise.
+Learn what you expect to happen—the value function V(s), the average return from this state. Then learn from the gap between expectation and reality. The advantage. The residual. The surprise.
 
 This slices variance. It centers the learning signal around zero. It stabilizes training.
 
@@ -243,10 +165,10 @@ But the deeper pattern isn't about RL. It's about baselines.
 
 Many of our systems implicitly assume zero is the right baseline. It almost never is.
 
-- Residual connections assume identity is a reasonable default. The network only needs to learn the deviation. But is identity actually a good prior? For some tasks, yes. For others, no. The assumption is baked in.
-- Centered activations assume zero mean helps optimization. This is empirically true for many architectures, but it's still an assumption about the optimal distribution of pre-activations.
-- Contrastive losses assume relative comparison is more stable than absolute prediction. Instead of predicting a class label, predict which of two samples is more similar to a query.
-- Normalization layers assume that rescaling to zero mean and unit variance is beneficial. They learn affine parameters to undo this if needed, but the default is zero.
+-   Residual connections assume identity is a reasonable default. The network only needs to learn the deviation. But is identity actually a good prior? For some tasks, yes. For others, no. The assumption is baked in.
+-   Centered activations assume zero mean helps optimization. This is empirically true for many architectures, but it's still an assumption about the optimal distribution of pre-activations.
+-   Contrastive losses assume relative comparison is more stable than absolute prediction. Instead of predicting a class label, predict which of two samples is more similar to a query.
+-   Normalization layers assume that rescaling to zero mean and unit variance is beneficial. They learn affine parameters to undo this if needed, but the default is zero.
 
 In each case, we're replacing an implicit zero baseline with something more informed. Sometimes learnable. Sometimes just a better default.
 

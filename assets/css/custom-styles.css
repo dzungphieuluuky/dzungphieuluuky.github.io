@@ -585,10 +585,10 @@ table tr:hover td { background: var(--table-row-hover); }
 
 .post-preview {
   display: grid;
-  grid-template-columns: 1fr 180px;
+  grid-template-columns: 1fr 100px;
   grid-template-rows: auto auto auto;
-  gap: 0.5rem 2rem;
-  padding: 2rem 0;
+  gap: 0.125rem 0.75rem;
+  padding: 1rem 0;
   border-bottom: 1px solid var(--border-primary);
   background: transparent;
   cursor: pointer;
@@ -615,7 +615,7 @@ table tr:hover td { background: var(--table-row-hover); }
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
@@ -629,11 +629,11 @@ table tr:hover td { background: var(--table-row-hover); }
   grid-column: 1;
   grid-row: 2;
   font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 .post-preview p,
@@ -641,11 +641,12 @@ table tr:hover td { background: var(--table-row-hover); }
   grid-column: 1;
   grid-row: 3;
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--text-tertiary);
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
   display: -webkit-box;
+  -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -656,7 +657,7 @@ table tr:hover td { background: var(--table-row-hover); }
   grid-column: 2;
   grid-row: 1 / 4;
   width: 100%;
-  height: 120px;
+  height: 80px;
   object-fit: cover;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-primary);
@@ -667,8 +668,8 @@ table tr:hover td { background: var(--table-row-hover); }
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 3rem 0 0;
-  padding-bottom: 1rem;
+  margin: 1.5rem 0 0;
+  padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--text-primary);
 }
 
@@ -1233,22 +1234,19 @@ html { transition: background-color 300ms ease; }
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto auto;
     gap: 0.5rem;
-    padding: 1.5rem 0;
+    padding: 1rem 0;
   }
-  
+
   .post-preview .post-thumbnail {
     grid-column: 1;
     grid-row: 4;
-    height: 200px;
-    margin-top: 1rem;
-  }
-  
-  .metadata-bar { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-  .post-share-bar { flex-wrap: wrap; }
+    height: 120px;
+    margin-top: 0.5rem;
   
   .search-modal .search-input { padding-left: 2.5rem; }
   .search-modal .search-icon { left: 1rem; }
   
   #scroll-to-top { bottom: 1rem; right: 1rem; width: 40px; height: 40px; }
   #lang-toggle { bottom: 4rem; right: 1rem; }
+}
 }

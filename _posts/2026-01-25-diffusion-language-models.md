@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Diffusion language model
-subtitle: When language models learn to sketch before they write
+title: Diffusion Language Models
+subtitle: Diffusion modeling invades language modeling
 tags: [diffusion, language]
 comments: true
 author: dzungphieuluuky

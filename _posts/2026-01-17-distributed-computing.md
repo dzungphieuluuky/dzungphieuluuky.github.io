@@ -1,17 +1,21 @@
 ---
 layout: post
 title: Distributed computing
-subtitle: Hands on distributed system for machine learning
+subtitle: Accelerate library for beginners
 tags: [distributed-computing]
 comments: true
 author: dzungphieuluuky
 ---
 
-With the increasingly large amount of data and model size in artificial intelligence training, especially deep learning with super massive models, training and inference time is becoming more and more expensive than ever before. They can consume a lot of time and this is raising another demand for distributed and parallel support for both training and inference process.
-In this blog, I will try to delve into Hugging Face Accelerate for distributed training and inference, highlighting its abstractions, key methods, comparisons with native PyTorch tools and PyTorch Lightning.
+With the increasingly large amount of data and model size in artificial intelligence training, especially deep learning with super massive models, training and inference times are becoming more and more expensive than ever before. They can consume a lot of time and this is raising another demand for distributed and parallel support for both training and inference processes.
 
-## The growing need for distributed computing
-As deep learning models expand in parameters and dataset sizes, single-device training becomes impractical. Practitioners often navigate diverse environments, from resource-constrained laptops to cloud-based multi-GPU setups. In this blog, we target young researchers and enthusiasts with low computational resources which would drive them to seek out for multiple GPU cloud computing environments for their projects.
+In this blog, we will try to delve into Hugging Face Accelerate for distributed training and inference, highlighting its abstractions, key methods, comparisons with native PyTorch tools and PyTorch Lightning.
+
+## The Hardware Dilemma: Why We Need Distributed Computing
+As deep learning models expand in parameters and dataset sizes, single-device training becomes impractical. Practitioners often navigate diverse environments, from resource-constrained laptops to cloud-based multi-GPU setups.
+
+In this blog, we target young researchers and enthusiasts with low computational resources which would drive them to seek out multiple GPU cloud computing environments for their projects.
+
 Consider these common platforms and their constraints:
 | Platform          | Typical Hardware          | Key Limitations                    | Distributed Suitability           |
 |:------------------|:--------------------------|:-----------------------------------|:----------------------------------|
@@ -19,10 +23,12 @@ Consider these common platforms and their constraints:
 | Kaggle Notebooks  | P100 or 2×T4 GPUs         | 30 GPU hours/week, ephemeral storage | Multi-GPU friendly, quota-limited |
 | Local Laptop      | CPU/MPS or single GPU     | Limited memory, no native multi-GPU| Ideal for prototyping, CPU fallback|
 | GPU Cluster       | 4–8× A100/H100            | High cost, setup complexity        | Multi-node scaling, production    |
-Without abstraction layers, code devolves into platform-specific hacks, complicating maintenance and reproducibility.
-Manual environment checks (e.g., via `os.environ`) and ad‑hoc device placements lead to brittle scripts that fail across setups—Accelerate addresses this by unifying the interface. We no longer to care about setup code and have more time to focus on the model itself and core logics.
 
-## Accelerate abstract aways boilerplate code for distributed computing
+> Without abstraction layers, code devolves into platform-specific hacks, complicating maintenance and reproducibility.
+Manual environment checks (e.g., via `os.environ`) and ad‑hoc device placements lead to brittle scripts that fail across setups—Accelerate addresses this by unifying the interface. 
+> How do we escape this? By using an abstraction layer so we no longer have to care about setup code, giving us more time to focus on the model itself and core logic.
+
+## Hiding the Boilerplate: The Magic of Accelerate
 Hugging Face Accelerate simplifies PyTorch code for any distributed configuration with minimal changes. It detects hardware automatically and handles device placement, parallelism, and optimizations.
 Core workflow:
 ```python
@@ -36,13 +42,13 @@ model, optimizer, dataloader = accelerator.prepare(
 - Then we initialize the `accelerator` object to wrap around our PyTorch code to enable automatic distributed computing.
 - In the final section of the code, we see that `model`, `optimizer` and `dataloader` are wrapped with `prepare()` method, which would move our important objects for training and inference process under `accelerator`'s wings. This should be done before `torch.compile()` if we want to compile the model for faster inference due to static computational graph after compilation. 
 
-## Comparing accelerate with native pytorch distributeddatapar (ddp)
+## Accelerate vs. Native DDP: A Tale of Two Approaches
 Native PyTorch DDP requires explicit management of process groups, ranks, and synchronization—boilerplate that Accelerate hides entirely.
 Key differences:
 - **Setup Complexity:** DDP demands `torch.distributed.init_process_group(backend='nccl')`, manual rank/world_size handling, and wrapping models with `DistributedDataParallel(model, device_ids=[local_rank])`. Accelerate initializes everything via `Accelerator()` and `prepare()`, which we talked about earlier in the previous code.
 - **Abstractions Provided by Accelerate:** It conceals device mapping, automatic `DistributedSampler` for dataloaders, gradient synchronization in `accelerator.backward(loss)`, and mixed‑precision scaling. Users focus on core logic without worrying about `torch.distributed.barrier()` or rank‑specific code.
-- **Advantages of Accelerate:** Portability across CPU/GPU/TPU/MPS, built‑in gradient accumulation, and seamless integration with HF ecosystems, you can find ít documentation on HuggingFace documents page. DDP is lower‑level, offering more customization but at the cost of verbosity.
-- **When to Choose:** Use native DDP for fine‑grained control in custom distributed algorithms, in case we have a architecture or processing paradigm that are too customized; prefer Accelerate for rapid prototyping and standard data‑parallel training.
+- **Advantages of Accelerate:** Portability across CPU/GPU/TPU/MPS, built‑in gradient accumulation, and seamless integration with HF ecosystems. You can find its documentation on the Hugging Face documents page. DDP is lower‑level, offering more customization but at the cost of verbosity.
+- **When to Choose:** Use native DDP for fine‑grained control in custom distributed algorithms, in case we have an architecture or processing paradigm that is too customized; prefer Accelerate for rapid prototyping and standard data‑parallel training.
 Example: native DDP vs. Accelerate
 ```python
 # native DDP (simplified)
@@ -56,14 +62,18 @@ model = accelerator.prepare(model)  # Internally wraps with DDP if multi‑GPU
 ```
 In the native DDP code, we can clearly see that we must do the following things to get the job done:
 - Set up import modules for torch distributed package and DistributedDataParallel class to handle distributed processing.
-- Initilize the backend for the process group manually and wrap the model with its corresponding device id inside the class DistributedDataParallel.
-On the other hand, when using Accelerate, we only needs one line to make the magic happens:
+- Initialize the backend for the process group manually and wrap the model with its corresponding device id inside the class DistributedDataParallel.
+On the other hand, when using Accelerate, we only need one line to make the magic happen:
 ```python
 model = accelerator.prepare(model)
 ```
-After this line, all the components inside the `prepare` method is immediately wrapped inside the accelerator object, ready for automatic backend handling. We can put anything related to our training and inference process inside the method such as scheduler, model, optimizer, train/validation/test data loader, etc. If you are intended to use `torch.compile()` method to speed up the inference process, then we should use it after preparing the modules inside accelrator. This order ensures that the pytorch library also compiles all related byproduct happening when accelerator handles our modules for best performance.
+After this line, all the components inside the `prepare` method are immediately wrapped inside the accelerator object, ready for automatic backend handling.
 
-## Complete portable training template
+We can put anything related to our training and inference process inside the method such as scheduler, model, optimizer, train/validation/test data loader, etc.
+
+If you intend to use the `torch.compile()` method to speed up the inference process, then we should use it after preparing the modules inside the accelerator. This order ensures that the PyTorch library also compiles all related byproducts happening when the accelerator handles our modules for best performance.
+
+## A Portable Training Template
 Leverage this template for end‑to‑end training across environments:
 ```python
 from accelerate import Accelerator
@@ -105,7 +115,7 @@ def train_model():
     return accelerator.unwrap_model(model)  # Access original model
 ```
 
-## Mastering distributed inference
+## Mastering Distributed Inference
 For inference, Accelerate enables parallel batch processing or model sharding.
 Data‑parallel inference example:
 ```python
@@ -123,7 +133,7 @@ with state.split_between_processes(inputs) as local_inputs: # partition the whol
 ```
 Avoid direct attribute access on prepared models (e.g., `model.config`); unwrap first: `accelerator.unwrap_model(model).config` to prevent **DistributedDataParallel does not have this property** errors.
 
-## Proper usage of key accelerate methods
+## The Arsenal: Proper Usage of Key Accelerate Methods
 ### 1. `prepare()` — put our weapons under accelerate's wings
 Wraps PyTorch objects (models, optimizers, dataloaders, schedulers…) to make them distributed‑aware. Ensures DDP wrapping, distributed sampling, and device placement.
 Call after creating model/optimizer/dataloader, but before training loop. If we want to compile models for faster inference, we should prepare it first then compile later to ensure the compilation process also touches all of submodules that **accelerate** introduces.
@@ -167,10 +177,12 @@ Effective batch size is calculated using number of batches per device, number of
 In the formula:
 - **EFB**: effective batch size. This is the total effective batch size conceptually used for training == the normal batch size you may find in textbooks in simple settings.
 - **BPD**: batch size per device. When we use distributed or parallel processing, especially data parallelism, this is the batch size that every device in our machine handles independently.
-- **AS**: number of accummulation steps. This is the number of the steps that before any gradients update can happen. Because our device may not contains data of all samples in a batch size simultaneously, and we needs large batch size to reduce bias and stabilize training, therefore we can simulate a much larger batch size by preventing gradient updates right way but rather only update after a number of steps. This mechanism ensure our devices do not get burnt with too much data but also mimics the stability of large batch size settings.
+- **AS**: number of accumulation steps. This is the number of steps before any gradients update can happen. Because our device may not contain data of all samples in a batch size simultaneously, and we need a large batch size to reduce bias and stabilize training, therefore we can simulate a much larger batch size by preventing gradient updates right away but rather only update after a number of steps. This mechanism ensures our devices do not get burnt with too much data but also mimics the stability of large batch size settings.
 
 ### 4. `accelerator.wait_for_everyone()` — process synchronization barrier
-Blocks until all processes reach this point — critical to prevent race conditions during I/O, checkpointing, or evaluation. Synchronizes all processes (like a barrier). Use before main‑process‑only operations (e.g., saving checkpoints) to avoid races. Ensure to use this regularly to prevent races conditions or out of synchronization.
+Blocks until all processes reach this point — critical to prevent race conditions during I/O, checkpointing, or evaluation. Synchronizes all processes (like a barrier). Use before main‑process‑only operations (e.g., saving checkpoints) to avoid races.
+
+Ensure to use this regularly to prevent race conditions or being out of synchronization.
 **Use case 1 — safe checkpoint saving**
 ```python
 accelerator.wait_for_everyone()
@@ -210,7 +222,7 @@ if accelerator.is_main_process:
 Creates a clean, non‑distributed checkpoint that can be loaded anywhere without Accelerate.
 
 ### 6. `accelerator.is_main_process` — process rank check
-Boolean flag indicating whether current process is rank 0 — used to guard logging, saving, printing, and evaluation. We usually use this method to only allow main process to do these logging, saving, printing things rather than allow every procesess do them at the same time to prevent excessive logging or corrupted files.
+Boolean flag indicating whether current process is rank 0 — used to guard logging, saving, printing, and evaluation. We usually use this method to only allow the main process to do these logging, saving, and printing things rather than allow every process to do them at the same time to prevent excessive logging or corrupted files.
 **Use case 1 — clean logging without duplication**
 ```python
 if accelerator.is_main_process:
@@ -226,7 +238,8 @@ pbar = tqdm(train_loader, disable=not accelerator.is_main_process)
 Only rank 0 shows the progress bar — improves console readability in distributed runs.
 
 ### 7. `split_between_processes()` — efficient data partitioning across processes
-This context manager partitions a list or iterable across all active processes, ensuring each process receives a roughly equal share of the workload and each process handles a non‑overlapping set of data to prevent duplicate processing. It is particularly useful for distributed inference, batch processing of large datasets, or parallel evaluation when you want to avoid manual index slicing.  
+This context manager partitions a list or iterable across all active processes, ensuring each process receives a roughly equal share of the workload and each process handles a non‑overlapping set of data to prevent duplicate processing. It is particularly useful for distributed inference, batch processing of large datasets, or parallel evaluation when you want to avoid manual index slicing.
+
 After processing, `state.gather()` (or `state.gather_for_metrics()`) collects results back to the main process.
 **Important:**  
 - Works with any iterable (lists, tuples, datasets…). Reference Accelerate documentation for more information.  
@@ -294,7 +307,7 @@ When running many short, independent distributed experiments in a loop (e.g., hy
 
 These methods cover ~90% of day‑to‑day Accelerate usage patterns in real‑world projects. Mastering them allows you to write clean, scalable code that remains nearly identical whether you are training on one GPU, eight GPUs, or across multiple nodes.
 
-## Common bugs
+## The Inevitable: Common Bugs and How to Squash Them
 Distributed setups introduce subtle issues; here are frequent ones from community reports and docs:
 | Bug category      | Description                              | Fix strategy                              |
 |:------------------|:-----------------------------------------|:------------------------------------------|
@@ -303,17 +316,17 @@ Distributed setups introduce subtle issues; here are frequent ones from communit
 | Logging failures  | Unsynchronized or missing logs           | Switch to `accelerate.logging.get_logger()` with appropriate levels. |
 | Non‑reproducible  | Varying results across configs           | Adjust per‑device batch size; use process‑offset seeds. |
 | Gradient accumulation   | Scheduler not adjusting properly         | Manually call `scheduler.step()` only after full accumulation steps. |
-| Older Linux kernels (<5.5), processes may hang—upgrade your kernel. |
+| Older Linux kernels | Processes may hang on versions <5.5      | Upgrade your kernel. |
 
 
-## Accelerate vs. Pytorch Lightning: complementary or competing?
+## Accelerate vs. PyTorch Lightning: Complementary or Competing?
 PyTorch Lightning offers high‑level abstractions for training, including automatic distributed handling via `Trainer(strategy="ddp", devices=4, num_nodes=2)`. It manages samplers, sync, and more, similar to Accelerate.
 - **Similarities:** both abstract DDP; Lightning adds logging, callbacks, and experiment management.
 - **Differences:** Accelerate is lightweight, focused on distribution (4‑line integration); Lightning is a full framework with `LightningModule` for structured code.
 - **Integration:** they work together! Lightning can use Accelerate as backend (e.g., via plugins or custom strategies). For HF models, Accelerate suffices for distribution, but Lightning enhances with auto‑logging and early stopping.
-- **Choice:** use Accelerate alone for simple scripts; add Lightning for complex workflows. avoid both if overkill—start with Accelerate for portability.
+- **Choice:** use Accelerate alone for simple scripts; add Lightning for complex workflows. Avoid both if overkill—start with Accelerate for portability.
 
 ## Conclusion
 Hugging Face Accelerate democratizes distributed computing by abstracting complexities, preventing common pitfalls, and integrating with tools like PyTorch Lightning. From hiding DDP details to robust inference scaling, it empowers efficient, portable deep learning.
 Embrace these patterns to elevate your projects—focus on innovation, not infrastructure.
-**Abstract once, deploy everywhere, scale with ease.**
+> **Abstract once, deploy everywhere, scale with ease.**

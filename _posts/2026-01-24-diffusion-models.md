@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Diffusion models
-subtitle: From chaos to order
+title: Diffusion Models
+subtitle: Inspiration from thermodynamics
 cover-img:
 thumbnail-img:
 share-img:
@@ -10,7 +10,6 @@ author: dzungphieuluuky
 ---
 
 # Introduction
-
 Coming from a physics background, I’ve always been drawn to systems that mirror the elegant, continuous laws of nature. My journey through the National Physics Olympiad taught me to see the world through differential equations, fields, and flows—where change is smooth, predictable, and deeply mathematical.
 
 When I first encountered deep learning, much of it felt like discrete pattern matching. Supervised learning was like memorizing a fixed catalog of answers. Reinforcement learning felt closer to life—learning by interacting, by trial and error—and soon enough it also became my interest in deep learning that I want to pursue further.
@@ -23,11 +22,11 @@ In this post, I want to share why diffusion models feel so natural to someone wi
 
 ## Watching noise turn into structure feels like a physics simulation
 
-In supervised learning, you feed data in and get predictions out. It’s useful, but there’s no *process* to observe—no unfolding, no transformation, just direct input output pairs generated out of the blue for you, with no clearly interpretation if you are using very deep learning models especially. With diffusion, you start with pure Gaussian noise and watch it gradually sharpen into a coherent image, molecule, or sound waveform. It’s like watching a cloud of particles condense into a crystal, or heat diffusing in reverse. There’s something deeply satisfying about witnessing that emergence—it doesn’t just give you the answer, it shows you how the answer *forms* iteratively and the wonderful transformation from the garbage and chaotic samples from the very first time step to something majestic and beautiful.
+In supervised learning, you feed data in and get predictions out. It’s useful, but there’s no *process* to observe—no unfolding, no transformation, just direct input-output pairs generated out of the blue for you, with no clear interpretation if you are using very deep learning models especially. With diffusion, you start with pure Gaussian noise and watch it gradually sharpen into a coherent image, molecule, or sound waveform. It’s like watching a cloud of particles condense into a crystal, or heat diffusing in reverse. There’s something deeply satisfying about witnessing that emergence—it doesn’t just give you the answer, it shows you how the answer *forms* iteratively and the wonderful transformation from the garbage and chaotic samples from the very first time step to something majestic and beautiful.
 
 ## It’s a continuous, differential journey—not a discrete jump
 
-Many generative models, like VAEs (Variational Autoencoder) or GANs (Generative Adversarial Network), map latent vectors to outputs in one or a few steps. Diffusion models work by taking hundreds of small, incremental steps—each governed by a learned gradient field (the score function). To someone used to solving differential equations in physics, this feels familiar. We’re not making a leap; we’re integrating along a vector field, tracing a smooth path from noise to a clear structure. The process is inherently continuous, iterative, and guided by local gradients—much like how physical systems evolve under external forces and can be described with Newton's laws of classic physcics to see how they change over time and what do their final states look like.
+Many generative models, like VAEs (Variational Autoencoder) or GANs (Generative Adversarial Network), map latent vectors to outputs in one or a few steps. Diffusion models work by taking hundreds of small, incremental steps—each governed by a learned gradient field (the score function). To someone used to solving differential equations in physics, this feels familiar. We’re not making a leap; we’re integrating along a vector field, tracing a smooth path from noise to a clear structure. The process is inherently continuous, iterative, and guided by local gradients—much like how physical systems evolve under external forces and can be described with Newton's laws of classical physics to see how they change over time and what do their final states look like.
 
 ## You can literally see the “physics” in the training objective
 
@@ -43,13 +42,13 @@ The magic lies in the reverse. Learning to invert this process isn’t just a ne
 
 ## It bridges continuous fields and discrete samples beautifully
 
-In physics, we often describe phenomena in two ways: at the macro scale with continuous fields (temperature, pressure, density), and at the micro scale with discrete particles or states (electron energy levels, subatomic particles and quantized angular momentum). Diffusion models operate in a similar dual regime. The forward and reverse processes are defined in continuous time (via stochastic differential equations, yeah here is a very scary monster that I don't they even exist until I get my hands more dirty with diffusion models), yet they generate discrete, high-dimensional samples (images, audio, protein structures).
+In physics, we often describe phenomena in two ways: at the macro scale with continuous fields (temperature, pressure, density), and at the micro scale with discrete particles or states (electron energy levels, subatomic particles and quantized angular momentum). Diffusion models operate in a similar dual regime. The forward and reverse processes are defined in continuous time (via stochastic differential equations, yeah here is a very scary monster that I didn't even know they existed until I get my hands more dirty with diffusion models), yet they generate discrete, high-dimensional samples (images, audio, protein structures).
 
 This continuous-time formulation isn’t just for show—it allows for flexible sampling, different step sizes, and even connections to optimal transport and fluid dynamics. It’s a framework where the tools of calculus and differential equations are first-class citizens.
 
 ## The score function is like a force field guiding creation
 
-At the heart of diffusion models is the **score function**—the gradient of the log-probability density. In physics, gradients of potentials give us force fields: $$ \mathbf{F} = -\nabla \phi $$ In this equation, the $\phi$ acts as the potential energy of the system, the higher the potential energy, the more unstable the system becomes. With the minus sign, we want to say that any physical systems will try to process in a wwy that reduce its potential energy, release its instability to end up in a more stable state that can continue to exist. Here, the score function acts as a “data force field” that pulls samples toward high-probability regions.
+At the heart of diffusion models is the **score function**—the gradient of the log-probability density. In physics, gradients of potentials give us force fields: $$ \mathbf{F} = -\nabla \phi $$ In this equation, the $\phi$ acts as the potential energy of the system, the higher the potential energy, the more unstable the system becomes. With the minus sign, we want to say that any physical systems will try to process in a way that reduce its potential energy, release its instability to end up in a more stable state that can continue to exist. Here, the score function acts as a “data force field” that pulls samples toward high-probability regions.
 
 During sampling, you start with noise and follow this learned gradient field, much like a particle moving under a force toward equilibrium. This perspective turns generation into a *physics-informed optimization*: you’re not just decoding a latent vector; you’re integrating a dynamical system.
 
@@ -67,7 +66,7 @@ The forward process doesn’t have to add noise linearly. You can design schedul
 
 ## Accuracy vs. efficiency trade-off
 
-In physics simulations, you often choose between a fast, approximate solver and a slow, accurate one. The same trade-off appears here. Fewer sampling steps (larger Δt) is faster but can lead to artifacts or mode collapse. More steps (smaller Δt) gives higher fidelity but costs more compute. Research in diffusion is actively exploring this Pareto frontier, seeking samplers that are both fast and faithful—a classic engineering challenge wrapped in a generative modeling skin. Also, fast samplers mentioned in the above section try to speed up the denoise process to actively reduce the number of inference steps in sampling without trade-off the quality of the outputs.
+In physics simulations, you often choose between a fast, approximate solver and a slow, accurate one. The same trade-off appears here. Fewer sampling steps (larger Δt) is faster but can lead to artifacts or mode collapse. More steps (smaller Δt) gives higher fidelity but costs more compute. Research in diffusion is actively exploring this Pareto frontier, seeking samplers that are both fast and faithful—a classic engineering challenge wrapped in a generative modeling skin. Also, fast samplers mentioned in the above section try to speed up the denoise process to actively reduce the number of inference steps in sampling without trading off the quality of the outputs.
 
 # The bigger picture: why this matters beyond images
 
@@ -85,7 +84,7 @@ My journey into diffusion models feels like coming home. Here is a branch of mac
 
 It’s more than a technical toolset. It’s a way of thinking about generation as a physical process, about data as a landscape of energy and gradients, and about intelligence as the ability to traverse that landscape with purpose.
 
-We’re moving into an era where AI won’t just classify or predict—it will imagine, design, and create. And for that, we need models that understand not just patterns, but *process*. Diffusion models, with their roots in the physics of noise and order, feel like a step in that direction. Actually, among the process in dynamical systems that I have learnt, including: diffusion process, heat transfer and internal friction between fluid layers. Maybe one day, I would be the one that harness the powers of the two remaining processes that can blend its power into deep learning to bring us something new and powerful.
+We’re moving into an era where AI won’t just classify or predict—it will imagine, design, and create. And for that, we need models that understand not just patterns, but *process*. Diffusion models, with their roots in the physics of noise and order, feel like a step in that direction. Actually, among the processes in dynamical systems that I have learnt, including: diffusion process, heat transfer and internal friction between fluid layers. Maybe one day, I would be the one that harness the powers of the two remaining processes that can blend its power into deep learning to bring us something new and powerful.
 
 If you’re also fascinated by the intersection of continuous mathematics, physics, and generative AI, I’d love to connect. The conversation is just beginning.
 

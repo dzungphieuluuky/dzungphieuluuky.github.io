@@ -52,105 +52,31 @@ Although there are a wide variety of normalization techniques apart from these t
 
 Apart from data normalization in supervised learning settings, reinforcement learning (RL) offers another approach on non-stationary data distribution that changes along with policy distribution. In RL settings, we often use another terminology for "data", which is "observation". The reasons leads to this interesting transition lies in the core mechanism of RL problems, where the agent must perform interactions with the environment rather training directly on a fixed dataset beforehand. Therefore, it's understandable to call these data as observations, since the agent directly experience (in other words, see) that data coming from the response of the environment following its actions.
 
-VIẾT TIẾP TẠI ĐÂY!
+The technique I'm talking about is the advantage function:
 
-The solution is the advantage function:
+$$A(s,a) = Q(s,a) - V(s)$$
 
-A(s,a) = Q(s,a) - V(s)
+Let's take a quick look into the meanings of each entity in the equation:
+- $A(s,a)$: The advantage function that calcualates how much advantage we get from performing action $a$ at the state $s$. This value can be interpreted how better the situation get if we perform this action at the current state, denoting its relative benefit compared the current state rather than raw values.
+- $Q(s,a)$: This is the Q-value we get from performing action $a$ at the state $s$. This concept is a little bit confusing with the aforementioned advantage since this quantiti measures how good (in terms of raw values) this state becomes after we perform this action.
+- $V(s)$: This quantity acts as the baseline for this advantage calculation. Of course, we can choose another function to act as a baseline, theoretically there are no strict rules on choosing what functions. However, to get the best estimation on how the situation get better for our agent, we should choose the expected value of the Q-value of the current state across all actions, so that the it makes a fair and stable baseline for all actions to be compared equally. Since $V(s)$ is exactly the expectation we are seeking, it would be wise to choose this function as our baseline.
 
-Instead of learning from the raw reward, learn from how much better things went than expected. Center the signal around a baseline. The baseline doesn't have to be perfect—it just has to be correlated enough with the true expectation to reduce variance.
+Without baseline function in advantage calculation, its value is equivalent to the raw Q-value of the state-action pair. Therefore, we can rewrite the equation as:
+$$A(s,a) = Q(s,a) - 0$$
+With this representation, we can see that without a baseline function, zero would be naturally the default baseline for the calculation, In other words, we are expecting that taking all possible actions at the current state into account would lead to a baseline value of zero. This spikes an enormous and dangerous assumption about the current environment settings, since we have no guarantee evidence that this would be true. This careless approach eventually gives us wrong learning signals, easily leading to the degradation in performance of the model due to high-basied esimation without a proper baseline value.
 
-This isn't a trick. It's a shift in how we think about learning signals.
 
-Absolute values are brittle. They depend on arbitrary scales, arbitrary offsets, arbitrary units. Deviations from expectations are stable. They isolate the information in the signal from its context.
-
-The same pattern shows up everywhere:
-
--   Residual networks learn deviations from identity. The default behavior—the baseline—is to pass the input through unchanged. The network only needs to learn the delta.
--   Reward normalization rescales returns to have zero mean and unit variance, removing environment-specific scaling.
--   Contrastive losses compare relative similarity, not absolute labels. An image is more similar to its augmented version than to a different image.
--   Centered activations shift distributions to have zero mean, improving gradient flow through saturating nonlinearities.
-
-Zero is the default baseline everywhere. It's convenient. It requires no computation, no estimation, no learning.
-
-But it's rarely optimal.
-
-Making that baseline explicit and learnable—estimating V(s) instead of assuming it's zero, learning the residual instead of the full mapping—almost always helps. It's not about the specific mathematical form. It's about the principle: tell the network what's normal, so it can focus on what's surprising.
+The point is not the absolute values of quantities we take into our calculation, but the relative value and relationship between them that actually leads us to the right estimation and drive meaningful decision.
 
 ---
 
 # 4. Sparsity
 
-Standard practice: every parameter, every input, every forward pass.
-
-This is expensive. It's also wasteful.
-
-Many parameters barely activate during the forward pass. Their weights are near zero, or their outputs are consistently suppressed by ReLU, or they're in parts of the network that specialize in patterns that rarely appear. Yet we pay the computational cost for them on every example, regardless of whether they contribute.
-
-Two different research directions converge on the same observation: you don't need full capacity for every example.
-
-Mixture of Experts (MoE) is the most prominent example.
-
-During training, all experts receive gradients. Every parameter gets updated based on the batch. But during inference, each input is routed to only a small subset of experts—typically 10–20% of the total parameters. The router learns to assign inputs to the experts best suited for them.
-
-I experienced this firsthand while using DeepSeek OCR for an NLP assignment. The model has roughly 3B parameters total. But only about 580M are activated during inference—barely one-sixth of the total. Outputs arrive in a fraction of the time. The model doesn't need its full capacity to process any single input. It needs that capacity to cover the distribution of possible inputs. Each input only needs a slice.
-
-Pruning tells a complementary story.
-
-Research shows that most trained networks are massively overparameterized. You can remove 90% of the weights—set them to zero, eliminate them entirely—and accuracy drops only a few points, sometimes less. The network had the capacity to do the task with far fewer parameters all along. Training just used the extra capacity to find a good solution faster, or to navigate the loss landscape more smoothly.
-
-This idea echoes an much older algorithm: Minimax with Alpha-Beta pruning.
-
-In vanilla Minimax, you traverse the entire game tree. Every branch, every leaf, every evaluation. The computation grows exponentially with depth. Alpha-Beta pruning exploits a simple insight: if you already know that one branch leads to a worse outcome than another branch already evaluated, you can stop exploring it. You don't need to know exactly how bad it is. Just that it's bad enough.
-
-With this optimization, you can eliminate 30–40% of the tree—sometimes much more—and still arrive at the exact same decision.
-
-What fascinates me is that MoE and pruning, despite their modern sophistication, are descendants of this simple, powerful insight: you don't need to explore everything if you already know where value lies.
-
-Yet despite its simplicity, sparse computation remains surprisingly hard to analyze theoretically. Why do some architectures prune cleanly while others collapse? How does sparsity affect the geometry of the representation manifold? Can sparse structure emerge naturally from learning dynamics, or does it need to be architected in?
-
-I don't know. But I suspect this is going to become a primary axis of architectural design, not just an optimization footnote.
 
 ---
 
 # 5. Looking through different lens
 
-When you look at a forest, you don't render individual leaves first, then branches, then trees, then the canopy.
-
-You see texture and structure at all scales simultaneously. The grain of the bark. The pattern of branches against the sky. The shape of the canopy. These aren't processed sequentially. They're perceived in parallel, integrated into a single coherent experience.
-
-Most vision architectures don't work this way.
-
-They process at a single resolution. Usually high. Then they progressively downsample—strides, pooling, convolutions with increasing dilation—to recover global structure through depth. Information flows bottom-up, from fine details to coarse abstractions, through dozens of layers.
-
-It works. It's the foundation of modern computer vision. But it feels indirect.
-
-Why force the network to reconstruct wide-angle views from pinhole inputs? Why require depth to see the big picture?
-
-What if multi-scale processing was a Day 1 design decision?
-
-Not an emergent property of deep stacking. Not something the network has to learn to do over many layers. But a structural constraint: the input is processed at multiple resolutions from the very first layer, and these parallel streams are integrated throughout the network.
-
-Examples already exist, scattered across the literature:
-
--   Feature pyramids and U-Net skip connections, which combine coarse semantic features with fine spatial details.
--   Parallel encoders operating at different resolutions, their outputs concatenated or attentively fused.
--   Cross-scale attention, where tokens at one scale attend to tokens at another.
--   Hierarchical transformers with nested context windows.
-
-In my own projects, I've found that parallel encoders processing the same image at multiple resolutions consistently outperform single-scale baselines.
-
-Take an input image. Generate downsampled versions at resolutions like $64, 96, 128, 256, 512$. Pass each through a separate encoder stream—or share weights across streams, tied convolutions, something learned. Fuse the resulting representations through concatenation, attention, or learned weights.
-
-The low-resolution stream captures global structure. The high-resolution stream preserves fine details. Together, they provide complementary information that depth alone struggles to reconstruct.
-
-Each scale is a different lens. A different aperture. A different answer to the question: what matters in this image?
-
-This principle isn't just about vision.
-
-For text, vary the context window size. Or the granularity of tokenization—characters, subwords, words, phrases. For time series, vary the temporal resolution—milliseconds, seconds, minutes, hours. For graphs, vary the neighborhood radius—immediate neighbors, two-hop neighborhoods, community structure.
-
-The principle: Don't force your model to reconstruct wide views from narrow inputs. Give it multiple apertures from the start.
 
 ---
 

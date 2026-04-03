@@ -39,13 +39,23 @@ layout: base
       {% endif %}
 
       <div class="blog-post">
-        <!-- Sidebar TOC — place OUTSIDE the <article>, as a sibling -->
-        <nav class="inline-toc" id="inline-toc" aria-label="Table of contents">
-          <div class="inline-toc-title">Contents</div>
-          <ul>
-            <!-- Auto-populated by PostTableOfContents JS -->
-          </ul>
-        </nav>
+        <!-- Floating TOC Button & Dropdown -->
+        <div class="toc-wrapper">
+          <button id="toc-trigger" class="toc-trigger" aria-label="Toggle contents">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+            CONTENTS
+          </button>
+          <nav class="inline-toc" id="inline-toc" aria-label="Table of contents">
+            <div class="inline-toc-title">Contents</div>
+            <ul>
+              <!-- Auto-populated by PostTableOfContents JS -->
+            </ul>
+          </nav>
+        </div>
         <article>
           <!-- Metadata Bar with Reading Time - MOVED HERE -->
           <div class="metadata-bar">

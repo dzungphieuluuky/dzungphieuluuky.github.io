@@ -738,10 +738,51 @@ const PostTableOfContents = {
     </div>`;
     article.insertAdjacentHTML('afterbegin', postTocHTML);
     
-    // Populate sidebar TOC (if exists)
-    const sidebar = document.querySelector('.inline-toc ul');
-    if (sidebar) {
-      sidebar.innerHTML = tocHtml.replace(/post-toc-list/g, '');
+    // Populate floating TOC (if exists)
+    const floatTocList = document.querySelector('#inline-toc ul');
+    if (floatTocList) {
+      floatTocList.innerHTML = tocHtml.replace(/post-toc-list/g, '');
+    }
+
+    // Bind floating TOC trigger
+    const tocTrigger = document.getElementById('toc-trigger');
+    const inlineToc = document.getElementById('inline-toc');
+    if (tocTrigger && inlineToc) {
+      tocTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        inlineToc.classList.toggle('active');
+        tocTrigger.classList.toggle('active');
+        const isActive = inlineToc.classList.contains('active');
+        tocTrigger.setAttribute('aria-expanded', isActive);
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!inlineToc.contains(e.target) && !tocTrigger.contains(e.target)) {
+          inlineToc.classList.remove('active');
+          tocTrigger.classList.remove('active');
+          tocTrigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+      // Close on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && inlineToc.classList.contains('active')) {
+          inlineToc.classList.remove('active');
+          tocTrigger.classList.remove('active');
+          tocTrigger.setAttribute('aria-expanded', 'false');
+          tocTrigger.focus();
+        }
+      });
+
+      // Navigate to section on click and close dropdown
+      inlineToc.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+          inlineToc.classList.remove('active');
+          tocTrigger.classList.remove('active');
+          tocTrigger.setAttribute('aria-expanded', 'false');
+        }
+      });
     }
   }
 };
@@ -2182,146 +2223,6 @@ const LinkPreview = {
 };
 
 // ====================================
-// 20. Multilingual Translation Widget
-// Adds a floating language selector button that translates the
-// entire page content using the Google Translate API (no key needed
-// via the free widget embed). Falls back to Google Translate URL.
-// ====================================
-
-const MultilingualTranslation = {
-  LANGUAGES: [
-    { code: 'en', label: 'English',    flag: 'en' },
-    { code: 'vi', label: 'Tiếng Việt', flag: 'vi' },
-    { code: 'fr', label: 'Français',   flag: 'fr' },
-    { code: 'de', label: 'Deutsch',    flag: 'de' },
-    { code: 'es', label: 'Español',    flag: 'es' },
-    { code: 'zh', label: '中文',        flag: 'zh' },
-    { code: 'ja', label: '日本語',      flag: 'ja' },
-    { code: 'ko', label: '한국어',      flag: 'ko' },
-    { code: 'ar', label: 'العربية',    flag: 'ar' },
-    { code: 'pt', label: 'Português',  flag: 'pt' },
-  ],
-  current: 'en',
-  btn: null,
-  panel: null,
-
-  init() {
-    this._injectGoogleTranslate();
-    this._buildUI();
-    this._restore();
-  },
-
-  _injectGoogleTranslate() {
-    // Inject the hidden Google Translate element
-    const div = document.createElement('div');
-    div.id = 'google_translate_element';
-    div.style.display = 'none';
-    document.body.appendChild(div);
-
-    window.googleTranslateElementInit = () => {
-      if (!window.google || !window.google.translate) {
-        console.warn('Google Translate library failed to load');
-        return;
-      }
-      try {
-        new window.google.translate.TranslateElement(
-          { pageLanguage: 'en', autoDisplay: false },
-          'google_translate_element'
-        );
-      } catch (err) {
-        console.error('Google Translate initialization failed:', err);
-      }
-    };
-
-    const script = document.createElement('script');
-    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    script.async = true;
-    script.onerror = () => console.warn('Failed to load Google Translate script');
-    document.head.appendChild(script);
-  },
-
-  _buildUI() {
-    // Floating button
-    this.btn = document.createElement('button');
-    this.btn.id = 'lang-toggle';
-    this.btn.setAttribute('aria-label', 'Change language');
-    this.btn.innerHTML = `<span class="lang-icon">🌐</span><span class="lang-label">EN</span>`;
-    document.body.appendChild(this.btn);
-
-    // Dropdown panel
-    this.panel = document.createElement('div');
-    this.panel.id = 'lang-panel';
-    this.panel.innerHTML = this.LANGUAGES.map(l => `
-      <button class="lang-option${l.code === this.current ? ' active' : ''}"
-              data-lang="${l.code}">
-        <span class="lang-flag">${l.flag}</span>
-        <span class="lang-name">${l.label}</span>
-      </button>`).join('');
-    document.body.appendChild(this.panel);
-
-    this.btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const open = this.panel.classList.toggle('open');
-      this.btn.setAttribute('aria-expanded', open);
-      if (open && window.anime) {
-        anime.set(this.panel, { opacity: 0, translateY: 8 });
-        anime.to(this.panel, { opacity: 1, translateY: 0, duration: 220, easing: 'easeOutQuad' });
-      }
-    });
-
-    this.panel.addEventListener('click', (e) => {
-      const opt = e.target.closest('.lang-option');
-      if (!opt) return;
-      this._setLanguage(opt.dataset.lang);
-    });
-
-    document.addEventListener('click', () => this.panel.classList.remove('open'));
-  },
-
-  _setLanguage(code) {
-    this.current = code;
-    localStorage.setItem('preferred-lang', code);
-
-    // Update active state
-    this.panel.querySelectorAll('.lang-option').forEach(o => {
-      o.classList.toggle('active', o.dataset.lang === code);
-    });
-
-    const label = this.LANGUAGES.find(l => l.code === code);
-    this.btn.querySelector('.lang-label').textContent = label.code.toUpperCase();
-    this.panel.classList.remove('open');
-
-    // Trigger Google Translate cookie-based switch
-    if (code === 'en') {
-      // Remove translation
-      const iframe = document.querySelector('.goog-te-banner-frame');
-      if (iframe) {
-        const restore = iframe.contentDocument?.querySelector('.goog-te-button button');
-        if (restore) restore.click();
-      }
-      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      location.reload();
-      return;
-    }
-    document.cookie = `googtrans=/en/${code}; path=/`;
-    location.reload();
-  },
-
-  _restore() {
-    const saved = localStorage.getItem('preferred-lang');
-    if (saved && saved !== 'en') {
-      this.current = saved;
-      const label = this.LANGUAGES.find(l => l.code === saved);
-      if (label) this.btn.querySelector('.lang-label').textContent = label.code.toUpperCase();
-      this.panel.querySelectorAll('.lang-option').forEach(o => {
-        o.classList.toggle('active', o.dataset.lang === saved);
-      });
-    }
-  }
-};
-
-
-// ====================================
 // 21. Estimated Read Completion Timer
 // Shows a live countdown "X min left" that updates as the user
 // scrolls, complementing the existing ReadingTime badge.
@@ -2970,7 +2871,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ====== DEFER: Load idle modules (requestIdleCallback with 2s timeout fallback) ======
   function initLazyModules() {
-    MultilingualTranslation.init();   // Only used on language button click
     ReadCompletionTimer.init();       // Supplementary reading timer
     KeyboardShortcuts.init();         // Keyboard help overlay
     SchemaMarkup.init();              // JSON-LD for SEO

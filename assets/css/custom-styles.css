@@ -822,37 +822,121 @@ table tr:hover td { background: var(--table-row-hover); }
    Table of Contents
    ==================================== */
 
-.inline-toc {
-  position: fixed;
-  left: max(1rem, calc(50% - var(--reading-width)/2 - 240px));
-  top: calc(var(--navbar-height) + 4rem);
-  width: 200px;
-  max-height: calc(100vh - 8rem);
-  overflow-y: auto;
+/* Floating TOC Wrapper */
+.toc-wrapper {
+  position: absolute;
+  top: 0;
+  left: -220px;
+  z-index: 100;
   font-family: var(--font-sans);
+  height: 100%;
 }
 
-.inline-toc::-webkit-scrollbar { display: none; }
+.toc-trigger {
+  position: sticky;
+  top: 120px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
 
-.inline-toc ul { list-style: none; padding: 0; }
+.toc-trigger:hover, .toc-trigger.active {
+  color: var(--text-primary);
+}
+
+.toc-trigger svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+/* Redesigned Floating TOC Dropdown */
+.inline-toc {
+  position: sticky;
+  top: 160px; /* Below the sticky trigger button */
+  left: 0;
+  width: 320px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  padding: 1.5rem 1rem;
+}
+
+.inline-toc.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.inline-toc-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-left: 0.5rem;
+}
+
+/* Custom minimal scrollbar */
+.inline-toc::-webkit-scrollbar { 
+  width: 6px;
+}
+.inline-toc::-webkit-scrollbar-track {
+  background: transparent;
+}
+.inline-toc::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+.inline-toc::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.inline-toc ul { list-style: none; padding: 0; margin: 0; }
 .inline-toc li { margin-bottom: 0.5rem; }
 
 .inline-toc a {
   display: block;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
   text-decoration: none;
   line-height: 1.4;
-  transition: color var(--transition-fast);
-  padding: 0.2rem 0;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
 }
 
-.inline-toc a:hover { color: var(--text-primary); }
-.inline-toc a.active { color: var(--text-primary); font-weight: 600; }
+.inline-toc a:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+.inline-toc a.active {
+  color: var(--text-primary);
+  font-weight: 600;
+  background: var(--bg-tertiary);
+}
 
-.inline-toc li.toc-h1 > a { font-weight: 600; color: var(--text-secondary); }
-.inline-toc li.toc-h2 { padding-left: 0.75rem; }
-.inline-toc li.toc-h3 { padding-left: 1.5rem; }
+.inline-toc li.toc-h1 > a { font-weight: 500; color: var(--text-primary); margin-top: 0.25rem; }
+.inline-toc li.toc-h2 { padding-left: 1rem; }
+.inline-toc li.toc-h3 { padding-left: 2rem; font-size: 0.9rem; }
 
 /* Post inline TOC */
 .post-toc-box {
@@ -1141,8 +1225,6 @@ html.dark-mode .search-modal-content { background: var(--bg-primary); }
 /* ====================================
    Features 20–24 (Functional hooks preserved, styled minimally)
    ==================================== */
-html.dark-mode #lang-toggle,
-html.dark-mode #lang-panel,
 html.dark-mode #scroll-to-top {
   background: #2A2A2A !important;
   border-color: #444444 !important;
@@ -1152,29 +1234,6 @@ html.dark-mode #scroll-to-top {
 html.dark-mode #scroll-to-top svg {
   fill: #F0F0F0 !important;
 }
-
-/* 20. Lang Widget */
-#lang-toggle {
-  position: fixed; bottom: 6rem; right: 2rem; z-index: 900;
-  display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
-  background: var(--bg-primary); border: 1px solid var(--border-primary);
-  border-radius: var(--radius-xl); font-family: var(--font-sans); font-size: 0.85rem;
-  color: var(--text-secondary); cursor: pointer; box-shadow: var(--shadow-md);
-}
-#lang-panel {
-  position: fixed; bottom: 9.5rem; right: 2rem; z-index: 901;
-  background: var(--bg-primary); border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md); padding: 0.5rem; display: none; flex-direction: column;
-  box-shadow: var(--shadow-lg); min-width: 150px;
-}
-#lang-panel.open { display: flex; }
-.lang-option {
-  padding: 0.5rem 1rem; background: none; border: none; text-align: left;
-  font-family: var(--font-sans); color: var(--text-secondary); cursor: pointer;
-  border-radius: var(--radius-sm);
-}
-.lang-option:hover { background: var(--bg-tertiary); }
-.goog-te-banner-frame, .skiptranslate { display: none !important; }
 
 /* 21. Timer Hook */
 [data-completion-timer] strong { color: var(--text-primary); }
@@ -1209,7 +1268,7 @@ html { transition: background-color 300ms ease; }
    ==================================== */
 @media print {
   #scroll-to-top, .navbar, .search-trigger, .search-modal, #reading-progress, 
-  .post-share-bar, #lang-toggle, .inline-toc { display: none !important; }
+  .post-share-bar, .toc-wrapper { display: none !important; }
   body { font-size: 12pt; line-height: 1.5; color: #000; background: #fff; }
   h1, h2 { page-break-before: avoid; page-break-after: avoid; }
   a { text-decoration: none; color: #000; }
@@ -1220,7 +1279,7 @@ html { transition: background-color 300ms ease; }
    Responsive
    ==================================== */
 @media (max-width: 1200px) {
-  .inline-toc { display: none; }
+  .toc-wrapper { display: none; }
 }
 
 @media (max-width: 768px) {

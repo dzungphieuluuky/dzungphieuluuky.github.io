@@ -1145,17 +1145,126 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
    ==================================== */
 
 .cv-container {
-  max-width: var(--reading-width); margin: 0 auto; padding: 2rem 0;
+  max-width: var(--reading-width);
+  margin: 0 auto;
+  padding: 0 0 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
-.cv-download-buttons { display: flex; gap: 1rem; margin-bottom: 2rem; }
+
+.cv-download-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.cv-download-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.cv-download-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .cv-btn {
-  display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-xl); font-family: var(--font-sans); font-weight: 600;
-  text-decoration: none; border: 1px solid var(--border-primary); color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  border: 1px solid transparent;
+  transition: background var(--transition-base), border-color var(--transition-base),
+              transform var(--transition-base), box-shadow var(--transition-base);
+  cursor: pointer;
+  line-height: 1;
 }
-.cv-btn-primary { background: var(--accent-primary); color: #fff; border: none; }
-.cv-btn-primary:hover { background: var(--accent-hover); color: #fff; }
-.cv-iframe-wrapper iframe { width: 100%; height: 80vh; border: 1px solid var(--border-primary); border-radius: var(--radius-md); }
+
+.cv-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); text-decoration: none; }
+.cv-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.cv-btn-text { display: flex; flex-direction: column; gap: 0.12rem; color: inherit; }
+.cv-btn-text strong { font-size: 0.85rem; font-weight: 700; color: inherit; }
+.cv-btn-text small { font-size: 0.67rem; font-weight: 500; opacity: 0.85; color: inherit; }
+
+.cv-btn-primary { background: var(--text-primary); border-color: var(--text-primary); color: var(--bg-primary); }
+.cv-btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+
+.cv-btn-secondary { background: transparent; border-color: var(--text-primary); color: var(--text-primary); }
+.cv-btn-secondary:hover { border-color: var(--text-primary); color: var(--text-primary); background: var(--bg-elevated); }
+
+.cv-viewer-section {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.cv-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.cv-viewer-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cv-open-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.cv-open-link:hover { color: var(--accent-hover); text-decoration: none; }
+.cv-open-link svg { width: 12px; height: 12px; }
+
+.cv-iframe-wrapper { width: 100%; background: var(--bg-tertiary); }
+
+.cv-iframe-wrapper iframe {
+  display: block;
+  width: 100%;
+  height: 88vh;
+  min-height: 600px;
+  border: none;
+}
+
+.cv-iframe-fallback {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.95rem;
+}
+
+.cv-iframe-fallback a { color: var(--accent-primary); }
 
 /* ====================================
    Dark Mode (Substack Style: Deep Gray)

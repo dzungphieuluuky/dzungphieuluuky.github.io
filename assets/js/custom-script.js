@@ -206,12 +206,6 @@ const InteractionManager = {
       if (!body.classList.contains('user-interactive')) {
         body.classList.add('user-interactive');
         this.initialized = true;
-        // Remove listeners after initialization
-        (listener) => {
-          ['click', 'mousemove', 'scroll', 'keydown'].forEach((evt) =>
-            document.removeEventListener(evt, listener, { passive: true })
-          );
-        };
       }
     };
     ['click', 'mousemove', 'scroll', 'keydown'].forEach((evt) =>
@@ -1449,7 +1443,7 @@ const EnhancedSearch = {
         </p>
         <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
           ${suggestion.similarTerms.map((term) => `
-            <button class="search-suggestion-btn" style="background: none; border: 1px solid rgba(0,0,0,0.1); padding: 0.5rem; cursor: pointer; border-radius: 4px; text-align: left; color: var(--text-primary); text-decoration: underline; font-size: 0.9rem;">
+            <button class="search-suggestion-btn" style="background: none; border: 1px solid rgba(0,0,0,0.1); padding: 0.5rem; cursor: pointer; border-radius: 4px; text-align: justify; color: var(--text-primary); text-decoration: underline; font-size: 0.9rem;">
               Try: <strong>${term}</strong>
             </button>
           `).join('')}

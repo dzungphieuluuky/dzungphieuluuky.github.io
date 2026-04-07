@@ -8,9 +8,6 @@ share-img:
 tags: [sino-nom]
 author: dzungphieuluuky
 ---
-
-# Báo Cáo Tổng Kết: FontDiffusion Sino Nom
-
 ## 1. Giới Thiệu Chung
 
 ### 1.1. Tổng quan đồ án

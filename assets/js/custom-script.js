@@ -682,6 +682,8 @@ const NavbarScroll = {
 // ====================================
 
 const PostTableOfContents = {
+  allExpanded: false,
+  
   init() {
     const article = document.querySelector('article');
     if (!article) return;
@@ -691,92 +693,132 @@ const PostTableOfContents = {
 
     const levelOf = { H1: 1, H2: 2, H3: 3 };
     
-    // Shared function to build TOC HTML - avoids duplication
+    // Build TOC with expand/collapse toggles
     const buildTocHtml = () => {
       let html = '<ul class="post-toc-list">';
       let h2Open = false;
+      let lastH2Index = -1;
 
-      headers.forEach((header) => {
+      headers.forEach((header, idx) => {
         const id    = header.getAttribute('id');
         const text  = header.textContent.replace(/^\d+\.?\s*/, '').trim();
         const level = levelOf[header.tagName];
 
         if (level === 1) {
           if (h2Open) { html += '</ul></li>'; h2Open = false; }
-          // H1 items: no bullet, just a link (no nested structure)
-          html += `<div class="toc-h1"><a href="#${id}">${text}</a></div>`;
+          html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
         } else if (level === 2) {
-          if (!h2Open) {
-            html += `<ul class="toc-h2-list">`;
-            h2Open = true;
+          if (h2Open) { html += '</ul></li>'; }
+          // Check if there are H3s following this H2
+          let hasH3 = false;
+          for (let i = idx + 1; i < headers.length; i++) {
+            const nextLevel = levelOf[headers[i].tagName];
+            if (nextLevel === 2 || nextLevel === 1) break;
+            if (nextLevel === 3) { hasH3 = true; break; }
           }
-          // H2 items: nested under H1, will get list styling
-          html += `<li class="toc-h2"><a href="#${id}">${text}</a></li>`;
+          const toggle = hasH3 ? `<button class="toc-expand-toggle" data-target="${id}" title="Toggle">▼</button>` : '';
+          html += `<li class="toc-h2">${toggle}<a href="#${id}">${text}</a>`;
+          if (hasH3) {
+            html += '<ul>';
+            h2Open = true;
+            lastH2Index = idx;
+          } else {
+            html += '</li>';
+          }
         } else if (level === 3 && h2Open) {
           html += `<li class="toc-h3"><a href="#${id}">${text}</a></li>`;
         }
       });
 
-      if (h2Open) html += '</ul>';
+      if (h2Open) html += '</ul></li>';
       html += '</ul>';
       return html;
     };
 
-    // Build TOC HTML
     const tocHtml = buildTocHtml();
     
-    // Inject top-of-post TOC box
-    const postTocHTML = `<div class="post-toc-box">
-      <h3 class="post-toc-title">Contents</h3>
-      ${tocHtml}
-    </div>`;
-    article.insertAdjacentHTML('afterbegin', postTocHTML);
-    
-    // Populate floating TOC (if exists)
-    const floatTocList = document.querySelector('#inline-toc ul');
-    if (floatTocList) {
-      floatTocList.innerHTML = tocHtml.replace(/post-toc-list/g, '');
-    }
-
-    // Bind floating TOC trigger
-    const tocTrigger = document.getElementById('toc-trigger');
+    // Populate floating TOC with expand/collapse + navigation buttons
     const inlineToc = document.getElementById('inline-toc');
-    if (tocTrigger && inlineToc) {
-      tocTrigger.addEventListener('click', (e) => {
+    if (inlineToc) {
+      const titleEl = inlineToc.querySelector('.inline-toc-title');
+      if (titleEl) {
+        // Hide standard title in Hedgedoc minimalist style
+        titleEl.style.display = 'none';
+      }
+
+      // Populate TOC list
+      const tocList = inlineToc.querySelector('ul');
+      if (tocList) {
+        tocList.innerHTML = tocHtml.replace(/post-toc-list/g, '');
+      }
+
+      // Add footer with navigation buttons
+      let footer = inlineToc.querySelector('.toc-footer');
+      if (!footer) {
+        footer = document.createElement('div');
+        footer.className = 'toc-footer';
+        // Hedgedoc style stack of plain links
+        footer.innerHTML = `
+          <button class="toc-nav-btn" id="toc-expand-all">Expand all</button>
+          <button class="toc-nav-btn" id="toc-back-top">Back to top</button>
+          <button class="toc-nav-btn" id="toc-go-bottom">Go to bottom</button>
+        `;
+        inlineToc.appendChild(footer);
+      }
+
+      // Bind navigation buttons
+      document.getElementById('toc-expand-all')?.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        inlineToc.classList.toggle('active');
-        tocTrigger.classList.toggle('active');
-        const isActive = inlineToc.classList.contains('active');
-        tocTrigger.setAttribute('aria-expanded', isActive);
+        this.toggleExpandAll(inlineToc);
       });
 
-      // Close when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!inlineToc.contains(e.target) && !tocTrigger.contains(e.target)) {
-          inlineToc.classList.remove('active');
-          tocTrigger.classList.remove('active');
-          tocTrigger.setAttribute('aria-expanded', 'false');
-        }
+      document.getElementById('toc-back-top')?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
       
-      // Close on escape key
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && inlineToc.classList.contains('active')) {
-          inlineToc.classList.remove('active');
-          tocTrigger.classList.remove('active');
-          tocTrigger.setAttribute('aria-expanded', 'false');
-          tocTrigger.focus();
-        }
+      document.getElementById('toc-go-bottom')?.addEventListener('click', () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       });
 
-      // Navigate to section on click and close dropdown
+      // Bind expand/collapse toggles
       inlineToc.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') {
-          inlineToc.classList.remove('active');
-          tocTrigger.classList.remove('active');
-          tocTrigger.setAttribute('aria-expanded', 'false');
+        if (e.target.classList.contains('toc-expand-toggle')) {
+          e.preventDefault();
+          this.toggleSection(e.target);
         }
       });
+    }
+  },
+
+  toggleSection(btn) {
+    const li = btn.closest('.toc-h2');
+    if (!li) return;
+    const ul = li.querySelector('ul');
+    if (!ul) return;
+    
+    ul.style.display = ul.style.display === 'none' ? '' : 'none';
+    btn.textContent = ul.style.display === 'none' ? '▶' : '▼';
+  },
+
+  toggleExpandAll(container) {
+    const toggles = container.querySelectorAll('.toc-expand-toggle');
+    const uls = container.querySelectorAll('.toc-h2 > ul');
+    
+    this.allExpanded = !this.allExpanded;
+    
+    toggles.forEach(btn => {
+      const ul = btn.closest('.toc-h2').querySelector('ul');
+      if (ul) {
+        ul.style.display = this.allExpanded ? '' : 'none';
+        btn.textContent = this.allExpanded ? '▼' : '▶';
+      }
+    });
+
+    // Update button text
+    const expandBtn = container.querySelector('#toc-expand-all');
+    if (expandBtn) {
+      expandBtn.textContent = this.allExpanded ? 'Collapse all' : 'Expand all';
     }
   }
 };
@@ -3035,7 +3077,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // UX Protection & Interaction (Ported from thinking-machine.js)
     ExternalLinks.init();
     ImageProtection.init();
-    ButtonAnimations.init();
+    // ButtonAnimations.init(); // Disabled for minimal academic layout
     FontLoaderCheck.init();
     SVGDashboardRenderer.init();
 
@@ -3048,9 +3090,9 @@ document.addEventListener('DOMContentLoaded', () => {
     PostShareBar.init();
     FootnoteTooltips.init();
     LinkPreview.init();
-    RevealOnScroll.init();
+    // RevealOnScroll.init(); // Disabled for minimal academic layout
     TocProgressDots.init();
-    AmbientBackground.init();
+    // AmbientBackground.init(); // Disabled for minimal academic layout
   });
 
   // ====== DEFER: Load idle modules (requestIdleCallback with 2s timeout fallback) ======

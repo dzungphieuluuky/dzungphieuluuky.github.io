@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Curriculum Vitae
-subtitle: "Undergraduate researcher in physics & deep learning"
+subtitle: "My Resumé"
 ---
 
 <div class="cv-container">

@@ -11,7 +11,7 @@ author: dzungphieuluuky
 
 A few months back, while downloading a new model from Hugging Face to experiment with, I noticed something interesting: the repository offered both the classic **model.pth** (the traditional weights storage format in pytorch) and a newer **model.safetensors**. At first glance, they seemed identical—just different extensions. But when I loaded the safetensors version, it felt noticeably faster, and I remembered reading about some security concerns with the older format.
 
-That small difference sparked my curiosity. Why do we have so many ways to save model weights? And why is everyone suddenly pushing safetensors as the new standard? At first, in my earlier days of working with Huggingface Models repository, I found that the suffix **.safetensors** is somewhat strange but captivating due to its expressive fashion. Then, of course, there’s **ONNX**—the format that promises to let your model run almost anywhere. So let’s add it to the conversation.
+That small difference sparked my curiosity. Why do we have so many ways to save model weights? And why is everyone suddenly pushing safetensors as the new standard? At first, in my earlier days of working with Hugging Face Models repository, I found that the suffix **.safetensors** is somewhat strange but captivating due to its expressive fashion. Then, of course, there’s **ONNX**—the format that promises to let your model run almost anywhere. So let’s add it to the conversation.
 
 ### Pickle vs PyTorch
 
@@ -19,7 +19,7 @@ For years, PyTorch has used Python's **pickle** module to serialize models. You 
 
 This approach is incredibly flexible. You can store not only weights but also optimizer states, training metadata, custom objects—pretty much anything Python can pickle. It's why so many research checkpoints use **.pth** files for a long time.
 
-But flexibility comes with a cost: security. Pickle is not safe when loading files from untrusted sources. A malicious file can execute arbitrary code during loading. PyTorch has added a `weights_only=True` flag in recent versions, you will definitely meet this warnings when working with pytorch. I have met it myself no less than 10 times and still remember the familiar warnings any time I save or load my models after training. Saving models with suffix **.pth** is still fine for already safe and well-verified model weights but the risk remains when dealing with models shared online.
+But flexibility comes with a cost: security. Pickle is not safe when loading files from untrusted sources. A malicious file can execute arbitrary code during loading. PyTorch has added a `weights_only=True` flag in recent versions, and you will definitely meet these warnings when working with PyTorch. I have encountered them myself no less than 10 times and still remember the familiar warnings any time I save or load my models after training. Saving models with suffix **.pth** is still fine for already safe and well-verified model weights but the risk remains when dealing with models shared online.
 
 ### Enter Safetensors
 
@@ -40,7 +40,7 @@ We can look at what the format looks like inside a safetensors file:
 
 We can see that the format contains three parts:
 - The first part contains 8 bytes = 64 bit unsigned integer to denote the number of bytes in the metadata section.
-- The second part is the metadata format where we store the dictionary to denote the data type, shape and offets of each tensor in the model.
+- The second part is the metadata format where we store the dictionary to denote the data type, shape and offsets of each tensor in the model.
 - And the final part is of course the part that contains the actual data for each tensor in the model.
 
 ### Keras and TensorFlow world

@@ -23,8 +23,8 @@ If the equation has real solutions, that could be any real numbers you can think
 
 Regularly, when a solution of a polynomial equation is a complex number, students usually find it strange and hard to understand. There are so many reasons why this may cause such trauma: what in the world can have that kind of number as a solution, what is the \\( i \\) doing over there, how can I interpret this solution in a meaningful way$...$
 
-# Solutions as tranformations
-Actually, we can view the complex solution as a transformation on something rather than just a number as real numbers. Imagine that someone has just given us something to toy with, it could be a sphere, a cube or any object we can imagine (just think of it as some 3D object to avoid headache), and our task is to apply some kind of transformation on that object to make it into something new.
+# Solutions as transformations
+Actually, we can view the complex solution as a transformation rather than just a number like real numbers. Imagine that someone has just given us something to toy with, it could be a sphere, a cube or any object we can imagine (just think of it as some 3D object to avoid headache), and our task is to apply some kind of transformation on that object to make it into something new.
 
 Now, if our equation yields real solutions, we can interpret that the necessary transformation is just a scalar operator. There are three cases with the solution:
 - If it is positive, the object gets larger.
@@ -60,4 +60,4 @@ These numbers with an immense number of imaginary components surely don't fit in
 
 # Conclusion
 
-In this blog, I don't want to be viewed as a lawyer defending the terrifying appearance of complex numbers. I just want to spread this idea and give some inspirations to those who feel that those numbers are kinds of intangible and hard to interpret. Also, not so sure but if we try to embed some physics imagination into these seemingly mathematical complicated concepts, there is maybe a way for us to see their true beauty and raise our awareness and appreciation of their existence as an indispensable tools to model and understand the world around us, rather than some scary mathematical notations used to traumatize miserable students.
+In this blog, I don't want to appear as defending the terrifying appearance of complex numbers. I just want to share this idea and give some inspiration to those who feel these numbers are intangible and hard to interpret. If we embed some physical intuition into these seemingly complicated mathematical concepts, we may find a way to see their true beauty and raise our awareness and appreciation of their existence as indispensable tools for modeling and understanding the world around us, rather than as scary mathematical notations meant to traumatize students.

@@ -7,7 +7,7 @@ comments: true
 author: dzungphieuluuky
 ---
 
-With the increasingly large amount of data and model size in artificial intelligence training, especially deep learning with super massive models, training and inference times are becoming more and more expensive than ever before. They can consume a lot of time and this is raising another demand for distributed and parallel support for both training and inference processes.
+With increasingly large amounts of data and model sizes in artificial intelligence training, especially deep learning with massive models, training and inference times are becoming increasingly expensive. This demand is driving a need for distributed and parallel support for both training and inference processes.
 
 In this blog, we will try to delve into Hugging Face Accelerate for distributed training and inference, highlighting its abstractions, key methods, comparisons with native PyTorch tools and PyTorch Lightning.
 

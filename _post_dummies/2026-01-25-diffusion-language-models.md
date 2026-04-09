@@ -55,7 +55,7 @@ It's not words being generated anymore. It's meaning, being coaxed into form.
 
 For years, diffusion language models were a curiosity — elegant in theory, but never quite able to keep up with the brute efficiency of autoregressive generation. They belonged in papers, not in products.
 
-Then came LLaDA — Large Language Diffusion with mAsking — presented at NeurIPS 2025. An eight-billion-parameter model trained from scratch, using a masking-based diffusion process. During forward diffusion, tokens are progressively hidden; during reverse diffusion, they're progressively revealed. Think of it like BERT's masked language modeling, but made iterative and generative rather than simply predictive.
+Then came LLaDA — Large Language Diffusion with Masking — presented at NeurIPS 2025. An eight-billion-parameter model trained from scratch using a masking-based diffusion process. During forward diffusion, tokens are progressively hidden; during reverse diffusion, they're progressively revealed. Think of it like BERT's masked language modeling, but made iterative and generative rather than simply predictive.
 
 The result that turned heads: LLaDA performs comparably to LLaMA 3 8B across a wide range of benchmarks.
 

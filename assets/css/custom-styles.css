@@ -22,7 +22,7 @@
    ==================================== */
 
 /* === TYPOGRAPHY === */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Georgia:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ====================================
    Palette & Variables
@@ -30,8 +30,8 @@
 
 :root {
   /* Typography */
-  --font-serif: 'Merriweather', 'Georgia', 'Times New Roman', serif;
-  --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
   /* Color Palette - Substack Light Mode */
@@ -83,6 +83,11 @@
   --reading-line-height: 1.6;
   --reading-font-size:   1.125rem; /* ~19px - large and readable */
   --navbar-height:       60px;
+
+  /* Transitions - Subtle, smooth animations */
+  --transition-fast:  0.15s ease;
+  --transition-base:  0.25s ease;
+  --transition-slow:  0.35s ease;
 
   /* Code token colors — grayscale minimalist */
   --code-bg:                #F9F9F9;
@@ -142,7 +147,8 @@ body {
   background: var(--bg-primary);
   font-weight: 400;
   overflow-x: hidden;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.015em;
+  word-spacing: 0.1em;
 }
 
 /* Headings */
@@ -154,25 +160,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 2.3rem;
-  font-weight: 700;
-  letter-spacing: normal;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   margin-top: 0;
   margin-bottom: 0.5rem;
 }
 
 h2 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 1.85rem;
   font-weight: 600;
-  letter-spacing: normal;
+  letter-spacing: -0.015em;
   margin-top: 3rem;
   margin-bottom: 1rem;
 }
 
 h3 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 1.45rem;
   font-weight: 600;
   margin-top: 2.5rem;

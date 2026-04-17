@@ -278,6 +278,13 @@ a:hover {
   padding: 0 1rem;
 }
 
+/* Wider container for posts with right sidebar TOC on large screens */
+@media (min-width: 1400px) {
+  main .row > div[class*="col"] {
+    max-width: calc(var(--reading-width) + 340px);
+  }
+}
+
 /* ====================================
    Reading Progress Bar
    ==================================== */
@@ -843,33 +850,38 @@ table tr:hover td { background: var(--table-row-hover); }
 
 /* Floating TOC Wrapper */
 .toc-wrapper {
-  display: none; /* Hidden - TOC is now always visible as sidebar */
+  display: block;
+  position: relative;
+  width: 280px;
+  flex-shrink: 0;
+  pointer-events: auto;
 }
 
 .toc-trigger {
-  display: none; /* Hide the trigger button - TOC is always visible */
+  display: none; /* Hide the trigger button - TOC is always visible in sidebar */
 }
 
 /* HedgeDoc-style Sticky Right Sidebar TOC */
 .inline-toc {
-  position: fixed;
-  left: calc(50% + 384px);
+  position: sticky;
   top: calc(var(--navbar-height) + 20px);
-  width: 250px;
+  width: 100%;
   background: transparent;
   border: none;
   box-shadow: none;
-  max-height: calc(100vh - var(--navbar-height) - 120px);
+  max-height: calc(100vh - var(--navbar-height) - 60px);
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   opacity: 1;
   visibility: visible;
   transform: none;
-  transition: none;
+  transition: opacity 0.2s ease;
   padding: 0;
-  z-index: 50;
+  z-index: 30;
   font-family: var(--font-sans);
+  pointer-events: auto;
 }
 
 .inline-toc.active {
@@ -879,11 +891,19 @@ table tr:hover td { background: var(--table-row-hover); }
 }
 
 .inline-toc-title {
-  display: none; /* Hidden in Hedgedoc minimalist style */
+  display: block;
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 0.75rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-secondary);
 }
 
-/* Custom minimal scrollbar */
-.inline-toc::-webkit-scrollbar { 
+/* HedgeDoc-style minimal scrollbar */
+.inline-toc::-webkit-scrollbar {
   width: 6px;
 }
 .inline-toc::-webkit-scrollbar-track {
@@ -891,10 +911,16 @@ table tr:hover td { background: var(--table-row-hover); }
 }
 .inline-toc::-webkit-scrollbar-thumb {
   background: var(--border-primary);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 .inline-toc::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: var(--text-tertiary);
+}
+
+/* Firefox scrollbar */
+.inline-toc {
+  scrollbar-color: var(--border-primary) transparent;
+  scrollbar-width: thin;
 }
 
 .inline-toc > ul {
@@ -902,86 +928,117 @@ table tr:hover td { background: var(--table-row-hover); }
   padding: 0;
   margin: 0;
   flex: 1;
-  overflow-y: auto;
+  font-size: 0.85rem;
 }
 
-.inline-toc ul { list-style: none; padding: 0; margin: 0; }
-.inline-toc li { margin-bottom: 0.3rem; }
+.inline-toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.inline-toc li {
+  margin: 0;
+  line-height: 1.5;
+}
 
 /* TOC Footer with Navigation Buttons */
 .toc-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
-  padding-top: 0;
-  border-top: none;
-  flex-shrink: 0;
-  padding-left: 12px;
+  display: none; /* Hidden for cleaner minimal design */
 }
 
 .toc-nav-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 500;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.15s ease;
-}
-
-.toc-nav-btn:hover {
-  color: var(--text-primary);
+  display: none;
 }
 
 .inline-toc a {
   display: block;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-tertiary);
   text-decoration: none;
-  line-height: 1.4;
-  padding: 0.3rem 0.2rem 0.3rem 10px;
+  line-height: 1.5;
+  padding: 0.25rem 0 0.25rem 0;
   border-left: 2px solid transparent;
   border-radius: 0;
-  transition: color 0.15s ease;
+  transition: all 0.15s ease;
+  word-wrap: break-word;
 }
 
 .inline-toc a:hover {
   background: transparent;
   color: var(--text-primary);
-}
-.inline-toc a.active {
-  color: var(--text-primary);
-  font-weight: 700;
-  background: transparent;
-  border-left: 2px solid var(--indigo-primary);
+  padding-left: 4px;
 }
 
-.inline-toc li.toc-h1 > a { font-weight: 600; color: var(--text-primary); margin-top: 0.25rem; border-left: 2px solid transparent; }
-.inline-toc li.toc-h2 { padding-left: 0; display: flex; align-items: flex-start; }
-.inline-toc li.toc-h3 { padding-left: 1rem; font-size: 0.8rem; }
-.inline-toc li.toc-h2 > a { flex: 1; padding-left: 10px; }
-.inline-toc li.toc-h1 > a.active { border-left-color: var(--indigo-primary); }
-.inline-toc li.toc-h3 > a { padding-left: 10px; }
+.inline-toc a.active {
+  color: var(--indigo-primary);
+  font-weight: 600;
+  background: transparent;
+  border-left: 2px solid var(--indigo-primary);
+  padding-left: 8px;
+}
+
+/* Heading hierarchy styling */
+.inline-toc li.toc-h1 > a {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.inline-toc li.toc-h1:first-child > a {
+  margin-top: 0;
+}
+
+.inline-toc li.toc-h2 {
+  padding-left: 0;
+  display: block;
+}
+
+.inline-toc li.toc-h2 > a {
+  padding-left: 12px;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.inline-toc li.toc-h3 {
+  padding-left: 0;
+  display: block;
+}
+
+.inline-toc li.toc-h3 > a {
+  padding-left: 24px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.inline-toc li.toc-h1 > a.active {
+  border-left-color: var(--indigo-primary);
+}
+
+.inline-toc li.toc-h2 > a.active {
+  border-left-color: var(--indigo-primary);
+}
+
+.inline-toc li.toc-h3 > a.active {
+  border-left-color: var(--indigo-primary);
+}
 
 .toc-expand-toggle {
   background: none;
   border: none;
-  padding: 0;
+  padding: 0 4px;
   cursor: pointer;
   color: var(--text-muted);
-  width: 14px;
-  height: 14px;
-  display: flex;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   transition: color 0.15s ease;
   flex-shrink: 0;
-  margin-top: 5px;
+  margin-right: 4px;
+  margin-top: 0;
 }
 
 .toc-expand-toggle:hover {
@@ -1028,12 +1085,29 @@ table tr:hover td { background: var(--table-row-hover); }
 
 .post-layout {
   display: block;
-  max-width: var(--reading-width);
   margin: 0 auto;
 }
 
 .blog-post {
-  margin: 2rem 0 4rem;
+  margin: 2rem auto 4rem;
+  position: relative;
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+  width: 100%;
+  max-width: calc(var(--reading-width) + 340px);
+}
+
+.blog-post > article {
+  flex: 1;
+  min-width: 0;
+  max-width: var(--reading-width);
+}
+
+.blog-post .toc-wrapper {
+  flex-shrink: 0;
+  width: 280px;
+  order: 2;
 }
 
 /* Blockquotes - Clean, Minimalist Style */
@@ -1461,16 +1535,38 @@ html.dark-mode .inline-toc {
   border: none;
 }
 
-html.dark-mode .toc-nav-btn {
-  background: transparent;
-  border: none;
+html.dark-mode .inline-toc-title {
+  border-bottom-color: var(--border-secondary);
   color: var(--text-muted);
 }
 
-html.dark-mode .toc-nav-btn:hover {
-  background: transparent;
+html.dark-mode .inline-toc a {
+  color: var(--text-tertiary);
+}
+
+html.dark-mode .inline-toc a:hover {
   color: var(--text-primary);
-  border: none;
+}
+
+html.dark-mode .inline-toc a.active {
+  color: var(--indigo-light);
+  border-left-color: var(--indigo-light);
+}
+
+html.dark-mode .inline-toc li.toc-h1 > a {
+  color: var(--text-primary);
+}
+
+html.dark-mode .inline-toc li.toc-h2 > a {
+  color: var(--text-tertiary);
+}
+
+html.dark-mode .inline-toc li.toc-h3 > a {
+  color: var(--text-muted);
+}
+
+html.dark-mode .toc-nav-btn {
+  display: none;
 }
 
 html.dark-mode .toc-expand-toggle {
@@ -1537,9 +1633,22 @@ html { transition: background-color 300ms ease; }
 /* ====================================
    Responsive
    ==================================== */
-@media (max-width: 1350px) {
-  .toc-wrapper { display: none; }
-  .inline-toc { display: none; }
+/* Hide TOC on smaller screens */
+@media (max-width: 1399px) {
+  .blog-post {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .blog-post > article {
+    max-width: 100%;
+    order: 1;
+  }
+  
+  .blog-post .toc-wrapper {
+    display: none;
+    order: 2;
+  }
 }
 
 @media (max-width: 768px) {

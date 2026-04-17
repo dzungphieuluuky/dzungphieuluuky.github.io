@@ -265,34 +265,39 @@ const PostTableOfContents = {
     const article = document.querySelector('article');
     if (!article) return;
 
-    // Ensure DOM structure
-    let blogPost = article.closest('.blog-post');
-    if (!blogPost) {
-      blogPost = document.createElement('div');
-      blogPost.className = 'blog-post';
-      article.parentNode.insertBefore(blogPost, article);
-      blogPost.appendChild(article);
-    }
+    // Use template structure when present; only create missing pieces.
+    const blogPost = article.closest('.blog-post') || article.parentElement;
+    if (!blogPost) return;
+
     let tocWrapper = blogPost.querySelector('.toc-wrapper');
     if (!tocWrapper) {
       tocWrapper = document.createElement('div');
       tocWrapper.className = 'toc-wrapper';
       blogPost.appendChild(tocWrapper);
     }
-    let inlineToc = tocWrapper.querySelector('#inline-toc');
+
+    let inlineToc = tocWrapper.querySelector('.inline-toc');
     if (!inlineToc) {
-      inlineToc = document.createElement('div');
+      inlineToc = document.createElement('nav');
       inlineToc.id = 'inline-toc';
       inlineToc.className = 'inline-toc';
-      inlineToc.innerHTML = '<div class="inline-toc-title">ON THIS PAGE</div><ul></ul>';
+      inlineToc.setAttribute('aria-label', 'Table of contents');
+      inlineToc.innerHTML = '<div class="inline-toc-title">Contents</div><ul></ul>';
       tocWrapper.appendChild(inlineToc);
+    }
+
+    // Guarantee a root list container for TOC items.
+    let tocList = inlineToc.querySelector(':scope > ul');
+    if (!tocList) {
+      tocList = document.createElement('ul');
+      inlineToc.appendChild(tocList);
     }
 
     const headers = article.querySelectorAll('h1[id], h2[id], h3[id]');
     if (headers.length < 1) return;
     const levelOf = { H1: 1, H2: 2, H3: 3 };
-    const buildTocHtml = () => {
-      let html = '<ul class="post-toc-list">';
+    const buildTocItemsHtml = () => {
+      let html = '';
       let h2Open = false;
       headers.forEach((header, idx) => {
         const id = header.id;
@@ -318,11 +323,11 @@ const PostTableOfContents = {
         }
       });
       if (h2Open) html += '</ul></li>';
-      html += '</ul>';
       return html;
     };
-    const tocList = inlineToc.querySelector('ul');
-    if (tocList) tocList.innerHTML = buildTocHtml().replace(/post-toc-list/g, '');
+
+    tocList.innerHTML = buildTocItemsHtml();
+
     inlineToc.addEventListener('click', (e) => {
       const btn = e.target.closest('.toc-expand-toggle');
       if (!btn) return;

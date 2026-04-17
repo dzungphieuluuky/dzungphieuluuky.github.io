@@ -1179,7 +1179,8 @@ const EnhancedSearch = {
         category_lower: item.category.toLowerCase(),
         readingTime: this._computeReadingTime(item.content),
         contentType: this._detectContentType(item),
-        keywords: this._extractKeywords(item)
+        keywords: this._extractKeywords(item),
+        tags: this._extractTags(item.category) // Extract tags from category field
       }));
 
       // Extract and rank trending terms
@@ -1187,6 +1188,18 @@ const EnhancedSearch = {
     } catch (error) {
       console.error('Failed to load search corpus:', error);
     }
+  },
+
+  /**
+   * Extract tags from category field (comma-separated or space-separated)
+   */
+  _extractTags(category) {
+    if (!category || category === 'page') return [];
+    // Split by comma or space and filter out empty strings
+    return category
+      .split(/[,\s]+/)
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0 && tag !== 'page');
   },
 
   /**
@@ -1278,6 +1291,10 @@ const EnhancedSearch = {
   /**
    * Perform semantic + full-text search
    * Includes keyword highlighting, intent matching, and relevance ranking
+   * Key improvements:
+   * - Better relevance scoring with emphasis on title matches
+   * - Word-based excerpt truncation (10-15 words max)
+   * - Improved semantic intent matching
    */
   _performSearch(query) {
     const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 0);
@@ -1288,21 +1305,22 @@ const EnhancedSearch = {
       let highlightedExcerpt = item.excerpt;
 
       queryTerms.forEach((term) => {
-        // Title match (highest weight)
-        if (item.title_lower.includes(term)) score += 100;
+        // Title match (highest weight - 150 points)
+        if (item.title_lower.includes(term)) score += 150;
 
-        // Exact phrase in title (even higher)
-        if (item.title_lower === term) score += 200;
+        // Exact title phrase (very high - 300 points)
+        if (item.title_lower === term) score += 300;
 
-        // Keywords match
-        if (item.keywords.some((kw) => kw.includes(term))) score += 50;
+        // Keywords match (80 points - higher than before)
+        if (item.keywords.some((kw) => kw.includes(term))) score += 80;
 
-        // Category/Tags match
+        // Tag/Category match (60 points - prioritize tagged content)
+        if (item.tags.some((tag) => tag.toLowerCase().includes(term))) score += 60;
         if (item.category_lower.includes(term)) score += 40;
 
         // Content match (lower weight due to volume)
         const contentMatches = (item.content_lower.match(new RegExp(term, 'g')) || []).length;
-        score += Math.min(contentMatches, 10) * 2; // Cap at 20 points
+        score += Math.min(contentMatches, 8) * 3; // Cap at 24 points, increased weight per match
 
         // Highlight keyword in excerpt
         highlightedExcerpt = this._highlightKeyword(highlightedExcerpt, term);
@@ -1311,7 +1329,7 @@ const EnhancedSearch = {
       // Semantic intent matching: related terms
       // Example: "grow business" should match "marketing", "scaling", "hiring"
       if (this._matchesSemanticIntent(query, item)) {
-        score += 30;
+        score += 40; // Increased from 30
       }
 
       return { ...item, score, highlightedExcerpt };
@@ -1321,13 +1339,53 @@ const EnhancedSearch = {
     return results
       .filter((r) => r.score > 0)
       .map((r) => {
-        // Truncate excerpt to reduce visual density (max 120 characters)
-        if (r.highlightedExcerpt.length > 120) {
-          r.highlightedExcerpt = r.highlightedExcerpt.substring(0, 120).trim() + '…';
-        }
+        // Truncate excerpt to ~50-70 characters or 10-15 words max
+        r.highlightedExcerpt = this._truncateExcerptByWords(r.highlightedExcerpt, 15, 70);
         return r;
       })
       .sort((a, b) => b.score - a.score);
+  },
+
+  /**
+   * Truncate excerpt to a maximum number of words and/or characters
+   * Preserves word boundaries for better readability
+   */
+  _truncateExcerptByWords(text, maxWords, maxChars) {
+    if (!text) return '';
+    
+    // First, remove any HTML tags temporarily for word counting
+    const plainText = text.replace(/<[^>]*>/g, '');
+    
+    // Split by whitespace
+    const words = plainText.split(/\s+/);
+    
+    // Limit by word count or character count
+    let truncated = '';
+    let charCount = 0;
+    
+    for (let i = 0; i < words.length && i < maxWords; i++) {
+      const word = words[i];
+      if (charCount + word.length + 1 > maxChars) {
+        break;
+      }
+      truncated += (truncated ? ' ' : '') + word;
+      charCount += word.length + 1;
+    }
+    
+    // Add ellipsis if truncated
+    if (truncated.length < plainText.length) {
+      truncated += '…';
+    }
+    
+    // Re-apply highlighting to truncated text
+    if (truncated && this.input && this.input.value) {
+      const searchTerms = this.input.value.trim().split(/\s+/).filter((t) => t.length > 0);
+      searchTerms.forEach((term) => {
+        truncated = this._highlightKeyword(truncated, term);
+      });
+    }
+    
+    return truncated;
   },
 
   /**
@@ -1406,6 +1464,7 @@ const EnhancedSearch = {
   /**
    * Display search results with rich formatting
    * Sanitizes title to prevent XSS, uses safe HTML for highlighted excerpt
+   * Shows tags, content type, reading time, and date
    */
   _displayResults(results) {
     this.resultsContainer.classList.add('active');
@@ -1424,9 +1483,12 @@ const EnhancedSearch = {
         <div class="search-result-title">${this._sanitizeHTML(result.title)}</div>
         <div class="search-result-excerpt">${result.highlightedExcerpt}</div>
         <div class="search-result-tags">
+          ${result.tags && result.tags.length > 0 
+            ? result.tags.map((tag) => `<span class="search-result-tag">${this._sanitizeHTML(tag)}</span>`).join('')
+            : ''
+          }
           ${result.contentType ? `<span class="search-result-category">${this._sanitizeHTML(result.contentType)}</span>` : ''}
-          ${result.readingTime ? `<span class="search-result-category">${result.readingTime} min read</span>` : ''}
-          ${result.date ? `<span class="search-result-category">${this._sanitizeHTML(result.date)}</span>` : ''}
+          ${result.readingTime ? `<span class="search-result-category">${result.readingTime} min</span>` : ''}
         </div>
       </div>
     `

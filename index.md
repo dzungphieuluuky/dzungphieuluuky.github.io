@@ -3,7 +3,6 @@ layout: page
 title: Representation
 subtitle: Everything is a representation
 markdown: kramdown
-
 ---
 
 # Introduction

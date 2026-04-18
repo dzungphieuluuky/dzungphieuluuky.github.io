@@ -1,78 +1,95 @@
 ---
 layout: post
-title: Font Diffusion Sino Nom Project
-subtitle: Tổng kết thực hiện module FontDiffusion - Dự án Tạo sinh Tự Điển Hán Nôm Tự Động
+title: Font Diffusion for Sino-Nom Character Synthesis
+subtitle: Implementation and Development of the FontDiffusion Module for Automated Sino-Nom Dictionary Generation
 cover-img:
 thumbnail-img:
 share-img:
-tags: [sino-nom]
+tags: [sino-nom, diffusion-models, deep-learning]
 author: dzungphieuluuky
 ---
-# 1. Giới Thiệu Chung
 
-## 1.1. Tổng quan đồ án
-Dự án này bao gồm 4 module chính:
-- **Dictionary**: xây dựng từ điển/tự điển để hỗ trợ truy vấn và trích xuất thông tin từ vựng để hỗ trợ cho việc so sánh, đối chiếu ở các pha sau.
-- **Font Diffusion**: module này hỗ trợ việc tạo sinh nhiều style khác nhau cho cùng 1 chữ content để hỗ trợ data augmentation (tăng cường dữ liệu) và giúp module OCR (Optical Character Recognition) đối sánh ảnh cho ra kết quả chính xác cao hơn nhờ dùng ảnh đã được diffused từ các ảnh content gốc.
-- **Image Comparison và OCR**: module này hỗ trợ đối sánh các ảnh có độ giống nhau cao để cho ra kết quả dạng mã Unicode character cho module Levenshtein Alignment bên dưới. Module này được cung cấp thêm ảnh đã qua diffused từ Font Diffusion để các ảnh dùng để đối sánh chân thực và có style giống với input đầu vào để tăng độ chính xác đặc biệt với những cặp chữ có độ giống nhau cao và có thể tạo dataset (image - character).
-- **Levenshtein Alignment**: dùng thuật toán Levenshtein để chuyển tự (align) từng cặp chữ với nhau để tạo thành bộ dataset (character - character).
+# 1. Overview
 
-## 1.2. Module Font Diffusion
-Module Font Diffusion này sử dụng các thư viện hỗ trợ sau:
-- **PyTorch**: thư viện Deep Learning của Meta dùng để tạo kiến trúc mô hình.
-- **Hugging Face Diffusers (HF Diffusers)**: thư viện dành cho Diffusion Models của Hugging Face để xây dựng và cài đặt các Module quan trọng cho Diffusion như Scheduler (quản lý lập lịch trong quá trình khử nhiễu), DPM Solver (thuật toán giải phương trình vi phân ngẫu nhiên SDE cho quá trình khử nhiễu).
-- **Accelerate**: thư viện hỗ trợ huấn luyện (training) và suy luận (inference) phân tán trên nhiều GPU giúp tăng tốc độ lên nhiều lần, nhằm tận dụng tối đa dung lượng sử dụng GPU từ nền tảng Kaggle.
+## 1.1. Project Architecture
 
-Hệ thống bao gồm các tính năng từ tạo hình ảnh song song theo lô (batch generation), đánh giá chất lượng, quản lý dữ liệu, đến tích hợp với Hugging Face Hub (HF Hub) để tối ưu hóa lưu trữ bằng Cloud của Hugging Face.
+This project comprises four primary modules:
 
-# 2. Những Kết Quả Đạt Được
+- **Dictionary Module**: Constructs a comprehensive lexicon/character dictionary to support querying and semantic feature extraction. This facilitates information comparison and cross-referencing in subsequent processing stages.
 
-## Các tính năng chính
+- **Font Diffusion Module**: Generates diverse stylistic variations of individual content characters to enable data augmentation and enhance optical character recognition (OCR) performance. By synthesizing character images through diffusion from base content images and style references, we create a richer set of training variations that improve pattern matching accuracy.
 
-- **Pipeline tạo dataset:** Tạo hình ảnh font chữ dựa trên ảnh content (Hán Nôm Tự Tạo do thầy Điền cung cấp) và 15 ảnh style sưu tầm (tiềm năng cần sưu tầm thêm ảnh style để dataset đa dạng hơn, vì training phase 2 lấy default là 16 ảnh negative style để setup cho kĩ thuật contrastive learning).
-- **Hỗ trợ đa GPU:** Tích hợp thư viện Accelerate cho phép inference và training phân tán, tận dụng tối đa tài nguyên (ví dụ: 2 GPU Kaggle).
-- **Quản lý Dataset:** Sử dụng định dạng **parquet** (Apache Arrow) giúp tốc độ upload/download từ Hugging Face nhanh vượt trội so với file thô.
-- **Module Đánh giá:** Tích hợp sẵn các chỉ số LPIPS, SSIM, FID.
-- **Tích hợp Checkpoint:** Quản lý resume quá trình sinh dữ liệu thông qua `results_checkpoint.json`.
+- **Image Comparison and OCR Module**: Performs high-fidelity image matching to produce Unicode character codes, which serve as input to the Levenshtein Alignment module. This module benefits from diffusion-augmented images that maintain visual authenticity while introducing stylistic variation consistent with target inputs. This capability is particularly valuable for disambiguating character pairs with high visual similarity, enabling (image, character) dataset generation.
 
-## Các module đã triển khai
+- **Levenshtein Alignment Module**: Applies the Levenshtein distance algorithm to align character pairs bidirectionally, producing a (character, character) alignment dataset.
 
-- Quản lý font chữ (`FontManager`).
-- Theo dõi quá trình tạo data (`GenerationTracker`).
-- Đánh giá chất lượng (`QualityEvaluator`).
-- Logging quá trình với **WandB**.
-- Thử nghiệm module **FST (Font Style Transformation)** từ bài báo FSTDiff (đang trong giai đoạn debug tensor dimension).
+## 1.2. Technical Stack
 
----
+The Font Diffusion module leverages the following core libraries:
 
-# 3. Chi Tiết Cấu Trúc Source Code
+- **PyTorch**: Meta's deep learning framework for constructing model architectures.
 
-Dưới đây là mô tả chức năng của các script chính trong repository:
+- **Hugging Face Diffusers**: A comprehensive library for diffusion model implementation, providing critical components including noise schedulers (which manage the denoising schedule) and DPM-Solver (an efficient algorithm for solving stochastic differential equations during the reverse diffusion process).
 
-## Nhóm Inference & Data Generation
+- **Accelerate**: A distributed training and inference library enabling efficient multi-GPU execution and significantly accelerating computation while maximizing GPU utilization on platforms like Kaggle.
 
-- **`sample_batch.py`:** Script tạo ảnh và đánh giá trên **1 GPU**. Sử dụng hash để tránh trùng lặp và hỗ trợ resume.
-- **`sample_batch_multi_gpus.py`:** Phiên bản **đa GPU** (Recommended). Tăng tốc độ sinh dữ liệu (gấp đôi so với đơn GPU), đạt ~1.7s/sample.
+The system encompasses batch image generation, quality assessment mechanisms, dataset management, and seamless integration with Hugging Face Hub for optimized cloud-based storage and model distribution.
 
-## Nhóm Quản lý Dataset
+# 2. Key Achievements and Features
 
-- **`create_hf_dataset.py`:** Chuyển đổi ảnh sang format HF Dataset (parquet) và upload lên Hub.
-- **`export_hf_dataset_to_disk.py`:** Tải dataset từ HF và giải nén thành cấu trúc thư mục chuẩn (`ContentImage/`, `TargetImage/`) để training.
-- **`create_validation_split.py`:** Chia tập dữ liệu thành Train/Val dựa trên tỷ lệ và seed, đảm bảo tính ngẫu nhiên của font/style.
+## Primary Capabilities
 
-## Nhóm Training
+- **Dataset Generation Pipeline**: Synthesizes character images from content source images (Sino-Nom characters provided by advisor) and 15 curated style references. Future iterations will expand the style reference corpus to increase dataset diversity, particularly for contrastive learning phases that utilize 16 negative style samples by default.
 
-- **`my_train.py`:** Script training chính. Hỗ trợ 2 phase, loss diffusion/perceptual/offset/SC, và distributed training với Accelerate.
+- **Multi-GPU Support**: Integrates the Accelerate framework for distributed inference and training, maximizing resource utilization across multiple GPUs (e.g., dual Kaggle T4 GPUs).
+
+- **Efficient Dataset Management**: Leverages the Apache Parquet format for superior throughput during upload/download operations from Hugging Face compared to raw file formats.
+
+- **Quality Assessment Module**: Incorporates standard image quality metrics including LPIPS (Learned Perceptual Image Patch Similarity), SSIM (Structural Similarity Index), and FID (Fréchet Inception Distance).
+
+- **Checkpoint Management**: Implements persistent tracking via `results_checkpoint.json` to enable seamless resumption of data generation pipelines.
+
+## Implemented Components
+
+- `FontManager`: Manages font resources and character rendering.
+- `GenerationTracker`: Monitors and logs data generation progress and statistics.
+- `QualityEvaluator`: Computes perceptual and structural quality metrics.
+- **Weights & Biases Integration**: Comprehensive experiment tracking and visualization.
+- **FST Module (Font Style Transformation)**: Experimental implementation based on the FSTDiff paper; currently in debugging phase for tensor dimension compatibility.
 
 ---
 
-# 4. Hướng Dẫn Sử Dụng
+# 3. Source Code Architecture and Module Descriptions
 
-*Lưu ý: Notebook `font_diffusion.ipynb` (link bên dưới) đã thiết lập sẵn môi trường, chỉ cần chạy các cell theo thứ tự.*
+The following sections outline the primary scripts and their respective functions within the repository:
 
-## Bước 1: Data Generation
+## Data Generation and Inference
 
-Sinh data bằng inference phân tán trên nhiều GPU:
+- **`sample_batch.py`**: Single-GPU inference script for image synthesis and quality evaluation. Implements hash-based deduplication and supports checkpoint-based resumption.
+
+- **`sample_batch_multi_gpus.py`**: **Recommended** multi-GPU variant. Provides approximate 2× speedup relative to single-GPU inference, achieving ~1.7s per sample.
+
+## Dataset Management
+
+- **`create_hf_dataset.py`**: Converts image collections to Hugging Face Dataset format (Parquet) and uploads to the Hub.
+
+- **`export_hf_dataset_to_disk.py`**: Downloads datasets from Hugging Face Hub and unpacks to standard directory structure (`ContentImage/`, `TargetImage/`) for training pipelines.
+
+- **`create_validation_split.py`**: Partitions datasets into training/validation splits based on user-specified ratios and seed values, ensuring randomization across font and style dimensions.
+
+## Training
+
+- **`my_train.py`**: Primary training script supporting dual-phase training with diffusion, perceptual, and offset loss objectives. Enables distributed training through the Accelerate framework.
+
+---
+
+# 4. Usage Guide
+
+*Note: The Jupyter notebook `font_diffusion.ipynb` (link below) includes pre-configured environments. Execute cells sequentially.*
+
+## Phase 1: Data Generation
+
+Generate training data using distributed inference across multiple GPUs:
 
 ```bash
 accelerate launch FontDiffusion/sample_batch_multi_gpus.py \
@@ -93,9 +110,9 @@ accelerate launch FontDiffusion/sample_batch_multi_gpus.py \
     --enable_xformers
 ```
 
-## Bước 2: Chia tập Train/Validation
+## Phase 2: Train/Validation Split
 
-Ví dụ `val_ratio` là 0.2:
+Partition the dataset with validation ratio of 0.2:
 
 ```bash
 python FontDiffusion/create_validation_split.py \
@@ -104,9 +121,9 @@ python FontDiffusion/create_validation_split.py \
   --seed 42
 ```
 
-## Bước 3: Training Model
+## Phase 3: Model Training
 
-Ví dụ cấu hình training Phase 1:
+Execute training with Phase 1 configuration:
 
 ```bash
 MAX_TRAIN_STEPS=1500
@@ -138,9 +155,9 @@ accelerate launch FontDiffusion/my_train.py \
     --mixed_precision="fp16"
 ```
 
-## Bước 4: Upload/Download Dataset với Hugging Face
+## Phase 4: Dataset Management with Hugging Face
 
-**Upload lên HF Hub:**
+**Upload to Hub:**
 
 ```bash
 python FontDiffusion/create_hf_dataset.py \
@@ -150,7 +167,7 @@ python FontDiffusion/create_hf_dataset.py \
   --token {HF_TOKEN}
 ```
 
-**Download từ HF Hub về Disk:**
+**Download from Hub to Local Disk:**
 
 ```bash
 python FontDiffusion/export_hf_dataset_to_disk.py \
@@ -165,39 +182,48 @@ python FontDiffusion/export_hf_dataset_to_disk.py \
 # 5. Resources
 
 - **Source Code (GitHub):** [https://github.com/dzungphieuluuky/FontDiffusion.git](https://github.com/dzungphieuluuky/FontDiffusion.git)
-- **Notebook (Kaggle):** [https://www.kaggle.com/code/dzung271828/font-diffusion](https://www.kaggle.com/code/dzung271828/font-diffusion)
-- **Dataset (Hugging Face):** [https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data](https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data)
-  - Train original: Tổng lượng data đã generate.
-  - Train/Val: Data đã split sẵn sàng cho training.
-- **Pretrained Models (Weights):** Gồm có các module sau, đã được chuyển từ .pth sang .safetensors vì tốc độ nhanh hơn và tích hợp tốt với hệ sinh thái của HF:
-  - content_encoder.safetensors
-  - style_encoder.safetensors
-  - unet.safetensors
-  - scr_210000.pth (training phase 2)
 
-  [https://huggingface.co/dzungpham/font-diffusion-weights](https://huggingface.co/dzungpham/font-diffusion-weights)
+- **Jupyter Notebook (Kaggle):** [https://www.kaggle.com/code/dzung271828/font-diffusion](https://www.kaggle.com/code/dzung271828/font-diffusion)
+
+- **Datasets (Hugging Face):** [https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data](https://huggingface.co/datasets/dzungpham/font-diffusion-generated-data)
+  
+  - **train_original**: Complete synthetic character image dataset.
+  - **train/val**: Pre-split dataset ready for training pipelines.
+
+- **Pretrained Model Weights:** Available in SafeTensors format (superior I/O performance and HF ecosystem compatibility):
+  
+  - `content_encoder.safetensors`
+  - `style_encoder.safetensors`
+  - `unet.safetensors`
+  - `scr_210000.pth` (Phase 2 training checkpoint)
+  
+  Model Hub: [https://huggingface.co/dzungpham/font-diffusion-weights](https://huggingface.co/dzungpham/font-diffusion-weights)
 
 ---
 
-# 6. Kết Quả Thực Nghiệm (Weights and Biases)
+# 6. Experimental Results and Training Metrics
 
-Một số hình ảnh log từ quá trình train Phase 1 (Perceptual loss và Offset loss coefficient đã được điều chỉnh tăng so với script gốc):
+Phase 1 training logs (via Weights & Biases), with adjusted perceptual loss and offset loss coefficients relative to baseline implementation:
 
-- **Train Loss:** ![train loss](../figures/train_loss.png)
+- **Training Loss:** ![train loss](../figures/train_loss.png)
 - **Perceptual Loss:** ![percept loss](../figures/percept_loss.png)
 - **Offset Loss:** ![offset loss](../figures/offset_loss.png)
 - **Diffusion Loss:** ![diffusion loss](../figures/diff_loss.png)
 
 ---
 
-# 7. Hướng Tiếp Theo
+# 7. Future Directions
 
-1. **Cải thiện Model Architecture:** Model hiện tại gần như đã bão hòa, train loss không cải thiện đáng kể khi training với hệ số của các hàm loss cao hơn so với trước. Tiếp tục debug và tích hợp **Style Transformation Module** (từ FSTDiff) để tăng capacity cho model.
-2. **Multi-scale Extraction:** Kết hợp cả 2 paper (FontDiffuser & FSTDiff) để áp dụng multi-scale feature extraction cho cả ảnh content và style.
-3. **Tối ưu Loss:** Thêm hàm **Loss Consistency** và các hàm loss phụ trợ khác sau khi giải quyết xong các vấn đề về chiều tensor.
-4. **Tập Validation Set:** Vì hiện tại chưa tích hợp với module đối sánh ảnh của Hưng nên chưa đánh giá toàn diện performance của module này được. Tập validation set của module này đặc biệt ở chỗ có thể chia thành 3 trường hợp:
-   - Seen content unseen style (SCUS)
-   - Unseen content seen style (UCSS)
-   - Unseen content unseen style (UCUS)
+1. **Architecture Enhancement:** The current model is approaching saturation with diminishing marginal improvements from higher loss coefficients. Future work will integrate the Style Transformation Module (FST) from the FSTDiff paper to increase model capacity and representational power.
 
-   Do đó chủ yếu đánh giá trên tập UCUS, khi cần debug performance cụ thể cho 1 yếu tố nào thì có thể dùng 2 tập SCUS và UCSS để xét riêng content hoặc style.
+2. **Multi-Scale Feature Extraction:** Combine insights from both FontDiffuser and FSTDiff to implement multi-resolution feature extraction for both content and style encoders.
+
+3. **Auxiliary Loss Functions:** Once tensor dimension compatibility is resolved, introduce consistency losses and complementary loss objectives to further constrain the learned representation.
+
+4. **Comprehensive Validation Framework:** Currently, model performance assessment is limited pending integration with the image comparison module. A robust validation protocol should distinguish three distinct scenarios:
+   
+   - **Seen Content, Unseen Style (SCUS)**: Evaluates style generalization.
+   - **Unseen Content, Seen Style (UCSS)**: Evaluates content generalization.
+   - **Unseen Content, Unseen Style (UCUS)**: Evaluates full generalization (primary metric).
+   
+   This stratification enables targeted ablation studies and component-level performance diagnosis.

@@ -87,7 +87,7 @@
   /* Reading */
   --reading-width:       950px; /* Increased for better content display */
   --reading-line-height: 1.7;
-  --reading-font-size:   1.05rem; /* ~17px - optimized for wider layout */
+  --reading-font-size:   1.075rem; /* ~17px - optimized for wider layout */
   --navbar-height:       60px;
 
   /* Transitions - Subtle, smooth animations */
@@ -151,7 +151,7 @@ body {
   line-height: var(--reading-line-height);
   color: var(--text-secondary);
   background: var(--bg-primary);
-  font-weight: 400;
+  font-weight: 350;
   overflow-x: hidden;
   letter-spacing: 0.015em;
   word-spacing: 0.1em;

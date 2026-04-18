@@ -1,35 +1,140 @@
 ---
 layout: post
-title: On the bitter lesson
-subtitle: Quick notes on Sutton's bitter lesson
+title: The bitter lesson
+subtitle: What fifty years of AI research teaches us about the limits of human insight
 cover-img:
 thumbnail-img:
 share-img:
-tags: [personal]
+tags: [ai, learning, deep-learning, philosophy]
 author: dzungphieuluuky
+
 ---
-# The bitter lesson
-Yesterday, I happened to see something about "The Bitter Lesson" written by Richard Sutton. Obviously, I immediately recognized the name of the scientist who is the author of my favourite book, which is *Reinforcement Learning: An Introduction*. Along with Andrew Barto, he has been deemed to be the godfather of Reinforcement Learning due to his great contribution to the field, especially with the foundational book that has been considered to be the bible, the holy grail, for those who are interested in reinforcement learning, especially for those who are autodidacts with great desire to teach themselves in the field. The book contains all of the most important materials in the development of the field from its basic form in tabular methods to the modern methodologies which use deep neural networks as the brain for the agent and harness the power of policy gradient theorem to update its policies.
 
-According to the essay, Sutton helped us recognize something that is so subtle yet so important to notice in artificial intelligence development across decades. He told us that in the long run, all of the manual methods of developing the feature space for the architecture by humans will only gain us a very small amount of improvement at the start. But as time passes, methods that are more general and computationally intensive are undeniably much more efficient and yield much better results. Although they require a much larger amount of computation to do the task and look more like black box methods, they provide the architecture, especially something as complicated and dynamic as neural networks, a large space of representations that they can gradually learn from the data itself, rather than learn from the human crafted features. History has a long record showing us that this observation is indeed harsh to believe, yet it is still true.
+# An observation
 
-# What is really learnt?
-After reading the blog, I have quite a few thoughts that somehow, personally, I thought about why this observation turns out to be intrinsically true, which might not need us to recognize it in real life but rather can deduce it from our logic. One reason is that when working with handcrafting features manually, we cannot directly tell the computer as expressively as we can with other people, as human beings. They cannot understand directly our ideas and thoughts or clues that we think can help us and them to solve the problem, such as chess game or games that need extensive logical reasoning. In order to bypass this difficulty, we need to encode them somehow for the computer to understand, by one-hot encoding or any encoding methods that we can think of. But as the number of parameters in the model increases, the total size of the space that they can represent is much larger than anything we can think of. Therefore, our representation of the handcrafted clues that we inject into the model seems to be so small and, as painful to say, negligible in that vast space. Instead, there might be an emergence of something that is far more informative and inexplicable that we cannot look into the network architecture to see directly. Those features are what the network has actually learnt throughout its training process, not our injected features.
+In 2019, Richard Sutton published a short essay titled "The Bitter Lesson." It's deceptively simple, and worth reading in full if you haven't already. The core observation is this: throughout the history of AI, methods that rely on human knowledge and domain expertise eventually lose to methods that leverage more computation and data. Always. Not sometimes, not in most cases—always.
 
-# The bias is greater than we thought
-Second, as we have so many problems to solve, such methods as injecting our features, our clues into the network that are specific to the task at hand are indeed too narrow and ungeneralizable. It ties neatly and indispensably with the problem we are trying to solve, therefore cannot allow the network to effectively solve a large number of problems that are different from the settings and assumptions we have had at the time of experiment, although they might share the same logical structure or some kinds of common latent representations, such as chess and Go. As our features are sometimes so complicated for a machine to understand, we cannot ensure that our encoding methods used to encode that information into the network is abstract enough. Some features that we inject into the model in forms of some numbers might actually need to be represented as much larger vectors or matrices. Therefore, there are more reasons that could make our handcrafted features fail than we thought. To name some of these:
-- Are features we handcraft and inject into the model actually correct, are they misleading or short-sighted that may guide the model into the wrong way and end up with much worse results?
-- Whether the representations for these features are rich and informative enough for the model to understand their meanings, perhaps our features are right and correct in the sense that it could not possibly lead to failure, but how about their representation?
-- Finally, the dynamics of the game or the environment or the data distributions, whatever we are dealing with at the time, might not be considered and interpreted the same way between us and the machines. Maybe with the same meanings, our interpretation and computers' interpretation about the features are entirely in different forms.
+This contradicts something deep in how we think about intelligence. As practitioners, we prize insight. We celebrate elegant solutions. A domain expert who hand-crafts the right feature seems more valuable than ten GPUs grinding through raw data. The bitter lesson says this intuition is backwards.
 
-These are some kinds of reasons and failure modes that I can think of about the collapse of these kinds of methods. Of course, there are a few more such as scalability. Such methods that require us to do the handcrafting each time we encounter a new problem surely prove themselves to have no scalability and transferability for other problems. But we are focusing on the abstract thinking and meanings behind those features, so technical stuff like this is temporarily ignored. In practical scenarios, scalability is indeed an important element that needs to be considered meticulously, as we cannot design the features manually for every single problem we encounter, that will lose the point of generalization in machine intelligence that we are supposed to achieve. Therefore, we can say that much more obstacles are in our way if we continue to follow the old school designing philosophy with our bare hands.
+Before we dive in, here's what we'll explore:
 
-# Final thoughts
-Finally, the bitter lesson that Sutton talked about is about the handcrafted features. As the large language models are becoming larger and larger as time passes, sometimes I think that the next bitter lesson that poses a new direction in our thinking about intelligence might be hidden somewhere in the model's number of parameters. Although I don't have much experience with complicated architectures and their topologies, I think that the number of parameters might become saturated at some point and increasing them at that point might not yield us much better performance. There must be something to do with the network's architecture and its mechanism of learning representations from the data. There might be some more effective architectures that are waiting for us to discover. As network architectures are increasingly getting more and more complicated in both size and connections between different modules, fields that consider general structures such as topologies can help us yield some insights into this messy, dynamic, high dimensional space of neural architectures.
+1. **How we got here**: Why hand-crafted features dominated for decades
+2. **Why it happened**: What mechanisms cause general methods to win
+3. **The historical pattern**: Examples from chess to vision to language
+4. **The uncomfortable implications**: What this means for how we build systems
+5. **The caveat**: Why scaling alone isn't sufficient
+6. **What to do about it**: Where human insight actually matters
 
-We also don't want to ignore the objective functions, also known as the loss functions in traditional supervised learning settings. Of course, objective functions sound more general than loss functions, as they are not telling us about which criteria we choose to be the objective, so the optimization on the functions might be maximization or minimization, depending on our function definition and problem statements. As we want to guide our models to achieve better results at some tasks, we need a better way to convey such an abstract idea into our bits-and-bytes machines. If the manifestations of the ideas are wrong, then they might destroy what we want from the model and guide the model to go in the wrong way. Our objective functions act as a proxy to our true intentions, they might never be the true manifestation of our intentions regardless of how hard we try but we still can manage to convey as much information as possible and ensure the model has no or little way to hack it, which means, they can achieve really low loss values and high evaluation results but perform poorly on real datasets or might have some actions that are unexpected, in the worst case, might be harmful (especially in robot learning, when we are dealing with real environments and the robots can severely harm themselves with a slightly wrong movement).
+Let's start with a concrete story.
 
-In summary, it is not about what we give the model, it is about how we guide the model to learn for itself? This idea sounds a little more pedagogical and lean towards social sciences than heavy technical stuffs as machine learning :D
+## The reign of SIFT
 
-# References
-You can find the original essay by Richard Sutton here: [The Bitter Lesson](https://www.cs.utexas.edu/~eunsol/courses/data/bitter_lesson.pdf#page=1&)
+Picture computer vision in 2005. The field had largely settled on a particular approach: extract hand-crafted features from images using mathematical methods designed by experts. The most famous of these features was SIFT (Scale-Invariant Feature Transform), developed by David Lowe in the late 1990s.
+
+SIFT was genuinely clever. It could find the same location in an image across different scales, rotations, and lighting conditions. The descriptor was mathematically elegant, and it worked well. For nearly a decade, if you wanted to match images or recognize objects, SIFT was your answer. The method was so dominant that computer vision competitions were essentially competitions about how to best use SIFT features.
+
+Then something changed.
+
+In 2012, Alex Krizhevsky, Ilya Sutskever, and Geoffrey Hinton released AlexNet. It didn't use SIFT or any other hand-crafted features. Instead, it trained a deep convolutional neural network on ImageNet—a large dataset of labeled images. The network learned what features to extract directly from data, without any human specification. 
+
+The results were shocking. AlexNet outperformed every hand-crafted approach by a wide margin. Within a few years, SIFT was relegated to the history books. Today, if you mention it in a computer vision conversation, you'll get polite nods and references to "classical methods."
+
+This same pattern has repeated everywhere we look in AI.
+
+## The pattern repeats
+
+**In game-playing**: Chess engines like Deep Blue (1997) relied on hand-crafted evaluation functions. Grandmasters would distill their intuition about a position into numerical scores: piece activity matters, control of the center matters, king safety matters. Engineers encoded this knowledge into evaluation functions. It worked beautifully. Then AlphaGo arrived and beat the world Go champion by learning strategies that violated human intuition about what mattered in the game.
+
+**In speech recognition**: Specialists spent decades designing hand-crafted features like Mel-frequency cepstral coefficients (MFCCs). These features were based on human understanding of how hearing works. Then deep learning models trained on raw audio learned better representations automatically, without anyone telling them how hearing should work.
+
+**In natural language processing**: Hand-crafted parse trees, linguistic rules, carefully designed syntax trees—all replaced by embeddings and transformer models trained on massive amounts of text.
+
+The pattern is so consistent that it's hard to dismiss as coincidence. Yet we keep reaching for the design option.
+
+## Why hand-crafted features fail
+
+There are (at least) three mechanisms at work:
+
+**First: Representation is lossy.** When you hand-craft a feature, you're translating human understanding into something a machine can process. This translation is never lossless. You have an intuition. You encode it as a mathematical formula. But the encoding you choose is almost always suboptimal. A neural network exploring millions of possible representations often finds something better than what you designed—something you didn't think to specify.
+
+Consider AlexNet and SIFT again. SIFT captures certain invariances humans care about: rotation, scale, illumination. These are important. But they're not the only invariances that matter. AlexNet learned additional patterns—correlations between patches, hierarchical structure, relationships across the image—that were too subtle to hand-code but turned out critical for classification. The network found them because it had the capacity to explore possibilities you didn't think to specify.
+
+**Second: Capacity grows faster than your insight.** As models gain parameters, their representational capacity scales exponentially. Your hand-crafted knowledge becomes a fixed point in an ever-expanding space of possibilities. The insight you inject becomes increasingly negligible.
+
+Think about modern diffusion models, which Francisco Rombach and colleagues explored in their latent diffusion work. Early image generation systems relied on carefully designed loss functions and architectural tricks. Modern diffusion models use relatively simple objectives—predict noise at each timestep—but learn tremendously rich representations because they have the capacity to do so. The design choice matters less; capacity matters more.
+
+We're veering firmly into opinion territory here, but I suspect this is why design feels less impactful in 2025 than it did in 1995. The models are so large that clever tricks barely register.
+
+**Third: Specificity doesn't generalize.** A feature engineered for chess doesn't transfer to Go. A detector trained on cats doesn't work as well on dogs. Hand-crafted methods are optimized for the specific problem you're solving. The moment the problem shifts—different domain, different data distribution—your careful work either breaks or requires expensive re-engineering.
+
+General methods are different. They're often less efficient on any individual task, but they work across tasks. ImageNet-trained CNNs transfer to medical imaging, satellite imagery, and tasks their designers never anticipated. The hand-crafted SIFT feature transfers poorly.
+
+## The model's perspective
+
+Here's another way to think about this. When you inject a hand-crafted feature into a model, you're constraining what the model can learn. You're saying: "Look at this, it's important." But you're also implicitly saying: "Ignore this other thing you might have found."
+
+A model with billions of parameters exploring billions of possible patterns through gradient descent will often find something better than your constraint. Not because you designed poorly, but because you're limited by human attention and human intuition. A model is limited only by compute and data.
+
+This isn't pessimistic about human intelligence. It's optimistic about learning systems. It's saying: stop trying to be clever in ways computation can do automatically. Be clever about what computation to do.
+
+## The tension
+
+All of this creates a fundamental tension:
+
+If you have limited data and limited compute, hand-crafted knowledge wins. It's efficient. It leverages human insight. A well-designed feature reduces the problem space.
+
+If you have abundant data and abundant compute, general methods win. They explore more possibilities. They're less efficient per unit of compute, but there's so much compute that efficiency doesn't matter.
+
+We clearly live in the second regime. The trend lines crossed years ago. The evidence is overwhelming. Yet we keep designing features. Why?
+
+Probably because design is satisfying. Building something clever feels productive. Scale feels inelegant and somehow less intellectually honest. There's also, I suspect, a small psychological component: if intelligence comes from scale rather than insight, what does that say about the value of deep thinking?
+
+(Though this feels like a false dichotomy—the real intelligence is in designing the right learning setup, as we'll discuss below.)
+
+## What the bitter lesson actually says
+
+The lesson doesn't claim that expertise is useless. Domain knowledge is valuable for:
+
+- Defining the problem correctly
+- Understanding what good looks like
+- Collecting and labeling data
+- Debugging failures
+- Evaluating whether results make sense
+
+It's useful for everything except the actual learning algorithm.
+
+Sutton's original essay suggests the practical takeaway: "The biggest lessons from 50 years of AI research is that the actual methods matter less; the power of the search and the breadth of the search matters more."
+
+In other words: build systems that search broadly and deeply through possibility space. Feed them data. Let them learn. Your job isn't to tell the system what to learn; it's to create an environment where good learning can happen.
+
+You'll be wrong about what matters. Repeatedly. A parameter you thought critical will turn out irrelevant. A relationship you assumed necessary will emerge naturally. A trick you invented will be harmful. Accept this and move forward.
+
+## What's incomplete about this picture
+
+The bitter lesson is simultaneously true and incomplete.
+
+**It's true**: Scale wins. General methods win. Hand-crafted knowledge loses in the long run. The evidence is overwhelming and I don't see how to argue against it honestly.
+
+**It's incomplete**: Scaling alone isn't sufficient. AlphaGo needed a hand-crafted architecture (the CNN + tree search combination). ImageNet needed a good loss function (cross-entropy). You can't scale infinitely and expect success.
+
+The real intelligence is in designing the right learning setup: the architecture, the objective, the training procedure. Then letting the system learn what to do within that framework. This is where human insight still matters enormously.
+
+This is why I find the bitter lesson so interesting—it's not saying domain expertise is worthless. It's saying domain expertise should be invested upstream, in the setup, not downstream in the features. It's arguing for a shift in where we apply our insight, not that we abandon insight altogether.
+
+## Closing thoughts
+
+Here's what I'd suggest: next time you're tempted to hand-craft a feature or a loss function or an architectural detail, pause. Ask: Could I solve this with scale instead? Could I let the model learn this?
+
+Often, the answer is yes. And when it is, the bitter lesson suggests you should. Not because you're being lazy, but because you're being smart about where your insight is needed most.
+
+That's not pessimistic about human intelligence. It's optimistic about learning systems. And it's maybe the most important lesson fifty years of AI research has to offer.
+
+## References
+
+- Sutton, R. S. (2019). "The Bitter Lesson." Retrieved - from http://www.incompleteideas.net/IncIdeas/BitterLesson.html
+
+- Krizhevsky, A., Sutskever, I., & Hinton, G. E. (2012). "ImageNet Classification with Deep Convolutional Neural Networks." In Advances in Neural Information Processing Systems (pp. 1097-1105).
+
+- Lowe, D. G. (2004). "Distinctive Image Features from Scale-Invariant Keypoints." International Journal of Computer Vision, 60(2), 91-110.
+
+- Silver, D., Huang, A., Maddison, C. J., et al. (2016). "Mastering the Game of Go with Deep Neural Networks and Tree Search." Nature, 529(7587), 484-489.

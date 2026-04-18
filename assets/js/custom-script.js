@@ -720,6 +720,9 @@ const EnhancedSearch = {
     const now = Date.now();
 
     return items.filter(item => {
+      // Only include items from _posts folder (items with a date)
+      if (!item.date) return false;
+
       if (readingTime === 'short' && item.minutes >= 5) return false;
       if (readingTime === 'medium' && (item.minutes < 5 || item.minutes > 15)) return false;
       if (readingTime === 'long' && item.minutes <= 15) return false;

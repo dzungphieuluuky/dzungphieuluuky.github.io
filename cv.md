@@ -6,8 +6,9 @@ subtitle: "My Resumé"
 
 <div class="cv-container">
 
-  <!-- ── Download Section ─────────────────────── -->
-  <div class="cv-download-section">
+<!-- ── Download Section ─────────────────────── -->
+
+<div class="cv-download-section">
     <p class="cv-download-label">Available formats</p>
     <div class="cv-download-buttons">
 
@@ -28,7 +29,7 @@ subtitle: "My Resumé"
           <small>Recommended</small>
         </span>
       </a>
-
+    
       <a href="{{ '/assets/cv/resume.tex' | relative_url }}"
          class="cv-btn cv-btn-secondary"
          download
@@ -44,12 +45,14 @@ subtitle: "My Resumé"
           <small>Source file</small>
         </span>
       </a>
-
+    
     </div>
-  </div>
 
-  <!-- ── PDF Viewer ───────────────────────────── -->
-  <div class="cv-viewer-section">
+</div>
+
+<!-- ── PDF Viewer ───────────────────────────── -->
+
+<div class="cv-viewer-section">
     <div class="cv-viewer-header">
       <span class="cv-viewer-label">Preview</span>
       <a href="{{ '/assets/cv/resume.pdf' | relative_url }}"
@@ -81,6 +84,7 @@ subtitle: "My Resumé"
         </p>
       </iframe>
     </div>
-  </div>
+
+</div>
 
 </div>

@@ -22,15 +22,15 @@
    ==================================== */
 
 /* === TYPOGRAPHY === */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Lora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 /* ====================================
    Palette & Variables
    ==================================== */
 
 :root {
   /* Typography */
-  --font-serif: 'Lora', 'Georgia', 'Times New Roman', serif;
-  --font-sans: 'Lora', 'Georgia', 'Times New Roman', serif;
+  --font-serif: 'Be Vietnam Pro', 'Georgia', 'Times New Roman', serif;
+  --font-sans: 'Be Vietnam Pro', 'Georgia', 'Times New Roman', serif;
   --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
@@ -54,11 +54,11 @@
   --indigo-light:        #818CF8; /* Indigo 400 */
   --indigo-subtle:       rgba(79, 70, 229, 0.08);
 
-  /* Backgrounds - Warm cream (old paper effect) */
-  --bg-primary:    #FFFBF5;
-  --bg-secondary:  #FFFBF5;
-  --bg-tertiary:   #FFFBF5;
-  --bg-elevated:   #FFFBF5;
+  /* Backgrounds - Clean white for higher contrast and a lighter page feel */
+  --bg-primary:    #FFFFFF;
+  --bg-secondary:  #FFFFFF;
+  --bg-tertiary:   #FFFFFF;
+  --bg-elevated:   #FFFFFF;
 
   /* Text - Cool slate tones (darkened for better contrast) */
   --text-primary:   #0A0E27; /* Darker slate 900 for higher contrast */
@@ -137,7 +137,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 15px;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--navbar-height) + 2rem);
   -webkit-font-smoothing: antialiased;
@@ -152,7 +152,6 @@ body {
   color: var(--text-secondary);
   background: var(--bg-primary);
   font-weight: 450;
-  font-size: larger;
   overflow-x: hidden;
   letter-spacing: 0.015em;
   word-spacing: 0.1em;
@@ -953,15 +952,6 @@ table tr:hover td { background: var(--table-row-hover); }
   line-height: 1.5;
 }
 
-/* TOC Footer with Navigation Buttons */
-.toc-footer {
-  display: none; /* Hidden for cleaner minimal design */
-}
-
-.toc-nav-btn {
-  display: none;
-}
-
 .inline-toc a {
   display: block;
   color: var(--text-muted);
@@ -1249,7 +1239,7 @@ table tr:hover td { background: var(--table-row-hover); }
   background: var(--bg-primary); width: 100%; max-width: 600px; border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg); position: relative;
 }
-.search-modal .search-container { padding: 1.5rem; }
+.search-modal .search-container { padding: 1.5rem; position: relative; }
 .search-modal .search-input {
   width: 100%; padding: 1rem 1rem 1rem 3rem; font-family: var(--font-sans); font-size: 1.1rem;
   border: 1px solid var(--border-primary); border-radius: var(--radius-md);
@@ -1261,17 +1251,70 @@ table tr:hover td { background: var(--table-row-hover); }
   border-color: var(--indigo-primary);
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
 }
-.search-modal .search-icon { position: absolute; left: 2.5rem; top: 2.6rem; color: var(--text-muted); }
+.search-modal .search-icon {
+  position: absolute;
+  left: 2.5rem;
+  top: 2.6rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
 .search-modal-close {
   position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none;
   font-size: 1.5rem; cursor: pointer; color: var(--text-muted);
 }
 .search-modal .search-results { max-height: 400px; overflow-y: auto; display: none; }
 .search-modal .search-results.active { display: block; border-top: 1px solid var(--border-primary); }
-.search-result-item { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-primary); cursor: pointer; }
-.search-result-item:hover { background: var(--bg-tertiary); }
+.search-result-item {
+  display: block;
+  padding: 1rem 1.5rem;
+  padding-left: 1.25rem;
+  border-bottom: 1px solid var(--border-primary);
+  border-left: 4px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition-fast);
+}
+
+.search-result-item:hover {
+  background: rgba(79, 70, 229, 0.06);
+  border-left-color: var(--indigo-primary);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-result-item.is-active {
+  background: rgba(79, 70, 229, 0.12);
+  border-left-color: var(--indigo-primary);
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+  font-weight: 500;
+}
+
+.search-result-item.is-active .search-result-title {
+  color: var(--indigo-primary);
+  font-weight: 700;
+}
 .search-result-title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
 .search-result-excerpt { font-family: var(--font-sans); font-size: 0.9rem; color: var(--text-tertiary); margin-top: 0.5rem; line-height: 1.5; }
+.search-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  align-items: center;
+}
+.search-result-meta span {
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+}
 .search-result-tags { 
   display: flex; 
   flex-wrap: wrap; 
@@ -1293,15 +1336,41 @@ html.dark-mode .search-result-tag {
 }
 .search-result-category { 
   display: inline-block; 
-  padding: 0.3rem 0.6rem; 
+  padding: 0.2rem 0.45rem;
   background: rgba(0, 0, 0, 0.08); 
-  border-radius: 3px; 
-  font-size: 0.8rem; 
+  border-radius: var(--radius-sm); 
+  font-size: 0.75rem; 
   color: var(--text-secondary); 
-  font-style: italic;
+  font-style: normal;
+  font-weight: 600;
+}
+.search-empty-state {
+  padding: 1.2rem 1.5rem;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
 }
 html.dark-mode .search-result-category { 
   background: rgba(255, 255, 255, 0.08); 
+}
+html.dark-mode .search-result-meta span {
+  border-color: var(--border-primary);
+  color: var(--text-tertiary);
+}
+
+html.dark-mode .search-result-item:hover {
+  background: rgba(129, 140, 248, 0.10);
+  border-left-color: var(--indigo-light);
+}
+
+html.dark-mode .search-result-item.is-active {
+  background: rgba(129, 140, 248, 0.18);
+  border-left-color: var(--indigo-light);
+  box-shadow: 0 2px 6px rgba(129, 140, 248, 0.25);
+}
+
+html.dark-mode .search-result-item.is-active .search-result-title {
+  color: var(--indigo-light);
 }
 
 /* Filter Panel (Required structurally) */
@@ -1575,10 +1644,6 @@ html.dark-mode .inline-toc li.toc-h3 > a {
   color: var(--text-muted);
 }
 
-html.dark-mode .toc-nav-btn {
-  display: none;
-}
-
 html.dark-mode .toc-expand-toggle {
   color: var(--text-muted);
 }
@@ -1600,32 +1665,7 @@ html.dark-mode #scroll-to-top svg {
   fill: var(--text-primary) !important;
 }
 
-/* 21. Timer Hook */
-[data-completion-timer] strong { color: var(--text-primary); }
-
-/* 22. KB Shortcuts */
-#kb-shortcuts-panel {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: var(--bg-primary); border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md); box-shadow: var(--shadow-xl); width: 400px;
-  max-width: 90vw; display: none; flex-direction: column; z-index: 6000;
-  font-family: var(--font-sans);
-}
-#kb-shortcuts-panel.open { display: flex; }
-.kb-header { padding: 1.5rem; border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; }
-.kb-title { font-weight: 700; color: var(--text-primary); }
-.kb-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
-.kb-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-.kb-row { display: flex; align-items: center; gap: 1rem; }
-kbd.kb-key { background: var(--bg-tertiary); border: 1px solid var(--border-primary); padding: 0.2rem 0.5rem; border-radius: 4px; }
-.kb-desc { color: var(--text-secondary); font-size: 0.9rem; }
-.kb-footer { display: none; }
-
-/* 23. TOC Dots */
-.toc-dot { display: none; }
-.toc-dot.read { display: none; }
-
-/* 24. Ambient transition */
+/* Ambient transition */
 html { transition: background-color 300ms ease; }
 
 /* ====================================
@@ -1677,5 +1717,4 @@ html { transition: background-color 300ms ease; }
   .search-modal .search-icon { left: 1rem; }
   
   #scroll-to-top { bottom: 1rem; right: 1rem; width: 40px; height: 40px; }
-  #lang-toggle { bottom: 4rem; right: 1rem; }
 }

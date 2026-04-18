@@ -428,7 +428,430 @@ const ExternalLinks = {
 };
 
 // ====================================
-// 13. Image Protection (prevent drag/right-click)
+// 13.5 Enhanced Search Modal
+// ====================================
+const EnhancedSearch = {
+  modal: null,
+  input: null,
+  results: null,
+  closeBtn: null,
+  triggerBtns: [],
+  corpus: [],
+  visibleResults: [],
+  selectedIndex: -1,
+  loaded: false,
+  loading: false,
+
+  init() {
+    this.modal = document.getElementById('search-modal');
+    this.input = this.modal?.querySelector('.search-input') || null;
+    this.results = document.getElementById('search-results');
+    this.closeBtn = this.modal?.querySelector('.search-modal-close') || null;
+    this.triggerBtns = Array.from(document.querySelectorAll('.search-trigger'));
+
+    if (!this.modal || !this.input || !this.results || this.triggerBtns.length === 0) return;
+
+    this.triggerBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.open();
+      });
+    });
+
+    if (this.closeBtn) {
+      this.closeBtn.addEventListener('click', () => this.close());
+    }
+
+    this.modal.addEventListener('click', (e) => {
+      if (e.target === this.modal) this.close();
+    });
+
+    this.input.addEventListener('input', () => {
+      this.selectedIndex = -1;
+      this.runSearch();
+    });
+
+    this.input.addEventListener('keydown', (e) => this.onKeydown(e));
+    this.results.addEventListener('keydown', (e) => this.onKeydown(e));
+
+    this.modal.querySelectorAll('input[name="date-range"], input[name="reading-time"], .content-type-filter').forEach(control => {
+      control.addEventListener('change', () => this.runSearch());
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const isCmdOrCtrlK = (e.key.toLowerCase() === 'k') && (e.metaKey || e.ctrlKey);
+      if (isCmdOrCtrlK) {
+        e.preventDefault();
+        this.open();
+      }
+    });
+  },
+
+  onKeydown(e) {
+    if (!this.isOpen()) return;
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.close();
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      if (!this.visibleResults.length) return;
+      e.preventDefault();
+      this.moveSelection(1);
+    } else if (e.key === 'ArrowUp') {
+      if (!this.visibleResults.length) return;
+      e.preventDefault();
+      this.moveSelection(-1);
+    } else if (e.key === 'Enter') {
+      if (!this.visibleResults.length) return;
+      e.preventDefault();
+      this.activateSelected();
+    }
+  },
+
+  moveSelection(delta) {
+    if (!this.visibleResults.length) return;
+
+    if (this.selectedIndex < 0) {
+      this.selectedIndex = delta > 0 ? 0 : this.visibleResults.length - 1;
+    } else {
+      this.selectedIndex = (this.selectedIndex + delta + this.visibleResults.length) % this.visibleResults.length;
+    }
+
+    this.syncSelection();
+  },
+
+  activateSelected() {
+    const index = this.selectedIndex >= 0 ? this.selectedIndex : 0;
+    const selected = this.visibleResults[index];
+    if (selected?.url) {
+      window.location.href = selected.url;
+    }
+  },
+
+  isOpen() {
+    return this.modal?.classList.contains('active') || false;
+  },
+
+  async open() {
+    this.modal.classList.add('active');
+    document.body.classList.add('overflow-hidden');
+    this.input.focus();
+
+    if (!this.loaded && !this.loading) {
+      await this.loadCorpus();
+    }
+
+    this.runSearch();
+  },
+
+  close() {
+    this.modal.classList.remove('active');
+    if (!document.querySelector('.lightbox.active')) {
+      document.body.classList.remove('overflow-hidden');
+    }
+    this.selectedIndex = -1;
+  },
+
+  getCorpusUrl() {
+    const baseMeta = document.querySelector('meta[name="baseurl"]')?.content || '';
+    const normalizedBase = (baseMeta === '/' ? '' : baseMeta).replace(/\/$/, '');
+    return `${normalizedBase}/assets/data/searchcorpus.json`;
+  },
+
+  async loadCorpus() {
+    this.loading = true;
+    this.renderStatus('Loading search index...');
+
+    try {
+      const response = await fetch(this.getCorpusUrl(), { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Search index HTTP ${response.status}`);
+
+      const raw = await response.json();
+      this.corpus = Array.isArray(raw) ? raw.map(item => this.normalizeItem(item)) : [];
+      this.loaded = true;
+      this.renderStatus('Start typing to search posts...');
+    } catch (error) {
+      this.renderStatus('Search is temporarily unavailable. Please refresh the page.');
+      this.corpus = [];
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  normalizeItem(item) {
+    const title = (item?.title || '').toString().trim();
+    const content = (item?.content || '').toString().replace(/\s+/g, ' ').trim();
+    const excerptRaw = (item?.excerpt || '').toString().trim() || content;
+    const excerpt = excerptRaw.length > 220 ? `${excerptRaw.slice(0, 220).trim()}...` : excerptRaw;
+    const url = (item?.url || '#').toString();
+    const date = (item?.date || '').toString();
+    const words = content ? content.split(/\s+/).length : 0;
+    const minutes = Math.max(1, Math.ceil(words / CONFIG.WORDS_PER_MINUTE));
+
+    const tags = (item?.category || '')
+      .toString()
+      .split(',')
+      .map(tag => tag.trim())
+      .filter(Boolean)
+      .filter(tag => tag.toLowerCase() !== 'page');
+
+    const contentType = this.inferContentType(title, tags, url, date);
+    const titleNormalized = this.normalizeText(title);
+    const tagsNormalized = this.normalizeText(tags.join(' '));
+    const excerptNormalized = this.normalizeText(excerpt);
+    const contentNormalized = this.normalizeText(content);
+    const searchBlobNormalized = this.normalizeText(`${title} ${content} ${excerpt} ${tags.join(' ')} ${contentType}`);
+
+    return {
+      title,
+      content,
+      excerpt,
+      url,
+      date,
+      tags,
+      words,
+      minutes,
+      contentType,
+      titleNormalized,
+      tagsNormalized,
+      excerptNormalized,
+      contentNormalized,
+      searchBlobNormalized
+    };
+  },
+
+  inferContentType(title, tags, url, date) {
+    const haystack = `${title} ${tags.join(' ')}`.toLowerCase();
+    if (haystack.includes('tutorial')) return 'Tutorial';
+    if (haystack.includes('guide')) return 'Guide';
+    if (haystack.includes('case study') || haystack.includes('case-study')) return 'Case Study';
+    if (date || /\/\d{4}\//.test(url)) return 'Article';
+    return 'Page';
+  },
+
+  runSearch() {
+    if (!this.loaded) return;
+
+    const query = this.input.value.trim();
+    const queryNormalized = this.normalizeText(query);
+    const queryTokens = this.tokenizeQuery(queryNormalized);
+    const filtered = this.applyFilters(this.corpus);
+
+    if (!queryNormalized && !this.hasActiveFilter()) {
+      this.visibleResults = [];
+      this.selectedIndex = -1;
+      this.renderStatus('Start typing to search posts...');
+      return;
+    }
+
+    const ranked = queryNormalized
+      ? this.rankResults(filtered, queryNormalized, queryTokens)
+      : filtered.map(item => ({ item, score: 0 }));
+    this.visibleResults = ranked.slice(0, 24).map(result => result.item);
+    if (this.selectedIndex < 0 || this.selectedIndex >= this.visibleResults.length) {
+      this.selectedIndex = this.visibleResults.length ? 0 : -1;
+    }
+    this.renderResults();
+  },
+
+  rankResults(items, queryNormalized, queryTokens) {
+    const ranked = [];
+
+    items.forEach(item => {
+      const title = item.titleNormalized;
+      const tags = item.tagsNormalized;
+      const excerpt = item.excerptNormalized;
+      const content = item.contentNormalized;
+      const blob = item.searchBlobNormalized;
+
+      let score = 0;
+      let matchedTokenCount = 0;
+
+      if (title.includes(queryNormalized)) score += 80;
+      if (tags.includes(queryNormalized)) score += 45;
+      if (excerpt.includes(queryNormalized)) score += 25;
+      if (content.includes(queryNormalized)) score += 12;
+      if (title.startsWith(queryNormalized)) score += 20;
+
+      queryTokens.forEach(token => {
+        const inTitle = title.includes(token);
+        const inTags = tags.includes(token);
+        const inExcerpt = excerpt.includes(token);
+        const inContent = content.includes(token);
+
+        if (inTitle || inTags || inExcerpt || inContent) {
+          matchedTokenCount += 1;
+        }
+
+        if (inTitle) score += 18;
+        if (inTags) score += 10;
+        if (inExcerpt) score += 6;
+        if (inContent) score += 3;
+
+        if (title.includes(` ${token} `) || title.startsWith(`${token} `) || title.endsWith(` ${token}`)) {
+          score += 6;
+        }
+      });
+
+      if (queryTokens.length) {
+        const requiredMatches = Math.max(1, Math.ceil(queryTokens.length * 0.6));
+        if (matchedTokenCount < requiredMatches && !blob.includes(queryNormalized)) return;
+
+        const coverage = matchedTokenCount / queryTokens.length;
+        score += Math.round(coverage * 30);
+        if (matchedTokenCount === queryTokens.length) score += 12;
+      }
+
+      if (score <= 0) return;
+      ranked.push({ item, score });
+    });
+
+    return ranked.sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
+  },
+
+  applyFilters(items) {
+    const dateRange = this.modal.querySelector('input[name="date-range"]:checked')?.value || 'any';
+    const readingTime = this.modal.querySelector('input[name="reading-time"]:checked')?.value || 'any';
+    const contentTypes = Array.from(this.modal.querySelectorAll('.content-type-filter:checked')).map(el => el.value);
+
+    const now = Date.now();
+
+    return items.filter(item => {
+      if (readingTime === 'short' && item.minutes >= 5) return false;
+      if (readingTime === 'medium' && (item.minutes < 5 || item.minutes > 15)) return false;
+      if (readingTime === 'long' && item.minutes <= 15) return false;
+
+      if (dateRange !== 'any') {
+        const ts = Date.parse(item.date);
+        if (Number.isNaN(ts)) return false;
+        const day = 24 * 60 * 60 * 1000;
+        const diff = now - ts;
+        if (dateRange === 'week' && diff > 7 * day) return false;
+        if (dateRange === 'month' && diff > 31 * day) return false;
+        if (dateRange === 'year' && diff > 365 * day) return false;
+      }
+
+      if (contentTypes.length && !contentTypes.includes(item.contentType)) return false;
+
+      return true;
+    });
+  },
+
+  normalizeText(value) {
+    return (value || '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9\s-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  },
+
+  tokenizeQuery(queryNormalized) {
+    const unique = new Set(
+      queryNormalized
+        .split(/\s+/)
+        .map(token => token.trim())
+        .filter(Boolean)
+        .filter(token => token.length > 1)
+    );
+    return Array.from(unique);
+  },
+
+  hasActiveFilter() {
+    const dateRange = this.modal.querySelector('input[name="date-range"]:checked')?.value || 'any';
+    const readingTime = this.modal.querySelector('input[name="reading-time"]:checked')?.value || 'any';
+    const hasContentType = this.modal.querySelectorAll('.content-type-filter:checked').length > 0;
+    return dateRange !== 'any' || readingTime !== 'any' || hasContentType;
+  },
+
+  renderStatus(message) {
+    this.results.classList.add('active');
+    this.results.innerHTML = `<div class="search-empty-state">${this.escapeHtml(message)}</div>`;
+  },
+
+  renderResults() {
+    this.results.classList.add('active');
+
+    if (!this.visibleResults.length) {
+      this.results.innerHTML = '<div class="search-empty-state">No matching posts found.</div>';
+      return;
+    }
+
+    this.results.innerHTML = this.visibleResults.map((item, index) => {
+      const tagsHtml = item.tags.length
+        ? `<div class="search-result-tags">${item.tags.map(tag => `<span class="search-result-tag">${this.escapeHtml(tag)}</span>`).join('')}</div>`
+        : '';
+
+      const dateHtml = item.date ? `<span class="search-result-date">${this.escapeHtml(item.date)}</span>` : '';
+
+      return `
+        <a class="search-result-item ${index === this.selectedIndex ? 'is-active' : ''}" data-index="${index}" href="${this.escapeAttr(item.url)}">
+          <div class="search-result-title">${this.escapeHtml(item.title || 'Untitled')}</div>
+          <div class="search-result-excerpt">${this.escapeHtml(item.excerpt || '')}</div>
+          <div class="search-result-meta">
+            <span class="search-result-category">${this.escapeHtml(item.contentType)}</span>
+            <span>${item.words.toLocaleString()} words</span>
+            <span>${item.minutes} min read</span>
+            ${dateHtml}
+          </div>
+          ${tagsHtml}
+        </a>
+      `;
+    }).join('');
+
+    this.syncSelection();
+
+    this.results.querySelectorAll('.search-result-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        const idx = Number(el.getAttribute('data-index'));
+        if (Number.isNaN(idx)) return;
+        this.selectedIndex = idx;
+        this.syncSelection();
+      });
+
+      el.addEventListener('focus', () => {
+        const idx = Number(el.getAttribute('data-index'));
+        if (Number.isNaN(idx)) return;
+        this.selectedIndex = idx;
+        this.syncSelection();
+      });
+    });
+  },
+
+  syncSelection() {
+    const nodes = Array.from(this.results.querySelectorAll('.search-result-item'));
+    nodes.forEach((node, idx) => {
+      node.classList.toggle('is-active', idx === this.selectedIndex);
+      node.setAttribute('aria-selected', idx === this.selectedIndex ? 'true' : 'false');
+    });
+    const activeNode = nodes[this.selectedIndex];
+    if (activeNode) activeNode.scrollIntoView({ block: 'nearest' });
+  },
+
+  escapeHtml(value) {
+    if (!value) return '';
+    return value
+      .toString()
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  },
+
+  escapeAttr(value) {
+    return this.escapeHtml(value);
+  }
+};
+
+// ====================================
+// 14. Image Protection (prevent drag/right-click)
 // ====================================
 const ImageProtection = {
   init() {
@@ -441,17 +864,7 @@ const ImageProtection = {
 };
 
 // ====================================
-// 14. Font Loader Check (optional fallback)
-// ====================================
-const FontLoaderCheck = { init: () => {} }; // stub – keep if you like
-
-// ====================================
-// 15. SVGDashboardRenderer (stub)
-// ====================================
-const SVGDashboardRenderer = { init: () => {} };
-
-// ====================================
-// 16. Schema Markup (JSON‑LD)
+// 15. Schema Markup (JSON‑LD)
 // ====================================
 const SchemaMarkup = {
   init() {
@@ -471,16 +884,6 @@ const SchemaMarkup = {
 };
 
 // ====================================
-// 17. Related Posts (optional stub)
-// ====================================
-const RelatedPosts = { init: () => {} };
-
-// ====================================
-// 18. Breadcrumb Navigation (optional)
-// ====================================
-const BreadcrumbNav = { init: () => {} };
-
-// ====================================
 // Main Initialization
 // ====================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -498,10 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
   TocHighlight.init();
   ReadingTime.init();
   ExternalLinks.init();
+  EnhancedSearch.init();
   ImageProtection.init();
-  FontLoaderCheck.init();
-  SVGDashboardRenderer.init();
   SchemaMarkup.init();
-  RelatedPosts.init();
-  BreadcrumbNav.init();
 });

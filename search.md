@@ -17,16 +17,19 @@ permalink: /search/
     </div>
   </div>
 
-  <!-- Search Results Container -->
-  <div id="search-results-container" class="search-results-container"></div>
+<!-- Search Results Container -->
 
-  <!-- No Results Message -->
-  <div id="search-no-results" class="search-no-results" style="display: none;">
+<div id="search-results-container" class="search-results-container"></div>
+
+<!-- No Results Message -->
+
+<div id="search-no-results" class="search-no-results" style="display: none;">
     <p>No results found. Try a different search term.</p>
   </div>
 
-  <!-- Empty State (before search) -->
-  <div id="search-empty-state" class="search-empty-state">
+<!-- Empty State (before search) -->
+
+<div id="search-empty-state" class="search-empty-state">
     <p>Enter a search term above to find posts and articles.</p>
   </div>
 </div>
@@ -69,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function performSearch(searchTerm) {
     emptyState.style.display = 'none';
     resultsContainer.innerHTML = '<p class="loading">Loading results...</p>';
-    
+
     // Load search corpus from the global EnhancedSearch module if available
     if (window.EnhancedSearch && window.EnhancedSearch.corpus && window.EnhancedSearch.corpus.length > 0) {
       displayResults(window.EnhancedSearch.corpus, searchTerm);

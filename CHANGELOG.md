@@ -1,4 +1,5 @@
 ## Unreleased version
+
 - BREAKING CHANGE: Allow changing the order of the social network links that appear in the footer (#1152)
 - BREAKING CHANGE: `google-scholar` social network link no longer requires the prefix `citations?user=`; if you previously set this parameter, it needs to be updated (#1189)
 - Added `mathjax` YAML parameter to allow support for MathJax, used to write LaTeX expressions (#195)
@@ -59,7 +60,6 @@ This version has been in the works for a few years. It includes several new feat
 - Added social network links for Patreon, Medium, Itch.io, Discord, Kaggle, Hackerrank (#783, #788, #907, #961, #978)
 - Slightly reworked margins and position for avatar image to resolve an alignment issue on Safari
 - Changed the width at which the navbar collapses to a higher threshold because most modern non-mobile browsers are >1000px
-
 
 ## v5.0.0 (2020-09-15)
 
@@ -247,4 +247,3 @@ One of the major changes in this version is that a lot of time was spent on reth
 ... Many small changes because the site was in its infancy
 
 **2015-03-12** Beautiful Jekyll version 0.0000001 is released!
-

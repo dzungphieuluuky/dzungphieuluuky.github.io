@@ -1,22 +1,22 @@
 ---
 layout: post
 title: The bitter lesson
-subtitle: What fifty years of AI research teaches us about the limits of human insight
+subtitle: Limitations of human's insight
 cover-img:
 thumbnail-img:
 share-img:
-tags: [ai, learning, deep-learning, philosophy]
+tags: [ai, learning, deep-learning]
 author: dzungphieuluuky
 
 ---
 
 # An observation
 
-In 2019, Richard Sutton published a short essay titled "The Bitter Lesson." It's deceptively simple, and worth reading in full if you haven't already. The core observation is this: throughout the history of AI, methods that rely on human knowledge and domain expertise eventually lose to methods that leverage more computation and data. Always. Not sometimes, not in most cases—always.
+In 2019, Richard Sutton published a short essay titled "The Bitter Lesson." It's deceptively simple, and worth reading in full if you haven't already. The core observation is this: throughout the history of AI, methods that rely on human knowledge and domain expertise eventually lose to methods that leverage more computation and data. Always. Not sometimes, not in most cases—always. The always-ness of this phenomenon is what makes it truly harsh for us, as human researchers.
 
 This contradicts something deep in how we think about intelligence. As practitioners, we prize insight. We celebrate elegant solutions. A domain expert who hand-crafts the right feature seems more valuable than ten GPUs grinding through raw data. The bitter lesson says this intuition is backwards.
 
-Before we dive in, here's what we'll explore:
+Before we dive in, here's what we'll explore in this blog:
 
 1. **How we got here**: Why hand-crafted features dominated for decades
 2. **Why it happened**: What mechanisms cause general methods to win
@@ -25,7 +25,7 @@ Before we dive in, here's what we'll explore:
 5. **The caveat**: Why scaling alone isn't sufficient
 6. **What to do about it**: Where human insight actually matters
 
-Let's start with a concrete story.
+This is my thoughts on Sutton's essay in particular and on the metamorphosis in AI advancements in general. Let's start with a concrete story.
 
 ## The reign of SIFT
 
@@ -53,19 +53,19 @@ The pattern is so consistent that it's hard to dismiss as coincidence. Yet we ke
 
 ## Why hand-crafted features fail
 
-There are (at least) three mechanisms at work:
+To the best of my knowledge and intutition, there are several predictable and interpretable reasons on why human-crafted features are not the true answer to our advancements. Among them, there are (at least) three mechanisms at work:
 
-**First: Representation is lossy.** When you hand-craft a feature, you're translating human understanding into something a machine can process. This translation is never lossless. You have an intuition. You encode it as a mathematical formula. But the encoding you choose is almost always suboptimal. A neural network exploring millions of possible representations often finds something better than what you designed—something you didn't think to specify.
+**First: Representation is lossy.** When you hand-craft a feature, you're translating human understanding into something a machine can process. This translation is never lossless. You have an intuition. You encode it as a mathematical formula. But, the problem is, there are an infathomable amount of representations can be used to convey our ideas, and among them the encoding we choose is almost always suboptimal. A neural network exploring millions of possible representations often finds something better than what we might expect.
 
-Consider AlexNet and SIFT again. SIFT captures certain invariances humans care about: rotation, scale, illumination. These are important. But they're not the only invariances that matter. AlexNet learned additional patterns—correlations between patches, hierarchical structure, relationships across the image—that were too subtle to hand-code but turned out critical for classification. The network found them because it had the capacity to explore possibilities you didn't think to specify.
+Consider AlexNet and SIFT again. SIFT captures certain invariances humans care about: rotation, scale, illumination. These are important features. But they're not the only invariances that matter. AlexNet learned additional patterns—correlations between patches, hierarchical structure, relationships across the image. These relationships situate in a much deeper representation that contains some kind of abstract meanings that we cannot imagine using our intutition alone. They were too subtle to hand-code but turned out critical for classification. The network found them because it had the capacity to explore thousands of different possibilities using its vast capacity with ultimate overparamerisation. They contains millions to billions of parameters that are able to allow them travel through a vast space of nearly every possible states and paths that can lead to a much more effective way of represent data features. While our intuition is nearly just a handful of salt in that vast space. 
 
-**Second: Capacity grows faster than your insight.** As models gain parameters, their representational capacity scales exponentially. Your hand-crafted knowledge becomes a fixed point in an ever-expanding space of possibilities. The insight you inject becomes increasingly negligible.
+**Second: Capacity grows faster than your insight.** As models gain parameters, their representational capacity scales exponentially, one of the benefits we get from the curse of dimensionality. Your hand-crafted knowledge becomes a fixed point in an ever-expanding space of possibilities. The insight you inject becomes increasingly negligible.
 
 Think about modern diffusion models, which Francisco Rombach and colleagues explored in their latent diffusion work. Early image generation systems relied on carefully designed loss functions and architectural tricks. Modern diffusion models use relatively simple objectives—predict noise at each timestep—but learn tremendously rich representations because they have the capacity to do so. The design choice matters less; capacity matters more.
 
 We're veering firmly into opinion territory here, but I suspect this is why design feels less impactful in 2025 than it did in 1995. The models are so large that clever tricks barely register.
 
-**Third: Specificity doesn't generalize.** A feature engineered for chess doesn't transfer to Go. A detector trained on cats doesn't work as well on dogs. Hand-crafted methods are optimized for the specific problem you're solving. The moment the problem shifts—different domain, different data distribution—your careful work either breaks or requires expensive re-engineering.
+**Third: Specificity doesn't generalize.** A feature engineered for chess doesn't transfer to Go. A detector trained on cats doesn't work as well on dogs. Hand-crafted methods are optimized for the specific problem we're solving at the time, especially those problems that we have lots of experience with. The moment the problem shifts to another domain with data distribution, our painstakingly designed work either breaks or requires expensive re-engineering over the whole process, from data processing to features engineering must be re-done from the start.
 
 General methods are different. They're often less efficient on any individual task, but they work across tasks. ImageNet-trained CNNs transfer to medical imaging, satellite imagery, and tasks their designers never anticipated. The hand-crafted SIFT feature transfers poorly.
 
@@ -131,7 +131,7 @@ That's not pessimistic about human intelligence. It's optimistic about learning 
 
 ## References
 
-- Sutton, R. S. (2019). "The Bitter Lesson." Retrieved - from http://www.incompleteideas.net/IncIdeas/BitterLesson.html
+- Sutton, R. S. (2019). "The Bitter Lesson." Retrieved from http://www.incompleteideas.net/IncIdeas/BitterLesson.html
 
 - Krizhevsky, A., Sutskever, I., & Hinton, G. E. (2012). "ImageNet Classification with Deep Convolutional Neural Networks." In Advances in Neural Information Processing Systems (pp. 1097-1105).
 

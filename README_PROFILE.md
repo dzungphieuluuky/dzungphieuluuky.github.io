@@ -19,9 +19,11 @@ My interest includes but not limit at:
 ## 🛠️ Technical Toolkit
 
 ### **Languages**
+
 Python, C++, German (Duolingo)
 
 ### **AI/ML Frameworks**
+
 - **Core**: PyTorch, TensorFlow, Hugging Face Transformers
 - **Specialization**: Diffusers (HF), RL libraries (Ray RLlib, Stable Baselines3)
 - **Mathematics and MlOps**: NumPy, SciPy, Pandas, Scikit-learn, wandb
@@ -45,10 +47,10 @@ Python, C++, German (Duolingo)
 
 I love discussing deep learning stuff and its mysteries, Tensortonic problems and anything about neural architecture design:
 
-| Platform | URL |
-|----------|-----|
-| 🌐 **Website** | [dzungphieuluuky](https://dzungphieuluuky.github.io) |
-| 📧 **Email** | [Work Email](mailto:pndung23@clc.fitus.edu.vn) |
+| Platform        | URL                                                           |
+| --------------- | ------------------------------------------------------------- |
+| 🌐 **Website**  | [dzungphieuluuky](https://dzungphieuluuky.github.io)          |
+| 📧 **Email**    | [Work Email](mailto:pndung23@clc.fitus.edu.vn)                |
 | 💼 **LinkedIn** | [Dung Pham](https://www.linkedin.com/in/dung-pham-99014b29a/) |
 
 ---

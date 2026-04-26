@@ -514,27 +514,79 @@ code:not(pre code) {
    ==================================== */
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 2rem 0;
+  display: table !important;
+  width: 100% !important;
+  background: transparent !important;
+  border-collapse: collapse !important;
+  margin: 2rem 0 !important;
   font-size: 0.95rem;
   font-family: var(--font-serif);
-  line-height: 1.5;
+  line-height: 1.7;
   border: 1px solid var(--table-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
-table th {
-  padding: 0.875rem 1rem;
-  text-align: left;
-  font-weight: 700;
-  color: var(--text-primary);
-  background: var(--table-header-bg);
-  border-bottom: 2px solid var(--table-border-strong);
+
+table thead {
+  display: table-header-group !important;
 }
+
+table tbody {
+  display: table-row-group !important;
+}
+
+table tr {
+  display: table-row !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Override alternating row backgrounds from beautifuljekyll.css */
+table tr:nth-child(2n) {
+  background: transparent !important;
+}
+
+table th,
 table td {
-  padding: 0.875rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--table-border);
-  color: var(--text-secondary);
+  display: table-cell !important;
+  padding: 0.9rem 1.1rem !important;
+  background: var(--table-cell-bg) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--table-border) !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  color: var(--text-secondary) !important;
+  font-weight: 400 !important;
+  margin: 0 !important;
+}
+
+table th {
+  background: var(--table-header-bg) !important;
+  color: var(--text-primary) !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  font-size: 0.9rem !important;
+}
+
+table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+table tr:hover td {
+  background: var(--table-row-hover) !important;
+}
+
+/* Prism highlight table fallback */
+.highlight table,
+.highlight tr,
+.highlight th,
+.highlight td {
+  display: table !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* ====================================
@@ -1322,15 +1374,36 @@ html.dark-mode .blog-post blockquote { background: #1E293B; color: var(--text-se
 html.dark-mode .blog-post blockquote em,
 html.dark-mode .blog-post blockquote i { color: var(--text-primary); }
 
-html.dark-mode table { border-color: var(--table-border); }
+html.dark-mode table { 
+  border-color: var(--table-border);
+}
+
+html.dark-mode table tr {
+  background: transparent !important;
+}
+
+html.dark-mode table tr:nth-child(2n) {
+  background: transparent !important;
+}
+
+html.dark-mode table th,
+html.dark-mode table td {
+  background: transparent !important;
+  border-bottom-color: var(--table-border);
+}
+
 html.dark-mode table th {
-  background: var(--table-header-bg);
+  background: var(--table-header-bg) !important;
   color: var(--text-primary);
   border-bottom-color: var(--table-border-strong);
 }
+
 html.dark-mode table td {
-  border-bottom-color: var(--table-border);
   color: var(--text-secondary);
+}
+
+html.dark-mode table tr:hover td {
+  background: var(--table-row-hover) !important;
 }
 
 html.dark-mode .inline-toc { background: transparent; border: none; }

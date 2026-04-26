@@ -85,10 +85,14 @@
   --radius-xl:  2px; /* Pill-style buttons still use 2px */  
 
   /* Reading */
-  --reading-width:       950px; /* Increased for better content display */
-  --reading-line-height: 1.7;
-  --reading-font-size:   1.075rem; /* ~17px - optimized for wider layout */
+  --reading-width:       900px; /* Optimal for readability ~65-75 chars per line */
+  --reading-line-height: 1.75; /* Generous spacing for academic feel */
+  --reading-font-size:   1.2rem; /* ~16px - compact readability */
+  --reading-font-size-sm: 0.9rem; /* ~14.4px for metadata/labels */
   --navbar-height:       60px;
+  --paragraph-margin:    1.5rem; /* Generous paragraph spacing */
+  --heading-margin-top:  2.25rem; /* More breathing room before headings */
+  --heading-margin-bottom: 1.25rem; /* Better spacing after headings */
 
   /* Transitions - Subtle, smooth animations */
   --transition-fast:  0.15s ease;
@@ -151,68 +155,72 @@ body {
   line-height: var(--reading-line-height);
   color: var(--text-secondary);
   background: var(--bg-primary);
-  font-weight: 350;
+  font-weight: 400;
   overflow-x: hidden;
-  letter-spacing: 0.015em;
-  word-spacing: 0.1em;
+  letter-spacing: 0.01em;
+  word-spacing: 0.05em;
 }
 
-/* Headings */
+/* Headings - Academic Style with Better Hierarchy */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
-  line-height: 1.2;
-  margin-bottom: 1rem;
+  line-height: 1.25;
   scroll-margin-top: calc(var(--navbar-height) + 2rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 h1 {
   font-family: var(--font-display);
-  font-size: 2.3rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.9rem, 4vw, 2.2rem);
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--heading-margin-bottom);
   text-align: left;
+  font-weight: 800;
 }
 
 h2 {
   font-family: var(--font-display);
-  font-size: 1.85rem;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  font-size: 1.7rem;
+  margin-top: var(--heading-margin-top);
+  margin-bottom: var(--heading-margin-bottom);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-primary);
 }
 
 h3 {
   font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 700;
-  margin-top: 1.75rem;
-  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  margin-top: var(--heading-margin-top);
+  margin-bottom: var(--heading-margin-bottom);
+  padding-top: 0.25rem;
 }
 
 h4 {
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+  font-size: 1.15rem;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
   color: var(--text-primary);
 }
 
-/* Paragraphs */
+/* Paragraphs - Better Breathing Room */
 p {
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--paragraph-margin);
   color: var(--text-secondary);
   orphans: 3;
   widows: 3;
-  text-align: justify;
+  text-align: left;
+  max-width: 100%;
+}
+
+p + p {
+  margin-top: -0.5rem; /* Reduce double spacing between consecutive paragraphs */
 }
 
 strong, b {
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ====================================
@@ -220,17 +228,19 @@ strong, b {
    ==================================== */
 
 a {
-  color: inherit;
+  color: var(--indigo-primary);
   text-decoration: underline;
-  text-decoration-color: var(--border-primary);
+  text-decoration-color: rgba(79, 70, 229, 0.3);
   text-underline-offset: 4px;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 1.5px;
   transition: all var(--transition-fast);
+  font-weight: 500;
 }
 
 a:hover {
-  color: var(--indigo-primary);
+  color: var(--indigo-hover);
   text-decoration-color: var(--indigo-primary);
+  text-decoration-thickness: 2px;
 }
 
 ::selection,
@@ -244,7 +254,7 @@ a:hover {
    ==================================== */
 
 .intro-header .page-heading h1 {
-  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.1;
@@ -254,7 +264,7 @@ a:hover {
 
 .intro-header .page-heading .page-subheading {
   font-family: var(--font-sans);
-  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
   color: var(--text-secondary);
   font-weight: 500;
   line-height: 1.5;
@@ -347,16 +357,21 @@ a:hover {
 
 .callout-title {
   font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
+  letter-spacing: 0.08em;
+  color: var(--indigo-primary);
+  margin-bottom: 0.5rem;
 }
 
 .callout-body p { 
-  margin-bottom: 0; 
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.callout-body p:last-child {
+  margin-bottom: 0;
 }
 
 .callout.callout-tip {
@@ -405,7 +420,7 @@ a:hover {
 
 .footnotes-section-title {
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -424,7 +439,7 @@ a:hover {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--text-tertiary);
   line-height: 1.5;
 }
@@ -487,16 +502,17 @@ kbd {
 pre {
   position: relative;
   margin: 2rem 0;
-  padding: 1rem;
-  padding-top: 2.5rem;
+  padding: 1.25rem;
+  padding-top: 3rem;
   background: var(--code-bg);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
   overflow-x: auto;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.6;
   color: var(--code-text);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 pre::-webkit-scrollbar { height: 8px; }
@@ -560,10 +576,10 @@ pre.line-numbers { padding-left: 3.5rem; }
 
 code:not(pre code) {
   font-family: var(--font-mono);
-  font-size: 0.85em;
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 0.25em 0.5em;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-primary);
 }
@@ -575,27 +591,31 @@ code:not(pre code) {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 2rem 0;
-  font-size: 1rem;
-  font-family: var(--font-sans);
+  margin: 2.5rem 0;
+  font-size: 0.95rem;
+  font-family: var(--font-serif);
   line-height: 1.6;
+  border: 1px solid var(--border-primary);
 }
 
 table th,
 table td {
-  padding: 1rem;
-  text-align: justify;
+  padding: 0.875rem 1rem;
+  text-align: left;
   border-bottom: 1px solid var(--table-border);
   color: var(--text-secondary);
 }
 
 table th {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
-  border-bottom: 2px solid var(--text-primary);
+  background: rgba(79, 70, 229, 0.05);
+  border-bottom: 2px solid var(--indigo-primary);
 }
 
 table tr:hover td { background: var(--table-row-hover); }
+
+table tr:last-child td { border-bottom: 1px solid var(--border-primary); }
 
 /* ====================================
    Post Previews (Archive List Style)
@@ -653,7 +673,7 @@ table tr:hover td { background: var(--table-row-hover); }
   grid-column: 1;
   grid-row: 2;
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -785,14 +805,16 @@ table tr:hover td { background: var(--table-row-hover); }
 .metadata-bar {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
-  margin: 1.5rem 0 2.5rem;
+  gap: 2rem;
+  padding: 1.25rem 0;
+  margin: 2rem 0 2.5rem;
   border-top: 1px solid var(--border-primary);
   border-bottom: 1px solid var(--border-primary);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .metadata-item {
@@ -801,8 +823,8 @@ table tr:hover td { background: var(--table-row-hover); }
   gap: 0.5rem;
 }
 
-.metadata-item svg { width: 16px; height: 16px; opacity: 0.6; }
-.metadata-item strong { color: var(--text-primary); font-weight: 500; }
+.metadata-item svg { width: 16px; height: 16px; opacity: 0.5; }
+.metadata-item strong { color: var(--text-primary); font-weight: 600; }
 
 .post-share-bar {
   display: flex;
@@ -1112,21 +1134,20 @@ table tr:hover td { background: var(--table-row-hover); }
 
 /* Blockquotes - Clean, Minimalist Style */
 .blog-post blockquote {
-  margin: 2.5rem 0;
-  padding: 1.5rem 1.75rem;
+  position: relative;
+  padding: 1.5rem 0 1.5rem 1.5rem;
+  margin: 2rem 0;
   border-left: 4px solid var(--indigo-primary);
-  background: var(--bg-tertiary);
-  font-style: italic;
+  background: transparent;
   color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.75;
 }
 
 .blog-post blockquote p {
-  font-size: 1.05rem;
-  line-height: 1.6;
-  margin-bottom: 0;
-  font-weight: 500;
+  margin: 0.75rem 0;
+  color: inherit;
 }
 
 .blog-post blockquote p:last-child {
@@ -1135,9 +1156,9 @@ table tr:hover td { background: var(--table-row-hover); }
 
 .blog-post blockquote em,
 .blog-post blockquote i {
-  font-style: normal;
   color: var(--text-primary);
-  font-weight: 600;
+  font-style: normal;
+  font-weight: 500;
 }
 
 /* Images */
@@ -1157,14 +1178,21 @@ table tr:hover td { background: var(--table-row-hover); }
   margin-bottom: 3rem;
 }
 
-/* Lists */
-.blog-post ul, .blog-post ol {
-  margin: 1.5rem 0 1.5rem 2rem;
+/* Lists - Better Spacing */
+.blog-post ul, 
+.blog-post ol {
+  margin: var(--paragraph-margin) 0;
+  padding-left: 2rem;
 }
 
 .blog-post li {
   margin-bottom: 0.75rem;
-  padding-left: 0.5rem;
+  color: var(--text-secondary);
+  line-height: var(--reading-line-height);
+}
+
+.blog-post li > p {
+  margin-bottom: 0.5rem;
 }
 
 /* Horizontal Rule */

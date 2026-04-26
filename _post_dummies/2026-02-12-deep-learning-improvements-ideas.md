@@ -2,84 +2,97 @@
 layout: post
 title: Some incomplete ideas
 subtitle: Interesting patterns for architectural innovations
-cover-img: 
-thumbnail-img: 
-share-img: 
 tags: [personal, machine-learning]
 author: dzungphieuluuky
 ---
 
 # Introduction
-Most state-of-the-art deep learning architectures don't necessarily suggest an entirely novel architecture that has never appeared in history. Rather, they often employ simple, minimalistic improvements that effectively increase the effectiveness of feature extraction in ways we might not expect. For example, people usually believe that the **Attention is all you need** paper is the cornerstone that created the biggest breakthroughs in language modeling, giving birth to the popular LLMs that increasingly became indispensable to our current work habits: ChatGPT, Gemini, Claude, etc. The biggest thing I think about this paper is that they bravely remove unnecessary modules from RNN and LSTM from the old days, to only rely on attention mechanism to handle all the transformations on dimensions. Perhaps, the biggest improvements in some scenarios may not be driven from a novel idea, but from a brave decision of removing the components that are not suitable with the problem at hand. I’ve spent my sophomore year at university teaching myself deep learning and reinforcement learning outside of school coursework. Around February 2025, while taking Operating Systems as one of my courses at that time, I decided to finally work through **Reinforcement Learning: An Introduction** by Sutton and Barto. At the same time, I was taking a course on **Probability theory and Statistics**. It turned out to be a perfect strategy at the time to learn probability from the ground up from the class and see them in action through my external materials, how they behave, how researchers use them in their work, how they are used to estimate things that are seemingly intractable and computationally intensive.
+
+Most state-of-the-art deep learning architectures are not radical inventions from scratch. Instead, they tend to assemble simple, almost minimalistic modifications — and the magic lies in how these small changes unlock unexpectedly powerful feature extraction. 
+
+Consider the *Attention is All You Need* paper. It is often celebrated as the origin of modern large language models (ChatGPT, Gemini, Claude, and friends). But the truly bold move in that paper was not the invention of attention itself — attention had been around for a while. The breakthrough was a *removal*: they stripped away the recurrent and LSTM machinery that everyone thought was necessary, and showed that attention alone could handle all the transformations. Sometimes progress comes not from adding new things, but from having the courage to discard old ones.
+
+During my sophomore year, I was teaching myself deep learning and reinforcement learning outside of coursework. Around February 2025, while taking an Operating Systems class, I finally worked through Sutton & Barto’s *Reinforcement Learning: An Introduction*. At the same time, I was taking a course in probability and statistics. That turned out to be a perfect combination: I learned probability from the ground up in class, and then saw those ideas in action — how they behave, how researchers use them for estimation, and how they turn intractable problems into tractable ones.
 
 ---
-Most of my time has been spent reading a wide variety of articles, blog posts, and books from outstanding researchers spanning various disciplines in artificial intelligence: basic machine learning, deep learning with neural networks, representation learning, reinforcement learning, diffusion generative modeling, etc. Throughout the journey, I found that some of the most groundbreaking innovations bear in their intrinsic properties an incredibly strong connections with our everyday lives. Their core mechanism and philosophies appear nearly everywhere we come, denoting that simple yet powerful ideas can bring about the biggest achievements in history of humanity's boundaries of civilization. In this post, I would like to do a little retrospective of some interesting yet powerful ideas that help to enhance the capabilities of AI systems. This post are expected to be continuing, with more ideas being appended to the post along my learning journey.
+
+Most of my time has been spent reading widely: articles, blog posts, books by outstanding researchers across AI — basic machine learning, deep learning, representation learning, RL, diffusion models. Throughout this journey, I have noticed something striking. Many of the most groundbreaking innovations carry within them deep connections to everyday life. Their core mechanisms and philosophies appear everywhere, suggesting that simple, powerful ideas can push the boundaries of what is possible.
+
+In this post (which will grow over time), I want to reflect on a few such ideas — patterns that improve AI systems in elegant ways.
 
 # 1. High and low dimension
 
 ## Data distribution
 
-In this first section, I would like to discuss the simplest approach in deep learning architecture design for processing input data. There is a truth known to every researcher in the generative modeling field of deep learning: the data we gather from the real world lies in a very high-dimensional space. Although we live in a 3D geometric space, the real data from this space is usually composed of very small pieces such as pixels (for vision tasks) and tokens (for language modeling). To articulate what I want to say, let's first examine the data distribution in images processing. Suppose we have an image of size $1024 * 1024$, each pixel in the image has RGB format with 256 different values for each indices in the tuple. Therefore the total combinations that one pixel has is $256^3$, and since we have $1024 * 1024$ ones like that, we have a total of $(256^3)^{1024^2}$ different combinations. Although a vast space of possible images can be generated using these settings, only a very small fraction are real, meaningful images containing objects that actually exist in the real world. We can use a short piece of code with `numpy` library to see this if we wish to see its visualization. Because of this phenomenon, we have a popular theory in machine learning called the **Manifold Hypothesis**. This theory states that most natural images (images with real meaning that can be interpreted as objects rather than pure noise) lie on a much lower-dimensional manifold (subspace) within the high-dimensional space of all possible images. From this perspective, training a generative model (for text, images, videos, actions, etc.) is equivalent to fitting our machine learning model to this low-dimensional manifold—learning the distribution from which we can sample real data.
+Let us start with a fundamental truth known to every researcher in generative modeling: the data we collect from the real world lives in a very high-dimensional space. We inhabit a 3D geometric world, but the data we feed into computers — images, text, sensor readings — often consists of many tiny pieces: pixels or tokens. To see the problem, consider a single $1024 \times 1024$ image. Each pixel has RGB values, each ranging from 0 to 255. That gives $256^3$ possibilities per pixel. Multiply that by the number of pixels $(1024^2)$, and the total number of possible images is astronomical:
+
+\[
+(256^3)^{1024^2}
+\]
+
+Yet only a tiny fraction of those possibilities correspond to meaningful natural images (a cat, a mountain, a face). Most are just noise. This observation leads to the **manifold hypothesis**: natural images lie on a much lower-dimensional manifold (a curved, low-dimensional subspace) embedded inside the high-dimensional space. Training a generative model — whether for images, text, or actions — is essentially learning that low-dimensional manifold, so we can sample new, realistic data from it.
 
 ## Representations
 
-Now let's examine how deep learning models, especially neural network-based models, extract information from training data to find this distribution. Given our assumption that meaningful data lie on a very low-dimensional distribution compared to the total space, it's straightforward to build an encoder that gradually reduces the number of neurons as we go deeper into the network. The first layer may contains a large number of input neurons: 748 (grayscale images of size 2828) or 2048 neurons depending on the size of our input data. Then, as we move deeper into the network, this size gradually becomes smaller, likely $2048, 1024, 512, 256, 128, 64, 32$. Researchers in this field have a strong preference for numbers that are powers of two. Conventionally, each time we move one step deeper, we double the number of channels and halve the size of the height and width of our images. This approach gives the model a chance to learn a much more compact representation (or embeddings, although they are still quite different) of the original data input, hopefully representing messy data in more meaningful ways than raw pixels. There are several problems and approaches under research in representation learning to hopefully yield better results on this manner.
+How do neural networks find this manifold? Given the manifold hypothesis, a natural design choice is to build an encoder that gradually reduces dimensionality. The first layer might have as many neurons as the input size (e.g., 784 for $28\times28$ grayscale images, or 2048 for larger inputs). Then, as we go deeper, we shrink the representation: 2048 → 1024 → 512 → 256 → 128 → 64 → 32. (Practitioners often like powers of two.) In convolutional architectures for images, a common pattern is to double the number of channels while halving the spatial dimensions. This gives the model a chance to learn compact *embeddings* (or latent representations) that capture meaning far more efficiently than raw pixels.
 
 ## Some examples
 
-Now we talk about one of the most prominent achievements with this innovation, denoting as latent diffusion model. Computer vision tasks, especially, the generative tasks that involve generating images based on some input conditions (text prompts, reference images, etc.) has been widely under researched for decades. Their improvements come from the first model class that can generate realistic images that resemble real images to some extent, GAN, or Generative Adversarial Networks, proposed by Ian Goodfellow et al. This model class harness the beauty of game theory and use its foundation to construct a training paradigm that utilize the mutual adversarial interaction between two entities to improve both of them simultaneously. Several years later, VAE (Variational Autoencoder) comes out of the box to jump into the vision generative domain. This model contains two main parts: an encoder and a decoder. The encoder tries to map the input space into a latent space, which act as a compact representation for the input space. This latent space is assumed to have much lower dimension than the original input space. When we have a compact representation of the original space, the decoder tries to decode this representation back to its original input space at the output head, hopefully to generate an image that lies on the same distribution with the input image but has some variations in it. Because of this design, VAE or Autoencoder in general are often described as a neural network architecture that learns an identity function. This definition sometimes confuse readers, because if we just want an identity funciton, then why we just return exactly the input rather than training a complex neural network like this? This popular confusion stems from a missing key point: we don't actually want the model to return the input itself. Instead, we want it to output something that also lies on the same distribution (manifold) as the input—not just a classification or regression task as in traditional machine learning, but a new instance, hence the name *Generative*. Now, let's transition to a new paradigm of generative AI: diffusion models (DMs). While VAEs use just one step to generate new images, DMs instead gradually generate new images through multiple iterative steps. In each denoising step, the image becomes clearer than its previous version, eventually becoming a high-fidelity image that can be visually interpreted as a fully meaningful image, depicting specific objects based on input prompts: a dog, a cat, a house, buildings, abstract figures, or geometries, etc. However, DMs require many denoising steps and perform these computationally intensive tasks directly on the input space, leading to high energy demands. Therefore, Latent Diffusion Models (LDMs) come to the rescue. Instead of computing directly on the expensive input space, they compress this space into a latent space and start its denoising process in this space. This approach leads to a huge efficiency compared to the old days methods, savings an unfathomable amount of energy demands. More insights on LDMs can be discovered from their original paper: [High-Resolution Image Synthesis with Latent Diffusion Models](https://www.alphaxiv.org/abs/2112.10752)
+One of the most prominent successes of this idea is the **latent diffusion model** (LDM). For decades, generating realistic images from text prompts or other conditions was a hard problem. Generative Adversarial Networks (GANs), introduced by Ian Goodfellow and colleagues, brought a game‑theoretic twist: two networks compete, improving each other. Then came Variational Autoencoders (VAEs), which consist of an encoder (mapping input to a low‑dimensional latent space) and a decoder (mapping back to the input space). VAEs are often described as learning an identity function, which can confuse newcomers: why learn to output the input? The key is that we do *not* want the exact input — we want a *new* sample that lies on the same manifold. That is why they are called *generative*.
+
+Diffusion models (DMs) take a different approach: they generate images gradually over many iterative denoising steps. Each step makes the image a little clearer, until finally we obtain a high‑fidelity output. But DMs operate directly on the high‑dimensional input space, which is computationally expensive. **Latent diffusion models** solve this by first compressing the input into a low‑dimensional latent space, then running the denoising process there. This dramatically reduces computation and energy consumption. The original paper — [High‑Resolution Image Synthesis with Latent Diffusion Models](https://www.alphaxiv.org/abs/2112.10752) — is well worth reading for deeper insights.
 
 ---
 
 # 3. Distribution vs absolute values
 
 ## Different scales
-When dealing with large datasets, we cannot expect all attributes to have the same value range. Their value ranges vary greatly, often by large margins. To add to the challenge, neural networks are surprisingly sensitive to scale.
 
-If you pass in one feature that ranges from $[0,1]$ and another that ranges from $[0,1000]$, the second will dominate the gradient updates, not because it's more important, but simply due to its larger numerical values. To counter this problem, there is a widely adopted approach called normalization, or standardization, as mentioned in some textbooks. Personally, I prefer the word normalization because standardization can have entirely different meanings.
+Real‑world datasets are messy. Different features can have wildly different value ranges: one might lie in $[0,1]$, another in $[0,1000]$. Neural networks are surprisingly sensitive to scale. If you feed in such features directly, the feature with the larger range will dominate gradient updates — not because it is more important, but simply because its numbers are bigger.
 
-Some of the most popular normalization techniques include BatchNorm, LayerNorm, and InstanceNorm. These techniques all aim to normalize raw values of input tensors to a more reasonable range that facilitates computation and enhances training stability. However, they differ in which dimensions or aspects they choose to normalize. Let's look at a few example of this technique:
-- BatchNorm: Batch normalization. As the name suggests, this technique normalizes values across a batch of data consisting of many samples, rather than considering each sample separately. The batch size is a tunable hyperparameter that can greatly influence training performance. Generally, larger batch sizes drive more stability but demand more computational power, while smaller batch sizes facilitate faster updates but risk overfitting and large bias. This technique is widely used in vision tasks involving CNN architectures since its introduction in 2015.
-- LayerNorm: Layer normalization. This technique was widely adopted after BatchNorm showed inefficiency when dealing with sequence models like RNNs and LSTMs for sequence-to-sequence tasks. Instead of normalizing across the batch dimension for each feature separately, this technique normalizes across all feature dimensions in every sample independently. This approach can be seen as a transpose of BatchNorm. 
+The standard solution is **normalization** (sometimes called standardization, though I prefer the former because “standardization” can be ambiguous). Popular normalization techniques include BatchNorm, LayerNorm, and InstanceNorm. All of them rescale activations to a reasonable range, improving training stability. They differ in which dimensions they normalize.
 
-To elucidate the difference between these methods, suppose we are dealing with a matrix of size $m*n$, representing $m$ samples of data with $n$ features each. 
-    - Doing BatchNorm is equivalent to take normalization for each column, which is actually computed across all samples in a batch for each feature dimension.
-    - Doing LayerNorm is equivalent to take normalization for each row in the matrix, which is actually computed across all feature dimensions for each sample independently. This is versatile enough to be fit perfectly for sequence-to-sequence tasks. 
+- **BatchNorm** normalizes across the batch dimension for each feature separately. For a matrix of size $m \times n$ ($m$ samples, $n$ features), BatchNorm normalizes each column (feature) using the statistics of that column across the batch. It works well for CNNs in vision tasks, but less so for sequence models.
+- **LayerNorm** normalizes across all feature dimensions for each sample independently. That is, it normalizes each row of the matrix. This makes it more suitable for sequence‑to‑sequence models like RNNs and Transformers.
 
-Although there are a wide variety of normalization techniques apart from these two techniques: InstanceNorm, GroupNorm, SpectralNorm, etc., what I want to say is that what we truly care about is not just raw values, but the distribution that is built from a large numbers of them. We don't really care much about their direct appearance, but about their distribution, how large they are compared to each other. with the mean-centering effect and calibrated variance after apply normalization techniques, this relative relationship between values in the same feature (with the same value ranges) gains more transparency by a large margin.
+The crucial insight is not the raw numbers themselves, but their *distribution* — how they relate to each other. After normalization (centering and scaling), the relative relationships become much clearer.
 
 ## Zero as implicit baselines
 
-Apart from data normalization in supervised learning settings, reinforcement learning (RL) offers another approach on non-stationary data distribution that changes along with policy distribution. In RL settings, we often use another terminology for "data", which is "observation". The reasons leads to this interesting transition lies in the core mechanism of RL problems, where the agent must perform interactions with the environment rather training directly on a fixed dataset beforehand. Therefore, it's understandable to call these data as observations, since the agent directly experience (in other words, see) that data coming from the response of the environment following its actions.
+Reinforcement learning offers a different perspective on non‑stationary data. In RL, the agent interacts with an environment, so the “data” are better called *observations* — they depend on the agent’s own policy, which changes over time.
 
-The technique I'm talking about is the advantage function:
+One powerful technique is the **advantage function**:
 
-$$A(s,a) = Q(s,a) - V(s)$$
+\[
+A(s,a) = Q(s,a) - V(s)
+\]
 
-Let's take a quick look at the meanings of each entity in the equation:
-- $A(s,a)$: The advantage function that calculates how much advantage we get from performing action $a$ at state $s$. This value represents how much better the situation becomes if we perform this action, denoting its relative benefit compared to the current state rather than absolute values.
-- $Q(s,a)$: This is the Q-value we get from performing action $a$ at state $s$. This concept is slightly confusing compared to the advantage mentioned above, since this quantity measures how good (in absolute terms) the state becomes after we perform this action.
-- $V(s)$: This quantity acts as the baseline for this advantage calculation. Of course, we can choose another function to act as a baseline; theoretically, there are no strict rules for choosing baseline functions. However, to get the best estimation of how much the situation improves for our agent, we should choose the expected value of the Q-value of the current state across all actions, making it a fair and stable baseline for comparing all actions equally. Since $V(s)$ is exactly the expectation we seek, it is wise to choose this function as our baseline.
+- $A(s,a)$ tells us how much better taking action $a$ in state $s$ is compared to the average action in that state.
+- $Q(s,a)$ is the absolute quality (expected total reward) of taking action $a$ in state $s$.
+- $V(s)$ is the baseline — the expected value of $Q(s,a)$ when averaging over all possible actions. Using $V(s)$ as the baseline centers the advantage: positive means “better than average”, negative means “worse than average”.
 
-Without a baseline function in advantage calculation, its value is equivalent to the raw Q-value of the state-action pair. Therefore, we can rewrite the equation as:
-$$A(s,a) = Q(s,a) - 0$$
-With this representation, we can see that without a baseline function, zero becomes the default baseline for the calculation. In other words, we are assuming that taking all possible actions at the current state into account would lead to a baseline value of zero. This introduces an enormous and dangerous assumption about the current environment, since we have no evidence that this is true. This careless approach eventually gives us wrong learning signals, easily leading to performance degradation due to bias in the estimation without a proper baseline value.
+Without a baseline, we would effectively be assuming
 
+\[
+A(s,a) = Q(s,a) - 0
+\]
 
-The point is not the absolute values of quantities we take into our calculation, but the relative value and relationship between them that actually leads us to the right estimation and drive meaningful decision.
+That is, zero becomes the baseline. This is a huge and dangerous assumption: it implies that the average action in any state yields zero future reward, which is rarely true. The result is biased learning signals and poor performance.
+
+The point, once again, is that absolute values matter less than relative comparisons. By subtracting a well‑chosen baseline, we isolate the *advantage* of one action over the average — and that relative signal drives much better decision making.
 
 ---
 
 # 4. Sparsity
 
+*(to be continued)*
 
 ---
 
 # 5. Looking through different lens
 
+*(to be continued)*
 
 ---
 
-To be continued.
-
----
+*To be continued.*

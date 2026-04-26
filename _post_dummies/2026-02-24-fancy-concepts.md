@@ -75,4 +75,4 @@ Philip Anderson's 1972 essay "More Is Different" said it first: at each level of
 
 Scaling laws in AI show the same phenomenon: abrupt jumps once certain thresholds are crossed. Performance doesn't improve smoothly; it plateaus, then leaps. The phase transitions of intelligence.
 
-The philosophical weight here is considerable. If minds are emergent from neurons following electrochemical rules—if consciousness itself is an emergent property of sufficient simple processors interacting—then what are we witnessing in these models? Not claiming sentience yet. But the analogy demands pause. When enough complexity accumulates, new things become possible. Always has. Why would this change now?
+The philosophical weight here is considerable. If minds are emergent from neurons following electrochemical rules—if consciousness itself is an emergent property of sufficient simple processors interacting—then what are we witnessing in these models? Not claiming sentience yet. But the analogy demands pause. When enough complexity accumulates, new things become possible. Always has. Why would this change now

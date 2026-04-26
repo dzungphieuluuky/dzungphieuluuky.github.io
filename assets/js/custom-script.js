@@ -244,20 +244,7 @@ const ImageLightbox = {
 };
 
 // ====================================
-// 7. Navbar Scroll Effect
-// ====================================
-const NavbarScroll = {
-  init() {
-    const navbar = document.querySelector('.navbar');
-    if (!navbar) return;
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 80);
-    }, { passive: true });
-  }
-};
-
-// ====================================
-// 8. Post Table of Contents (HedgeDoc/HackMD style)
+// 7. Post Table of Contents (HedgeDoc/HackMD style)
 // ====================================
 const PostTableOfContents = {
   allExpanded: false,
@@ -343,7 +330,7 @@ const PostTableOfContents = {
 };
 
 // ====================================
-// 9. Reading Time & Word Count
+// 8. Reading Time & Word Count
 // ====================================
 const ReadingTime = {
   init() {
@@ -375,7 +362,7 @@ const ReadingTime = {
 };
 
 // ====================================
-// 10. Auto‑Numbering Headers
+// 9. Auto‑Numbering Headers
 // ====================================
 const AutoNumbering = {
   init() {
@@ -393,23 +380,8 @@ const AutoNumbering = {
 };
 
 // ====================================
-// 11. Post Preview Click (archive)
 // ====================================
-const PostPreviewClick = {
-  init() {
-    document.querySelectorAll('.post-preview').forEach(preview => {
-      const link = preview.querySelector('a[href]');
-      if (!link) return;
-      preview.addEventListener('click', (e) => {
-        if (e.target.closest('a') && e.target.closest('a') !== link) return;
-        window.location.href = link.href;
-      });
-    });
-  }
-};
-
-// ====================================
-// 12. External Links Security
+// 10. External Links Security
 // ====================================
 const ExternalLinks = {
   init() {
@@ -428,7 +400,7 @@ const ExternalLinks = {
 };
 
 // ====================================
-// 13.5 Enhanced Search Modal
+// 11. Enhanced Search Modal
 // ====================================
 const EnhancedSearch = {
   modal: null,
@@ -854,20 +826,8 @@ const EnhancedSearch = {
 };
 
 // ====================================
-// 14. Image Protection (prevent drag/right-click)
 // ====================================
-const ImageProtection = {
-  init() {
-    document.querySelectorAll('article img, .post-content img').forEach(img => {
-      img.setAttribute('draggable', 'false');
-      img.addEventListener('dragstart', e => e.preventDefault());
-      img.addEventListener('contextmenu', e => e.preventDefault());
-    });
-  }
-};
-
-// ====================================
-// 15. Schema Markup (JSON‑LD)
+// 12. Schema Markup (JSON‑LD)
 // ====================================
 const SchemaMarkup = {
   init() {
@@ -895,16 +855,13 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollToTop.init();
   SmoothAnchors.init();
   DarkMode.init();
-  PostPreviewClick.init();
   CodeCopy.init();
   ImageLightbox.init();
-  NavbarScroll.init();
   AutoNumbering.init();
   PostTableOfContents.init();
   TocHighlight.init();
   ReadingTime.init();
   ExternalLinks.init();
   EnhancedSearch.init();
-  ImageProtection.init();
   SchemaMarkup.init();
 });

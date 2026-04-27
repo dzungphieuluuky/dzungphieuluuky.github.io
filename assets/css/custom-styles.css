@@ -22,7 +22,7 @@
    ==================================== */
 
 /* === TYPOGRAPHY === */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ====================================
    Palette & Variables (Light Mode)
@@ -32,7 +32,7 @@
   /* Typography */
   --font-serif: 'Be Vietnam Pro', 'Georgia', 'Times New Roman', serif;
   --font-sans: 'Be Vietnam Pro', 'Georgia', 'Times New Roman', serif;
-  --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-display: 'Merriweather', Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
   /* Color Palette - Pure Black & White Minimalist */
@@ -133,12 +133,11 @@
 
 html {
   font-size: 15px;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-padding-top: calc(var(--navbar-height) + 2rem);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  transition: background-color 300ms ease;
 }
 
 body {
@@ -287,11 +286,19 @@ a:hover {
    ==================================== */
 
 :target {
-  animation: anchorHighlight 2s ease-out forwards;
+  animation: none;
 }
 @keyframes anchorHighlight {
   0%   { background: var(--accent-subtle); border-radius: var(--radius-sm); }
   100% { background: transparent; }
+}
+
+/* Static-first mode for professional academic reading and faster rendering */
+*,
+*::before,
+*::after {
+  animation: none !important;
+  transition: none !important;
 }
 
 /* ====================================
@@ -628,7 +635,7 @@ table tr:hover td {
 .post-preview h3 {
   grid-column: 1;
   grid-row: 2;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -917,6 +924,7 @@ table tr:hover td {
 }
 .post-toc-box a:hover { color: var(--text-primary); text-decoration: underline; }
 .post-toc-box li.toc-h2 { padding-left: 1rem; }
+.post-toc-box li.toc-h3 { padding-left: 2rem; }
 
 /* ====================================
    Post Layout / Content Elements
@@ -1185,12 +1193,12 @@ details > summary {
 }
 details > *:not(summary) { padding: 1rem 1rem 0; }
 
-.reveal { opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
-.reveal.active { opacity: 1; transform: translateY(0); }
-.reveal-group > * { opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
-.reveal-group.active > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
-.reveal-group.active > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 100ms; }
-.reveal-group.active > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 200ms; }
+.reveal { opacity: 1; transform: none; }
+.reveal.active { opacity: 1; transform: none; }
+.reveal-group > * { opacity: 1; transform: none; }
+.reveal-group.active > *:nth-child(1) { opacity: 1; transform: none; }
+.reveal-group.active > *:nth-child(2) { opacity: 1; transform: none; }
+.reveal-group.active > *:nth-child(3) { opacity: 1; transform: none; }
 
 /* ====================================
    CV Page

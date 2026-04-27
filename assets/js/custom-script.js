@@ -313,7 +313,39 @@ const PostTableOfContents = {
       return html;
     };
 
+    const buildPostTocHtml = () => {
+      const items = [];
+      headers.forEach((header) => {
+        const id = header.id;
+        const text = header.textContent.replace(/^\d+\.?\s*/, '').trim();
+        const tag = header.tagName.toLowerCase();
+        items.push(`<li class="toc-${tag}"><a href="#${id}">${text}</a></li>`);
+      });
+      return items.join('');
+    };
+
     tocList.innerHTML = buildTocItemsHtml();
+
+    // Create an in-article TOC at the beginning of each post.
+    let postTocBox = article.querySelector(':scope > .post-toc-box');
+    if (!postTocBox) {
+      postTocBox = document.createElement('nav');
+      postTocBox.className = 'post-toc-box';
+      postTocBox.setAttribute('aria-label', 'Table of contents');
+      const metadataBar = article.querySelector(':scope > .metadata-bar');
+      if (metadataBar) {
+        metadataBar.insertAdjacentElement('afterend', postTocBox);
+      } else {
+        article.insertAdjacentElement('afterbegin', postTocBox);
+      }
+    }
+
+    postTocBox.innerHTML = `
+      <div class="post-toc-title">Contents</div>
+      <ul class="post-toc-list">
+        ${buildPostTocHtml()}
+      </ul>
+    `;
 
     inlineToc.addEventListener('click', (e) => {
       const btn = e.target.closest('.toc-expand-toggle');

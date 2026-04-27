@@ -1,7 +1,6 @@
 ---
 layout: post
 title: The beginning of a blog
-subtitle: The blog of the beginning
 cover-img:
 thumbnail-img:
 share-img:

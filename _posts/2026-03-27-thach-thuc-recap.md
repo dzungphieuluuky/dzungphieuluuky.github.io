@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Recap Thách Thức 2026
-subtitle: Sức mạnh của nồi thịt kho ngày Tết
 cover-img:
 thumbnail-img:
 share-img:

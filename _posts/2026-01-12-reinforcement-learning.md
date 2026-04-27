@@ -1,7 +1,6 @@
 ---
 layout: post
 title: On Reinforcement Learning
-subtitle: Why I'm gravitated towards reinforcement learning
 cover-img:
 thumbnail-img:
 share-img:

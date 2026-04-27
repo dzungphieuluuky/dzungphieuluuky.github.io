@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Font Diffusion for Sino-Nom Character Synthesis
-subtitle: Implementation and Development of the FontDiffusion Module for Automated Sino-Nom Dictionary Generation
 cover-img:
 thumbnail-img:
 share-img:

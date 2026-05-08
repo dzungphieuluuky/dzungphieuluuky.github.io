@@ -66,6 +66,10 @@ Therefore, since our financial power is not unlimited, waiting the model to gene
 
 ### Aware with different backends between interactive and background Kaggle
 
+Kaggle is our friendly companion when it comes to free GPUs quota with generous 30 hours of free tier per week. Since there are two modes for a Kaggle notebook to run on: the interactive session and the background session. I was painfully aware that these backend computing environments are quite different from each other. It seems to me that the interactive session has a slightly more benevolent reaction on runtime errors, while background session is prohibitvely strict on these errors. There was a time I have to use the library protobuf alongside with some library in the code for the language models mentioned before, things happend when installing new version of protobuf, there are some modules or classes which are deprecated and no longer in the library code. The interactive session kindly tells me about this error in the console log but continue to run normally without any more errors. But when I run the notebook in background session, the errors are not allowed to pass in and immeidately get caught and the whole notebook session has been terminated painfully due to its strict backends. Following the Google search, I learn that the backend they use for the background session is named Papermills. Below is the message error I got:
 
+```python
+AttributeError: 'MessageFactory' object has no attribute 'GetPrototype'
+```
 
 ### Create test mode for functional testing before long run

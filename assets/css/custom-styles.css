@@ -1383,6 +1383,17 @@ html.dark-mode .btn-glow { background: var(--text-primary); color: #000000 !impo
 html.dark-mode .btn-primary:hover,
 html.dark-mode .btn-glow:hover { background: #E5E5E5; }
 
+html.dark-mode .cv-btn-primary {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: #000000;
+}
+html.dark-mode .cv-btn-primary:hover {
+  background: #E5E5E5;
+  border-color: #E5E5E5;
+  color: #000000;
+}
+
 html.dark-mode .share-btn,
 html.dark-mode .copy-btn { border-color: var(--border-primary); color: var(--text-primary); background: var(--bg-tertiary); }
 html.dark-mode .share-btn:hover,

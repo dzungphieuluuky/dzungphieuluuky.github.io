@@ -11,6 +11,38 @@ const CONFIG = {
 };
 
 // ====================================
+// 0.05 Scroll Event Batching
+// ====================================
+const ScrollManager = {
+  handlers: new Set(),
+  ticking: false,
+  lastScrollY: 0,
+  init() {
+    const onScroll = () => this._queue();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    this._queue();
+  },
+  subscribe(handler) {
+    this.handlers.add(handler);
+  },
+  _queue() {
+    this.lastScrollY = window.scrollY;
+    if (this.ticking) return;
+    this.ticking = true;
+    requestAnimationFrame(() => {
+      this.ticking = false;
+      const info = {
+        scrollY: this.lastScrollY,
+        docHeight: document.documentElement.scrollHeight,
+        viewportHeight: window.innerHeight
+      };
+      this.handlers.forEach((handler) => handler(info));
+    });
+  }
+};
+
+// ====================================
 // 0.1 Dark Mode Toggle
 // ====================================
 const DarkMode = {
@@ -83,12 +115,12 @@ const ReadingProgress = {
       this.bar.id = 'reading-progress';
       document.body.appendChild(this.bar);
     }
-    window.addEventListener('scroll', () => this.update(), { passive: true });
+    ScrollManager.subscribe((info) => this.update(info));
     this.update();
   },
-  update() {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  update(info) {
+    const scrollTop = info?.scrollY ?? window.scrollY;
+    const docHeight = (info?.docHeight ?? document.documentElement.scrollHeight) - (info?.viewportHeight ?? window.innerHeight);
     const progress = docHeight > 0 ? scrollTop / docHeight : 0;
     this.bar.style.transform = `scaleX(${progress})`;
   }
@@ -106,12 +138,13 @@ const ScrollToTop = {
     this.btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
     document.body.appendChild(this.btn);
     this.btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-    window.addEventListener('scroll', () => this.toggle(), { passive: true });
+    ScrollManager.subscribe((info) => this.toggle(info));
     this.toggle();
   },
-  toggle() {
+  toggle(info) {
     if (!this.btn) return;
-    const visible = window.scrollY > CONFIG.SCROLL_TO_TOP_THRESHOLD;
+    const scrollTop = info?.scrollY ?? window.scrollY;
+    const visible = scrollTop > CONFIG.SCROLL_TO_TOP_THRESHOLD;
     this.btn.classList.toggle('visible', visible);
   }
 };
@@ -883,6 +916,7 @@ const SchemaMarkup = {
 // ====================================
 document.addEventListener('DOMContentLoaded', () => {
   // Core reading experience
+  ScrollManager.init();
   ReadingProgress.init();
   ScrollToTop.init();
   SmoothAnchors.init();

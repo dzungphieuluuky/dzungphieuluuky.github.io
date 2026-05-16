@@ -1,7 +1,6 @@
 ---
 layout: post
 title: The bitter lesson
-subtitle: Limitations of human's insight
 cover-img:
 thumbnail-img:
 share-img:
@@ -53,11 +52,11 @@ The pattern is so consistent that it's hard to dismiss as coincidence. Yet we ke
 
 ## Why hand-crafted features fail
 
-To the best of my knowledge and intutition, there are several predictable and interpretable reasons on why human-crafted features are not the true answer to our advancements. Among them, there are (at least) three mechanisms at work:
+To the best of my knowledge and intuition, there are several predictable and interpretable reasons on why human-crafted features are not the true answer to our advancements. Among them, there are (at least) three mechanisms at work:
 
-**First: Representation is lossy.** When you hand-craft a feature, you're translating human understanding into something a machine can process. This translation is never lossless. You have an intuition. You encode it as a mathematical formula. But, the problem is, there are an infathomable amount of representations can be used to convey our ideas, and among them the encoding we choose is almost always suboptimal. A neural network exploring millions of possible representations often finds something better than what we might expect.
+**First: Representation is lossy.** When you hand-craft a feature, you're translating human understanding into something a machine can process. This translation is never lossless. You have an intuition. You encode it as a mathematical formula. But, the problem is, there are an unfathomable amount of representations can be used to convey our ideas, and among them the encoding we choose is almost always suboptimal. A neural network exploring millions of possible representations often finds something better than what we might expect.
 
-Consider AlexNet and SIFT again. SIFT captures certain invariances humans care about: rotation, scale, illumination. These are important features. But they're not the only invariances that matter. AlexNet learned additional patterns—correlations between patches, hierarchical structure, relationships across the image. These relationships situate in a much deeper representation that contains some kind of abstract meanings that we cannot imagine using our intutition alone. They were too subtle to hand-code but turned out critical for classification. The network found them because it had the capacity to explore thousands of different possibilities using its vast capacity with ultimate overparamerisation. They contains millions to billions of parameters that are able to allow them travel through a vast space of nearly every possible states and paths that can lead to a much more effective way of represent data features. While our intuition is nearly just a handful of salt in that vast space. 
+Consider AlexNet and SIFT again. SIFT captures certain invariances humans care about: rotation, scale, illumination. These are important features. But they're not the only invariances that matter. AlexNet learned additional patterns—correlations between patches, hierarchical structure, relationships across the image. These relationships situate in a much deeper representation that contains some kind of abstract meanings that we cannot imagine using our intuition alone. They were too subtle to hand-code but turned out critical for classification. The network found them because it had the capacity to explore thousands of different possibilities using its vast capacity with ultimate overparameterization. They contains millions to billions of parameters that are able to allow them travel through a vast space of nearly every possible states and paths that can lead to a much more effective way of represent data features. While our intuition is nearly just a handful of salt in that vast space. 
 
 **Second: Capacity grows faster than your insight.** As models gain parameters, their representational capacity scales exponentially, one of the benefits we get from the curse of dimensionality. Your hand-crafted knowledge becomes a fixed point in an ever-expanding space of possibilities. The insight you inject becomes increasingly negligible.
 

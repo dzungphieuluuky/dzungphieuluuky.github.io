@@ -89,10 +89,6 @@
   --heading-margin-top:  2.25rem;
   --heading-margin-bottom: 1.25rem;
 
-  --transition-fast:  0.15s ease;
-  --transition-base:  0.25s ease;
-  --transition-slow:  0.35s ease;
-
   --code-bg:                #F5F5F5;
   --code-text:              #1A1A1A;
   --code-keyword:           #000000;
@@ -211,7 +207,6 @@ a {
   text-decoration-color: rgba(0, 0, 0, 0.3);
   text-underline-offset: 4px;
   text-decoration-thickness: 1.5px;
-  transition: all var(--transition-fast);
   font-weight: 500;
 }
 a:hover {
@@ -278,19 +273,6 @@ a:hover {
   transform: scaleX(0);
   transform-origin: left center;
   pointer-events: none;
-  will-change: transform;
-}
-
-/* ====================================
-   Anchor Highlight
-   ==================================== */
-
-:target {
-  animation: none;
-}
-@keyframes anchorHighlight {
-  0%   { background: var(--accent-subtle); border-radius: var(--radius-sm); }
-  100% { background: transparent; }
 }
 
 /* Static-first mode for professional academic reading and faster rendering */
@@ -475,7 +457,6 @@ pre code { background: transparent; color: inherit; padding: 0; }
   display: inline-flex;
   gap: 0.4rem;
   align-items: center;
-  transition: all var(--transition-fast);
 }
 .copy-btn:hover  { border-color: var(--text-primary); color: var(--text-primary); }
 .copy-btn.copied { background: var(--text-primary); color: #FFFFFF; border-color: var(--text-primary); }
@@ -712,7 +693,6 @@ table tr:hover td {
   padding-right: 0.5rem !important;
   color: var(--text-tertiary) !important;
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active { color: var(--text-primary) !important; }
@@ -731,7 +711,6 @@ table tr:hover td {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition-fast);
 }
 .btn-primary:hover,
 .btn-glow:hover { background: #333333; text-decoration: none; }
@@ -784,7 +763,6 @@ table tr:hover td {
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: all var(--transition-fast);
 }
 .share-btn:hover {
   border-color: var(--text-primary);
@@ -803,7 +781,6 @@ table tr:hover td {
   flex-shrink: 0;
   pointer-events: auto;
 }
-.toc-trigger { display: none; }
 
 .inline-toc {
   position: sticky;
@@ -864,7 +841,6 @@ table tr:hover td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: color 0.15s ease;
 }
 .inline-toc a:hover { color: var(--text-primary); }
 .inline-toc a.active { color: var(--text-primary); font-weight: 700; }
@@ -891,7 +867,6 @@ table tr:hover td {
   align-items: center;
   justify-content: center;
   font-size: 0.65rem;
-  transition: color 0.15s ease;
   flex-shrink: 0;
   margin-right: 4px;
 }
@@ -1039,7 +1014,6 @@ table tr:hover td {
   font-weight: 500;
   text-decoration: none;
   border: 1px solid var(--border-primary);
-  transition: all var(--transition-fast);
 }
 .blog-tags a:hover {
   border-color: var(--text-primary);
@@ -1116,7 +1090,6 @@ table tr:hover td {
   cursor: pointer;
   text-decoration: none;
   color: inherit;
-  transition: all var(--transition-fast);
 }
 .search-result-item:hover {
   background: rgba(0, 0, 0, 0.02);
@@ -1182,15 +1155,12 @@ table tr:hover td {
   font-family: var(--font-sans);
   font-size: 0.92rem;
 }
-.search-filters-toggle,
-.search-filters-panel,
-.search-filter-group { display: none; }
 
 #scroll-to-top {
   position: fixed; bottom: 2rem; right: 2rem; width: 48px; height: 48px;
   background: var(--text-primary); border: none;
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; opacity: 0; pointer-events: none; transition: all var(--transition-fast);
+  cursor: pointer; opacity: 0; pointer-events: none;
   box-shadow: var(--shadow-sm); z-index: 999;
 }
 #scroll-to-top.visible { opacity: 1; pointer-events: auto; }
@@ -1204,12 +1174,6 @@ details > summary {
 }
 details > *:not(summary) { padding: 1rem 1rem 0; }
 
-.reveal { opacity: 1; transform: none; }
-.reveal.active { opacity: 1; transform: none; }
-.reveal-group > * { opacity: 1; transform: none; }
-.reveal-group.active > *:nth-child(1) { opacity: 1; transform: none; }
-.reveal-group.active > *:nth-child(2) { opacity: 1; transform: none; }
-.reveal-group.active > *:nth-child(3) { opacity: 1; transform: none; }
 
 /* ====================================
    CV Page
@@ -1251,11 +1215,10 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
   text-decoration: none;
   font-family: 'Montserrat', sans-serif;
   border: 1px solid transparent;
-  transition: background var(--transition-base), border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
   cursor: pointer;
   line-height: 1;
 }
-.cv-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); text-decoration: none; }
+.cv-btn:hover { text-decoration: none; }
 .cv-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
 .cv-btn-text { display: flex; flex-direction: column; gap: 0.12rem; color: inherit; }
 .cv-btn-text strong { font-size: 0.85rem; font-weight: 700; color: inherit; }
@@ -1297,7 +1260,6 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
   font-weight: 600;
   color: var(--text-primary);
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 .cv-open-link:hover { color: #333333; text-decoration: none; }
 .cv-open-link svg { width: 12px; height: 12px; }

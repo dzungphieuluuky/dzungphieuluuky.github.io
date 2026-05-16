@@ -137,7 +137,7 @@ const ScrollToTop = {
     this.btn.setAttribute('aria-label', 'Scroll to top');
     this.btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
     document.body.appendChild(this.btn);
-    this.btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    this.btn.addEventListener('click', () => window.scrollTo(0, 0));
     ScrollManager.subscribe((info) => this.toggle(info));
     this.toggle();
   },
@@ -150,30 +150,7 @@ const ScrollToTop = {
 };
 
 // ====================================
-// 3. Smooth Anchor Navigation
-// ====================================
-const SmoothAnchors = {
-  init() {
-    document.addEventListener('click', (e) => {
-      const anchor = e.target.closest('a[href^="#"]');
-      if (!anchor) return;
-      const id = decodeURIComponent(anchor.getAttribute('href').slice(1));
-      if (!id) return;
-      const target = document.getElementById(id);
-      if (!target) return;
-      e.preventDefault();
-      const offset = CONFIG.NAVBAR_HEIGHT + 16;
-      window.scrollTo({
-        top: target.getBoundingClientRect().top + window.scrollY - offset,
-        behavior: 'smooth'
-      });
-      history.pushState(null, '', '#' + id);
-    });
-  }
-};
-
-// ====================================
-// 4. TOC Active Highlight & Auto-scroll
+// 3. TOC Active Highlight & Auto-scroll
 // ====================================
 const TocHighlight = {
   observer: null,
@@ -205,7 +182,7 @@ const TocHighlight = {
 };
 
 // ====================================
-// 5. Code Copy Button
+// 4. Code Copy Button
 // ====================================
 const CodeCopy = {
   init() {
@@ -234,7 +211,7 @@ const CodeCopy = {
 };
 
 // ====================================
-// 6. Image Lightbox
+// 5. Image Lightbox
 // ====================================
 const ImageLightbox = {
   lightbox: null,
@@ -277,7 +254,7 @@ const ImageLightbox = {
 };
 
 // ====================================
-// 7. Post Table of Contents (HedgeDoc/HackMD style)
+// 6. Post Table of Contents (HedgeDoc/HackMD style)
 // ====================================
 const PostTableOfContents = {
   allExpanded: false,
@@ -395,7 +372,7 @@ const PostTableOfContents = {
 };
 
 // ====================================
-// 8. Reading Time & Word Count
+// 7. Reading Time & Word Count
 // ====================================
 const ReadingTime = {
   init() {
@@ -427,7 +404,7 @@ const ReadingTime = {
 };
 
 // ====================================
-// 9. Auto‑Numbering Headers
+// 8. Auto‑Numbering Headers
 // ====================================
 const AutoNumbering = {
   init() {
@@ -445,8 +422,7 @@ const AutoNumbering = {
 };
 
 // ====================================
-// ====================================
-// 10. External Links Security
+// 9. External Links Security
 // ====================================
 const ExternalLinks = {
   init() {
@@ -465,7 +441,7 @@ const ExternalLinks = {
 };
 
 // ====================================
-// 11. Enhanced Search Modal
+// 10. Enhanced Search Modal
 // ====================================
 const EnhancedSearch = {
   modal: null,
@@ -510,10 +486,6 @@ const EnhancedSearch = {
 
     this.input.addEventListener('keydown', (e) => this.onKeydown(e));
     this.results.addEventListener('keydown', (e) => this.onKeydown(e));
-
-    this.modal.querySelectorAll('input[name="date-range"], input[name="reading-time"], .content-type-filter').forEach(control => {
-      control.addEventListener('change', () => this.runSearch());
-    });
 
     document.addEventListener('keydown', (e) => {
       const isCmdOrCtrlK = (e.key.toLowerCase() === 'k') && (e.metaKey || e.ctrlKey);
@@ -675,9 +647,9 @@ const EnhancedSearch = {
     const query = this.input.value.trim();
     const queryNormalized = this.normalizeText(query);
     const queryTokens = this.tokenizeQuery(queryNormalized);
-    const filtered = this.applyFilters(this.corpus);
+    const filtered = this.filterPosts(this.corpus);
 
-    if (!queryNormalized && !this.hasActiveFilter()) {
+    if (!queryNormalized) {
       this.visibleResults = [];
       this.selectedIndex = -1;
       this.renderStatus('Start typing to search posts...');
@@ -749,35 +721,8 @@ const EnhancedSearch = {
     return ranked.sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
   },
 
-  applyFilters(items) {
-    const dateRange = this.modal.querySelector('input[name="date-range"]:checked')?.value || 'any';
-    const readingTime = this.modal.querySelector('input[name="reading-time"]:checked')?.value || 'any';
-    const contentTypes = Array.from(this.modal.querySelectorAll('.content-type-filter:checked')).map(el => el.value);
-
-    const now = Date.now();
-
-    return items.filter(item => {
-      // Only include items from _posts folder (items with a date)
-      if (!item.date) return false;
-
-      if (readingTime === 'short' && item.minutes >= 5) return false;
-      if (readingTime === 'medium' && (item.minutes < 5 || item.minutes > 15)) return false;
-      if (readingTime === 'long' && item.minutes <= 15) return false;
-
-      if (dateRange !== 'any') {
-        const ts = Date.parse(item.date);
-        if (Number.isNaN(ts)) return false;
-        const day = 24 * 60 * 60 * 1000;
-        const diff = now - ts;
-        if (dateRange === 'week' && diff > 7 * day) return false;
-        if (dateRange === 'month' && diff > 31 * day) return false;
-        if (dateRange === 'year' && diff > 365 * day) return false;
-      }
-
-      if (contentTypes.length && !contentTypes.includes(item.contentType)) return false;
-
-      return true;
-    });
+  filterPosts(items) {
+    return items.filter(item => Boolean(item.date));
   },
 
   normalizeText(value) {
@@ -801,13 +746,6 @@ const EnhancedSearch = {
         .filter(token => token.length > 1)
     );
     return Array.from(unique);
-  },
-
-  hasActiveFilter() {
-    const dateRange = this.modal.querySelector('input[name="date-range"]:checked')?.value || 'any';
-    const readingTime = this.modal.querySelector('input[name="reading-time"]:checked')?.value || 'any';
-    const hasContentType = this.modal.querySelectorAll('.content-type-filter:checked').length > 0;
-    return dateRange !== 'any' || readingTime !== 'any' || hasContentType;
   },
 
   renderStatus(message) {
@@ -891,8 +829,7 @@ const EnhancedSearch = {
 };
 
 // ====================================
-// ====================================
-// 12. Schema Markup (JSON‑LD)
+// 11. Schema Markup (JSON‑LD)
 // ====================================
 const SchemaMarkup = {
   init() {
@@ -919,7 +856,6 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollManager.init();
   ReadingProgress.init();
   ScrollToTop.init();
-  SmoothAnchors.init();
   DarkMode.init();
   CodeCopy.init();
   ImageLightbox.init();

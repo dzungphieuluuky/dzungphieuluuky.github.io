@@ -7,326 +7,118 @@ comments: true
 author: dzungphieuluuky
 ---
 
-With increasingly large amounts of data and model sizes in artificial intelligence training, especially deep learning with massive models, training and inference times are becoming increasingly expensive. This demand is driving a need for distributed and parallel support for both training and inference processes.
+Training big models isn't interesting because it's hard — it's interesting because it's boring. The engineering part is getting the boring bits right: device placement, data sharding, sync, and reliable checkpoints. Hugging Face Accelerate removes most of that boring plumbing while keeping the parts you actually care about: the model, the data, and the math.
 
-In this blog, we will try to delve into Hugging Face Accelerate for distributed training and inference, highlighting its abstractions, key methods, comparisons with native PyTorch tools and PyTorch Lightning.
+This note is pragmatic: how I use Accelerate to move from a laptop prototype to multi‑GPU runs without rewriting my training loop every time.
 
-## The Hardware Dilemma: Why We Need Distributed Computing
-As deep learning models expand in parameters and dataset sizes, single-device training becomes impractical. Practitioners often navigate diverse environments, from resource-constrained laptops to cloud-based multi-GPU setups.
+## Motivation — stop writing setup code
 
-In this blog, we target young researchers and enthusiasts with low computational resources which would drive them to seek out multiple GPU cloud computing environments for their projects.
+When models and datasets grow, two things happen:
+- Your single GPU runs out of memory.
+- Your scripts become full of `if rank == 0` and `os.environ` hacks.
 
-Consider these common platforms and their constraints:
-| Platform          | Typical Hardware          | Key Limitations                    | Distributed Suitability           |
-|:------------------|:--------------------------|:-----------------------------------|:----------------------------------|
-| Google Colab      | T4/A100 GPU               | Session timeouts, ~15GB VRAM       | Single-node, basic multi-GPU      |
-| Kaggle Notebooks  | P100 or 2×T4 GPUs         | 30 GPU hours/week, ephemeral storage | Multi-GPU friendly, quota-limited |
-| Local Laptop      | CPU/MPS or single GPU     | Limited memory, no native multi-GPU| Ideal for prototyping, CPU fallback|
-| GPU Cluster       | 4–8× A100/H100            | High cost, setup complexity        | Multi-node scaling, production    |
+Accelerate gives you a small, predictable surface to solve both problems. You keep your PyTorch loops; you wrap the pieces that need distribution. That minimal change is the whole win.
 
-> Without abstraction layers, code devolves into platform-specific hacks, complicating maintenance and reproducibility.
-Manual environment checks (e.g., via `os.environ`) and ad‑hoc device placements lead to brittle scripts that fail across setups—Accelerate addresses this by unifying the interface. 
-> How do we escape this? By using an abstraction layer so we no longer have to care about setup code, giving us more time to focus on the model itself and core logic.
+## The pattern I use
 
-## Hiding the Boilerplate: The Magic of Accelerate
-Hugging Face Accelerate simplifies PyTorch code for any distributed configuration with minimal changes. It detects hardware automatically and handles device placement, parallelism, and optimizations.
-Core workflow:
+1. Construct model, optimizer, dataloaders.
+2. Create `Accelerator()` with sensible defaults (mixed precision, accumulation).
+3. Call `accelerator.prepare(model, optimizer, dataloader, val_dataloader)`.
+4. Run the exact same training loop you had before, replacing `loss.backward()` with `accelerator.backward(loss)` and guarding I/O with `if accelerator.is_main_process`.
+
+Small example:
+
 ```python
 from accelerate import Accelerator
-accelerator = Accelerator(mixed_precision="bf16")  # bf16 for modern GPUs
-model, optimizer, dataloader = accelerator.prepare(
-    model, optimizer, dataloader
-)
-```
-- First, we need to import class `Accelerator` from module **accelerate** to use it.
-- Then we initialize the `accelerator` object to wrap around our PyTorch code to enable automatic distributed computing.
-- In the final section of the code, we see that `model`, `optimizer` and `dataloader` are wrapped with `prepare()` method, which would move our important objects for training and inference process under `accelerator`'s wings. This should be done before `torch.compile()` if we want to compile the model for faster inference due to static computational graph after compilation. 
-
-## Accelerate vs. Native DDP: A Tale of Two Approaches
-Native PyTorch DDP requires explicit management of process groups, ranks, and synchronization—boilerplate that Accelerate hides entirely.
-Key differences:
-- **Setup Complexity:** DDP demands `torch.distributed.init_process_group(backend='nccl')`, manual rank/world_size handling, and wrapping models with `DistributedDataParallel(model, device_ids=[local_rank])`. Accelerate initializes everything via `Accelerator()` and `prepare()`, which we talked about earlier in the previous code.
-- **Abstractions Provided by Accelerate:** It conceals device mapping, automatic `DistributedSampler` for dataloaders, gradient synchronization in `accelerator.backward(loss)`, and mixed‑precision scaling. Users focus on core logic without worrying about `torch.distributed.barrier()` or rank‑specific code.
-- **Advantages of Accelerate:** Portability across CPU/GPU/TPU/MPS, built‑in gradient accumulation, and seamless integration with HF ecosystems. You can find its documentation on the Hugging Face documents page. DDP is lower‑level, offering more customization but at the cost of verbosity.
-- **When to Choose:** Use native DDP for fine‑grained control in custom distributed algorithms, in case we have an architecture or processing paradigm that is too customized; prefer Accelerate for rapid prototyping and standard data‑parallel training.
-Example: native DDP vs. Accelerate
-```python
-# native DDP (simplified)
-import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel
-dist.init_process_group(backend='nccl')
-model = DistributedDataParallel(model, device_ids=[local_rank])
-# Accelerate equivalent
-accelerator = Accelerator()
-model = accelerator.prepare(model)  # Internally wraps with DDP if multi‑GPU
-```
-In the native DDP code, we can clearly see that we must do the following things to get the job done:
-- Set up import modules for torch distributed package and DistributedDataParallel class to handle distributed processing.
-- Initialize the backend for the process group manually and wrap the model with its corresponding device id inside the class DistributedDataParallel.
-On the other hand, when using Accelerate, we only need one line to make the magic happen:
-```python
-model = accelerator.prepare(model)
-```
-After this line, all the components inside the `prepare` method are immediately wrapped inside the accelerator object, ready for automatic backend handling.
-
-We can put anything related to our training and inference process inside the method such as scheduler, model, optimizer, train/validation/test data loader, etc.
-
-If you intend to use the `torch.compile()` method to speed up the inference process, then we should use it after preparing the modules inside the accelerator. This order ensures that the PyTorch library also compiles all related byproducts happening when the accelerator handles our modules for best performance.
-
-## A Portable Training Template
-Leverage this template for end‑to‑end training across environments:
-```python
-from accelerate import Accelerator
-import torch
 from tqdm.auto import tqdm
-def train_model():
-    accelerator = Accelerator(
-        mixed_precision="fp16",
-        gradient_accumulation_steps=4,
-        log_with="wandb"
+
+def train(model, optimizer, train_loader, val_loader):
+    accelerator = Accelerator(mixed_precision="fp16", gradient_accumulation_steps=4)
+    model, optimizer, train_loader, val_loader = accelerator.prepare(
+        model, optimizer, train_loader, val_loader
     )
-    torch.manual_seed(42 + accelerator.process_index)  # Per‑process seed
-    model = YourModel()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-5)
-    train_loader = your_dataloader(batch_size=64 // accelerator.num_processes)
-    model, optimizer, train_loader = accelerator.prepare(model, optimizer, train_loader)
-    for epoch in range(10):
+
+    for epoch in range(epochs):
         model.train()
-        
-        # we wrap normal range() with tqdm here for progress bar displaying, you can leave it as is if you don't need it
-        pbar = tqdm(train_loader, disable=not accelerator.is_main_process, desc=f"Epoch {epoch}")
-        for batch in pbar:
+        for batch in tqdm(train_loader, disable=not accelerator.is_main_process):
             with accelerator.accumulate(model):
                 outputs = model(**batch)
                 loss = outputs.loss
-                
-               
-                accelerator.backward(loss)  # be aware not loss.backward(), this is for single gpu training
-                optimizer.step()
-                optimizer.zero_grad()
-            if accelerator.is_main_process:
-                pbar.set_postfix({"loss": loss.item()})
-        accelerator.wait_for_everyone()  # Sync before epoch‑end ops
-        
-        
-        if accelerator.is_main_process: # only main process is allowed to save state to prevent race conditions
-            accelerator.save_state(f"checkpoint_epoch_{epoch}")
-    accelerator.end_training()  # Cleans up, calls destroy_process_group internally
-    return accelerator.unwrap_model(model)  # Access original model
+                accelerator.backward(loss)
+                optimizer.step(); optimizer.zero_grad()
+
+        accelerator.wait_for_everyone()
+        if accelerator.is_main_process:
+            accelerator.save_state(f"ckpt_epoch_{epoch}")
+
+    return accelerator.unwrap_model(model)
 ```
 
-## Mastering Distributed Inference
-For inference, Accelerate enables parallel batch processing or model sharding.
-Data‑parallel inference example:
-```python
-from accelerate import PartialState, infer_auto_device_map
-state = PartialState()
-model = YourLargeModel().to(state.device)
-# For very large models
-device_map = infer_auto_device_map(model, max_memory={0: "16GiB", 1: "16GiB"})
-model = accelerator.prepare(model, device_map=device_map)
-inputs = ["prompt"] * 100
-with state.split_between_processes(inputs) as local_inputs: # partition the whole inputs into multiple sub inputs for each process
-    outputs = model.generate(local_inputs)
-    # Gather outputs if needed
-    all_outputs = state.gather(outputs)
-```
-Avoid direct attribute access on prepared models (e.g., `model.config`); unwrap first: `accelerator.unwrap_model(model).config` to prevent **DistributedDataParallel does not have this property** errors.
+Notes:
+- Call `prepare()` before `torch.compile()` if you intend to compile — I usually prepare then compile the unwrapped model.
+- Use `accelerator.is_main_process` to keep logs and checkpoints single‑threaded.
 
-## The Arsenal: Proper Usage of Key Accelerate Methods
-### 1. `prepare()` — put our weapons under accelerate's wings
-Wraps PyTorch objects (models, optimizers, dataloaders, schedulers…) to make them distributed‑aware. Ensures DDP wrapping, distributed sampling, and device placement.
-Call after creating model/optimizer/dataloader, but before training loop. If we want to compile models for faster inference, we should prepare it first then compile later to ensure the compilation process also touches all of submodules that **accelerate** introduces.
-**Example use case**
-```python
-model, optimizer, train_loader, eval_loader = accelerator.prepare(
-    model, optimizer, train_loader, eval_loader
-)
-```
-All components are prepared in one call. This is the most common pattern for typical supervised training pipelines (computer vision, NLP, tabular models).
+## Why not raw DDP?
 
-### 2. `accelerator.backward(loss)` — distributed‑aware backpropagation
-Replaces `loss.backward()`. Performs gradient synchronization across processes and handles scaling in mixed precision training.
-**Use case 1 — any training loop with multi‑GPU**
-```python
-with accelerator.accumulate(model):
-    loss = model(inputs).loss
-    accelerator.backward(loss)
-```
-Ensures gradients are correctly averaged across all GPUs — required whenever using data parallelism.
+Raw DDP is powerful but boilerplatey. You write code that assumes a specific launch method, set up process groups manually, and sprinkle `rank` checks everywhere. Accelerate still uses DDP under the hood where appropriate, but it gives you:
 
-**Use case 2 — training with gradient checkpointing + mixed precision**
-```python
-loss = model(inputs, use_checkpointing=True).loss
-accelerator.backward(loss)
-accelerator.clip_grad_norm_(model.parameters(), max_norm=1.0)
-```
-Combines safely with gradient checkpointing and clipping — very common when training large transformers with limited memory.
+- automatic device mapping and `DistributedSampler` for dataloaders;
+- `accelerator.backward` which handles mixed precision scaling;
+- context managers like `split_between_processes` for easy distributed inference.
 
-### 3. `accelerator.accumulate(model)` — gradient accumulation context
-Accumulates gradients over several forward‑backward passes before performing an optimization step. Allows larger effective batch sizes without increasing VRAM usage.
-**Example use case — memory‑constrained fine‑tuning**
-```python
-for batch in train_loader:
-    with accelerator.accumulate(model):
-        loss = model(batch).loss / accelerator.gradient_accumulation_steps
-        accelerator.backward(loss)
-```
-Effective batch size is calculated using number of batches per device, number of devices and gradient accumulation steps — very useful on Colab/Kaggle with small GPU memory.
-\\(EFB  = BPD \times  P \times  AS\\)
-In the formula:
-- **EFB**: effective batch size. This is the total effective batch size conceptually used for training == the normal batch size you may find in textbooks in simple settings.
-- **BPD**: batch size per device. When we use distributed or parallel processing, especially data parallelism, this is the batch size that every device in our machine handles independently.
-- **AS**: number of accumulation steps. This is the number of steps before any gradients update can happen. Because our device may not contain data of all samples in a batch size simultaneously, and we need a large batch size to reduce bias and stabilize training, therefore we can simulate a much larger batch size by preventing gradient updates right away but rather only update after a number of steps. This mechanism ensures our devices do not get burnt with too much data but also mimics the stability of large batch size settings.
+Use raw DDP if you need low‑level control (custom collectives, exotic scheduling). Use Accelerate for day‑to‑day work and prototyping.
 
-### 4. `accelerator.wait_for_everyone()` — process synchronization barrier
-Blocks until all processes reach this point — critical to prevent race conditions during I/O, checkpointing, or evaluation. Synchronizes all processes (like a barrier). Use before main‑process‑only operations (e.g., saving checkpoints) to avoid races.
+## Distributed inference — simple patterns that scale
 
-Ensure to use this regularly to prevent race conditions or being out of synchronization.
-**Use case 1 — safe checkpoint saving**
-```python
-accelerator.wait_for_everyone()
-if accelerator.is_main_process:
-    accelerator.save_state("checkpoints/last")
-accelerator.wait_for_everyone()
-```
-Ensures all processes have finished the current step before saving — prevents corrupted states.
+Two common modes:
 
-**Use case 2 — synchronized evaluation across epochs**
-```python
-accelerator.wait_for_everyone()
-if accelerator.is_main_process:
-    evaluate_model(model, eval_loader)
-accelerator.wait_for_everyone()
-```
-Guarantees all GPUs have the same model weights before evaluation begins.
+- Data‑parallel inference: replicate the model on each device and split the input list across processes.
+- Model sharding: split layers or tensors across devices for models that don't fit in one GPU.
 
-### 5. `accelerator.unwrap_model(model)` — access the original unwrapped model
-Returns the base model (removing DDP/FSDP wrapper) — necessary when accessing attributes or saving in standard format.
-**Use case 1 — getting model configuration or tokenizer compatibility**
-```python
-base_model = accelerator.unwrap_model(model)
-print(base_model.config)
-tokenizer = AutoTokenizer.from_pretrained(base_model.config.name_or_path)
-```
-DDP/FSDP‑wrapped models don't expose `.config` directly — unwrapping solves this cleanly.
+A compact inference recipe:
 
-**Use case 2 — standard checkpoint saving for later single‑GPU inference**
-```python
-if accelerator.is_main_process:
-    torch.save(
-        accelerator.unwrap_model(model).state_dict(),
-        "model_final.pth"
-    )
-```
-Creates a clean, non‑distributed checkpoint that can be loaded anywhere without Accelerate.
-
-### 6. `accelerator.is_main_process` — process rank check
-Boolean flag indicating whether current process is rank 0 — used to guard logging, saving, printing, and evaluation. We usually use this method to only allow the main process to do these logging, saving, and printing things rather than allow every process to do them at the same time to prevent excessive logging or corrupted files.
-**Use case 1 — clean logging without duplication**
-```python
-if accelerator.is_main_process:
-    print(f"Epoch {epoch} - loss: {loss.item():.4f}")
-    wandb.log({"train_loss": loss.item()})
-```
-Prevents every GPU from printing/logging the same information thousands of times.
-
-**Use case 2 — progress bar visibility**
-```python
-pbar = tqdm(train_loader, disable=not accelerator.is_main_process)
-```
-Only rank 0 shows the progress bar — improves console readability in distributed runs.
-
-### 7. `split_between_processes()` — efficient data partitioning across processes
-This context manager partitions a list or iterable across all active processes, ensuring each process receives a roughly equal share of the workload and each process handles a non‑overlapping set of data to prevent duplicate processing. It is particularly useful for distributed inference, batch processing of large datasets, or parallel evaluation when you want to avoid manual index slicing.
-
-After processing, `state.gather()` (or `state.gather_for_metrics()`) collects results back to the main process.
-**Important:**  
-- Works with any iterable (lists, tuples, datasets…). Reference Accelerate documentation for more information.  
-- Automatically applies padding if lengths are uneven (controlled by `apply_padding=True`). Some optimization techniques about batch processing tries to group nearly equal length samples together into a batch to prevent massive padding. More on that later$...$  
-- Ideal when the same model runs independently on different data portions (data parallelism for inference/evaluation).
-**Example use case — distributed batch inference on large number of prompts**
 ```python
 from accelerate import PartialState
+
 state = PartialState()
-model.eval()
 model.to(state.device)
-prompts = ["Generate a story about..."] * 512  # example large batch
-with state.split_between_processes(prompts, apply_padding=True) as my_prompts:
-    inputs = tokenizer(my_prompts, return_tensors="pt", padding=True).to(state.device)
-    
-    with torch.inference_mode(): # will compare with torch.no_grad() later
-        outputs = model.generate(**inputs, max_new_tokens=120)
-    
-    generated = tokenizer.decode(outputs, skip_special_tokens=True) # use decode() instead of batch_decode() because of modern API and highly recommended
-all_generated_texts = state.gather(generated)
+prompts = ["..." ] * 1024
+with state.split_between_processes(prompts) as local_prompts:
+    inputs = tokenizer(local_prompts, return_tensors="pt", padding=True).to(state.device)
+    with torch.inference_mode():
+        out = model.generate(**inputs, max_new_tokens=120)
+    texts = tokenizer.batch_decode(out, skip_special_tokens=True)
+all_texts = state.gather(texts)
 ```
-Each GPU processes only ~1/N of the prompts (where N is the number of processes/GPUs). Results are gathered back to rank 0. This pattern scales throughput linearly with the number of GPUs and is widely used for offline batch generation, evaluation on large test sets, or production inference pipelines.
 
-### 8. `accelerator.destroy_process_group()` — release resources at the end
-Manually destroys the current distributed process group (NCCL, Gloo, MPI…), releasing all associated communication handles and resources.
-This is a method of `PartialState` and `AcceleratorState` not `Accelerator`. Called automatically in `accelerator.end_training()`. Although `accelerator.end_training()` also release resources but it will bring up some warnings if we use this method in inference phase because it also releases all gradients tracking but inference do not track gradients. To eliminate such annoying warnings, we should call `free_memory()` followed by `destroy_process_group()` in inference phase and only use `end_training()` in training phase.
+`split_between_processes` does the boring work of partitioning and optional padding; `state.gather` collects results on the main process.
 
-**Important:**  
-- After calling `destroy_process_group()`, any subsequent distributed operation (e.g., `prepare()`, collective communication) will trigger automatic re‑initialization of a fresh process group.  
-- Use with caution — incorrect usage can lead to hangs or resource leaks.  
-- Best practice: Prefer `accelerator.end_training()` for normal training scripts.
+## A few practical details I always check
 
-**Example use case 1 — multiple independent training stages in one script**
-```python
-accelerator = Accelerator()
-# Stage 1: pre‑training with frozen layers (DDP)
-freeze_backbone(model)
-train_stage(model, optimizer1, pretrain_loader, accelerator, epochs=3)
-# Explicit cleanup before changing strategy
-accelerator.destroy_process_group()
-accelerator.print("Pre‑training stage completed — process group released")
-# Stage 2: full fine‑tuning (possibly switching to FSDP)
-unfreeze_backbone(model)
-train_stage(model, optimizer2, finetune_loader, accelerator, epochs=5)
-# Final clean shutdown
-accelerator.end_training()
-```
-This pattern is useful in complex pipelines (e.g., pre‑training → supervised fine‑tuning → RLHF, or switching between DDP and FSDP). Explicit destruction prevents NCCL handle conflicts and ensures a clean state for the next phase.
+- Seeds: set `torch.manual_seed(42 + accelerator.process_index)` so each process gets a deterministic offset.
+- Checkpointing: save only on `accelerator.is_main_process` and call `accelerator.wait_for_everyone()` before/after saving.
+- Memory: with accumulation and mixed precision you can simulate larger batches. Effective batch size follows
 
-**Example use case 2 — debugging or testing multiple short distributed runs**
-```python
-for experiment_id in range(5):
-    accelerator = Accelerator(mixed_precision="bf16")
-    
-    # Quick hyperparameter test
-    model = create_model(hparams[experiment_id])
-    model, optimizer, loader = accelerator.prepare(model, optimizer, loader)
-    train_short(model, optimizer, loader, accelerator, steps=100)
-    
-    # Clean up before next experiment
-    accelerator.destroy_process_group()
-    accelerator.print(f"Experiment {experiment_id} finished")
-```
-When running many short, independent distributed experiments in a loop (e.g., hyperparameter sweeps, ablation studies), explicitly destroying the process group after each run prevents resource accumulation and potential NCCL/Gloo initialization conflicts.
+$$EFB = 	ext{batch	n per device} \times \text{num	n devices} \times \text{accumulation	n steps}$$
 
-These methods cover ~90% of day‑to‑day Accelerate usage patterns in real‑world projects. Mastering them allows you to write clean, scalable code that remains nearly identical whether you are training on one GPU, eight GPUs, or across multiple nodes.
+- Clean shutdown: prefer `accelerator.end_training()` for training runs; for ad‑hoc inference loops use `accelerator.free_memory()` and `destroy_process_group()` if you need to avoid warnings.
 
-## The Inevitable: Common Bugs and How to Squash Them
-Distributed setups introduce subtle issues; here are frequent ones from community reports and docs:
-| Bug category      | Description                              | Fix strategy                              |
-|:------------------|:-----------------------------------------|:------------------------------------------|
-| Hanging processes | Tensor shape mismatches in gather/reduce | Use debug mode (`--debug` launch) to detect; pad tensors uniformly. |
-| OOM errors        | Memory exhaustion mid‑training           | Employ `find_executable_batch_size()` for auto‑reduction; clear memory with `accelerator.free_memory()`. |
-| Logging failures  | Unsynchronized or missing logs           | Switch to `accelerate.logging.get_logger()` with appropriate levels. |
-| Non‑reproducible  | Varying results across configs           | Adjust per‑device batch size; use process‑offset seeds. |
-| Gradient accumulation   | Scheduler not adjusting properly         | Manually call `scheduler.step()` only after full accumulation steps. |
-| Older Linux kernels | Processes may hang on versions <5.5      | Upgrade your kernel. |
+## Common pitfalls
 
+- Hanging: usually mismatched tensor sizes when gathering — use the `--debug` launch for diagnostics.
+- OOM: lower per‑device batch size, increase accumulation, or use model sharding / `infer_auto_device_map`.
+- Logging spam: only log from `accelerator.is_main_process`.
 
-## Accelerate vs. PyTorch Lightning: Complementary or Competing?
-PyTorch Lightning offers high‑level abstractions for training, including automatic distributed handling via `Trainer(strategy="ddp", devices=4, num_nodes=2)`. It manages samplers, sync, and more, similar to Accelerate.
-- **Similarities:** both abstract DDP; Lightning adds logging, callbacks, and experiment management.
-- **Differences:** Accelerate is lightweight, focused on distribution (4‑line integration); Lightning is a full framework with `LightningModule` for structured code.
-- **Integration:** they work together! Lightning can use Accelerate as backend (e.g., via plugins or custom strategies). For HF models, Accelerate suffices for distribution, but Lightning enhances with auto‑logging and early stopping.
-- **Choice:** use Accelerate alone for simple scripts; add Lightning for complex workflows. Avoid both if overkill—start with Accelerate for portability.
+## Accelerate vs Lightning
 
-## Conclusion
-Hugging Face Accelerate democratizes distributed computing by abstracting complexities, preventing common pitfalls, and integrating with tools like PyTorch Lightning. From hiding DDP details to robust inference scaling, it empowers efficient, portable deep learning.
-Embrace these patterns to elevate your projects—focus on innovation, not infrastructure.
-> **Abstract once, deploy everywhere, scale with ease.**
+Lightning is an opinionated training framework with many bells and whistles (callbacks, logging, standardized `Trainer`). Accelerate is deliberately small: it keeps your loop and makes it distributed. Use Lightning when you want framework‑level features; use Accelerate when you want to keep your code explicit and simple.
+
+## Closing
+
+Accelerate is one of those tools that pays off immediately: change three lines, and your script runs on one GPU, many GPUs, or a TPU with no further surgery. If you care about experiments and iteration speed, it buys you time back to think about models instead of launch flags.
+
+If you'd like, I can:
+- convert one of your existing training scripts to Accelerate, or
+- add a small runnable example to the repo.
+
+Happy to do either — tell me which script to convert.

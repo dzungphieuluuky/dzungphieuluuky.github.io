@@ -719,6 +719,7 @@ table tr:hover td {
 .metadata-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 2rem;
   padding: 1.25rem 0;
   margin: 2rem 0 2.5rem;
@@ -737,6 +738,35 @@ table tr:hover td {
 }
 .metadata-item svg { width: 16px; height: 16px; opacity: 0.5; }
 .metadata-item strong { color: var(--text-primary); font-weight: 600; }
+
+/* Read Mode Toggle */
+.read-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.read-mode-toggle:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+.read-mode-toggle.active {
+  border-color: var(--text-primary);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+.read-mode-toggle svg {
+  width: 18px;
+  height: 18px;
+}
 
 .post-share-bar {
   display: flex;
@@ -1279,6 +1309,21 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
   font-size: 0.95rem;
 }
 .cv-iframe-fallback a { color: var(--accent-primary); }
+
+/* ====================================
+   Read Mode (Distraction-Free)
+   ==================================== */
+html.read-mode nav.navbar {
+  display: none !important;
+}
+
+html.read-mode footer {
+  display: none !important;
+}
+
+html.read-mode #reading-progress {
+  display: none !important;
+}
 
 /* ====================================
    Dark Mode (Consolidated)

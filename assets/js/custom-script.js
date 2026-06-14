@@ -279,7 +279,7 @@ const PostTableOfContents = {
       inlineToc.id = 'inline-toc';
       inlineToc.className = 'inline-toc';
       inlineToc.setAttribute('aria-label', 'Table of contents');
-      inlineToc.innerHTML = '<div class="inline-toc-title">Contents</div><ul></ul>';
+      inlineToc.innerHTML = '<div class="inline-toc-title"><button class="toc-toggle-btn" aria-expanded="true">▼ Contents</button></div><ul></ul>';
       tocWrapper.appendChild(inlineToc);
     }
 
@@ -849,6 +849,32 @@ const SchemaMarkup = {
 };
 
 // ====================================
+// 11. Read Mode (Distraction-Free)
+// ====================================
+const ReadMode = {
+  isActive: false,
+  toggleBtn: null,
+  init() {
+    this.toggleBtn = document.querySelector('.read-mode-toggle');
+    if (!this.toggleBtn) return;
+    this.toggleBtn.addEventListener('click', () => this.toggle());
+  },
+  toggle() {
+    this.isActive = !this.isActive;
+    const root = document.documentElement;
+    if (this.isActive) {
+      root.classList.add('read-mode');
+      this.toggleBtn.setAttribute('aria-label', 'Exit read mode');
+      this.toggleBtn.classList.add('active');
+    } else {
+      root.classList.remove('read-mode');
+      this.toggleBtn.setAttribute('aria-label', 'Toggle read mode');
+      this.toggleBtn.classList.remove('active');
+    }
+  }
+};
+
+// ====================================
 // Main Initialization
 // ====================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -857,6 +883,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ReadingProgress.init();
   ScrollToTop.init();
   DarkMode.init();
+  ReadMode.init();
   CodeCopy.init();
   ImageLightbox.init();
   AutoNumbering.init();

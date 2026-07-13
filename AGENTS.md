@@ -3,7 +3,7 @@
 ## Stack
 - Ruby/Jekyll (Beautiful Jekyll theme v6.0.1) — static site blog
 - Hosted on GitHub Pages, built via GitHub Actions (Ruby 3.3)
-- Custom CSS: Geist design system (DESIGN.md), Substack-minimalist fonts (Outfit/Lora/JetBrains Mono)
+- Custom CSS: Geist design system (DESIGN.md), Substack-minimalist fonts (Be Vietnam Pro/Lora/JetBrains Mono)
 - Custom JS: modular init pattern (DarkMode, ReadingProgress, TocHighlight, CodeCopy, ImageLightbox, EnhancedSearch)
 - LaTeX CV in assets/cv/
 

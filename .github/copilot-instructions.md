@@ -104,7 +104,7 @@ When writing highly technical deep-dives (especially in AI/ML), adopt the follow
 ## Design Principles
 
 Your blog uses a **Substack-inspired minimalist aesthetic**:
-- Typography: **Outfit** (headers) + **Lora** (body) + **JetBrains Mono** (code)
+- Typography: **Be Vietnam Pro** (headers) + **Lora** (body) + **JetBrains Mono** (code)
 - Color palette: Pure grayscale (white, blacks, grays) with no saturation
 - Typography scale: Rem-based, rooted at 87.5% for compact density
 - Reading line-height: 1.6 (optimized for Vietnamese text)

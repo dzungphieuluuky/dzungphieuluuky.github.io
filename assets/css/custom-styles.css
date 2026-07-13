@@ -22,7 +22,7 @@
    ==================================== */
 
 /* === TYPOGRAPHY === */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ====================================
    Palette & Variables (Light Mode)
@@ -30,9 +30,9 @@
 
 :root {
   /* Typography */
-  --font-serif: 'Be Vietnam Pro', 'Georgia', 'Times New Roman', serif;
-  --font-sans: 'Be Vietnam Pro', 'Georgia', 'Times New Roman', serif;
-  --font-display: 'Merriweather', Georgia, 'Times New Roman', serif;
+  --font-serif: 'Lora', 'Georgia', 'Times New Roman', serif;
+  --font-sans: 'Outfit', 'Inter', 'Arial', sans-serif;
+  --font-display: 'Outfit', 'Georgia', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
   /* Color Palette - Pure Black & White Minimalist */
@@ -74,14 +74,14 @@
   --shadow-lg:  0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-xl:  0 2px 4px rgba(0, 0, 0, 0.05);
 
-  --radius-xs:  0px;
-  --radius-sm:  2px;
-  --radius-md:  2px;
-  --radius-lg:  2px;
-  --radius-xl:  2px;
+  --radius-xs:  2px;
+  --radius-sm:  4px;
+  --radius-md:  6px;
+  --radius-lg:  8px;
+  --radius-xl:  12px;
 
-  --reading-width:       900px;
-  --reading-line-height: 1.75;
+  --reading-width:       728px;
+  --reading-line-height: 1.8;
   --reading-font-size:   1.175rem;
   --reading-font-size-sm: 0.9rem;
   --navbar-height:       60px;
@@ -201,19 +201,6 @@ strong, b {
   font-weight: 700;
 }
 
-a {
-  color: var(--text-primary);
-  text-decoration: underline;
-  text-decoration-color: rgba(0, 0, 0, 0.3);
-  text-underline-offset: 4px;
-  text-decoration-thickness: 1.5px;
-  font-weight: 500;
-}
-a:hover {
-  text-decoration-color: var(--text-primary);
-  text-decoration-thickness: 2px;
-}
-
 ::selection,
 ::-moz-selection {
   background: rgba(0, 0, 0, 0.1);
@@ -275,12 +262,121 @@ a:hover {
   pointer-events: none;
 }
 
-/* Static-first mode for professional academic reading and faster rendering */
+/* Fluid micro-interactions for immersive reading */
 *,
 *::before,
 *::after {
-  animation: none !important;
-  transition: none !important;
+  transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease, opacity 200ms ease, box-shadow 200ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+/* Custom scrollbar — signature detail */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-primary); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+html { scrollbar-color: var(--border-primary) transparent; scrollbar-width: thin; }
+
+#reading-progress {
+  transition: transform 150ms ease-out;
+}
+#reading-progress.complete {
+  box-shadow: 0 0 6px var(--text-primary);
+}
+
+@keyframes lightboxZoom {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.lightbox.active .lightbox-content img {
+  animation: lightboxZoom 300ms ease;
+}
+
+#scroll-to-top {
+  transition: opacity 300ms ease, transform 300ms ease, background-color 200ms ease;
+  transform: translateY(8px);
+}
+#scroll-to-top.visible {
+  transform: translateY(0);
+}
+
+.search-modal {
+  transition: opacity 200ms ease;
+}
+.search-modal.active {
+  animation: fadeIn 200ms ease;
+}
+
+.post-preview {
+  transition: background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.copy-btn {
+  transition: all 200ms ease;
+}
+
+.share-btn, .btn-primary, .btn-glow,
+.navbar-nav .nav-link, .blog-tags a {
+  transition: all 200ms ease;
+}
+
+.lightbox-content img {
+  transition: transform 300ms ease, box-shadow 300ms ease;
+}
+.lightbox-content img:hover {
+  transform: scale(1.02);
+}
+
+.metadata-item svg {
+  transition: opacity 200ms ease;
+}
+.metadata-item:hover svg {
+  opacity: 0.8;
+}
+
+/* Animated link underline — signature micro-interaction */
+a {
+  color: var(--text-primary);
+  font-weight: 500;
+  background-image: linear-gradient(var(--text-primary), var(--text-primary));
+  background-size: 0% 1.5px;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  transition: background-size 300ms ease, color 200ms ease;
+  text-decoration: none;
+}
+a:hover {
+  background-size: 100% 1.5px;
+}
+a:active {
+  background-size: 100% 1.5px;
+  opacity: 0.7;
+}
+
+/* Restore text-decoration for specific contexts that need it */
+.navbar-brand, .navbar-nav .nav-link, .post-preview,
+.post-preview h2, .post-preview h3,
+.search-result-item, .blog-tags a,
+.share-btn, .btn-primary, .btn-glow,
+.footnote-ref, .post-toc-box a,
+.inline-toc a, .cv-btn, .cv-open-link {
+  background-image: none;
+  text-decoration: none;
+}
+.navbar-brand:hover, .navbar-nav .nav-link:hover,
+.post-preview:hover h2, .post-preview:hover h3,
+.search-result-item:hover, .blog-tags a:hover,
+.share-btn:hover, .btn-primary:hover, .btn-glow:hover,
+.post-toc-box a:hover, .inline-toc a:hover,
+.cv-btn:hover, .cv-open-link:hover {
+  background-size: 0;
+  text-decoration: none;
 }
 
 /* ====================================
@@ -551,7 +647,7 @@ table td {
 table th {
   background: var(--table-header-bg) !important;
   color: var(--text-primary) !important;
-  font-family: 'Montserrat', sans-serif !important;
+  font-family: var(--font-sans) !important;
   font-weight: 600 !important;
   letter-spacing: 0.01em !important;
   font-size: 0.9rem !important;
@@ -581,22 +677,39 @@ table tr:hover td {
    Post Previews (Archive List)
    ==================================== */
 
+@keyframes postEntrance {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .posts-list { display: flex; flex-direction: column; gap: 0; }
 .post-preview {
   display: grid;
   grid-template-columns: 1fr 100px;
   grid-template-rows: auto auto auto;
   gap: 0.125rem 0.75rem;
-  padding: 1rem 0;
+  padding: 1.25rem 0.75rem;
+  margin: 0 -0.75rem;
   border-bottom: 1px solid var(--border-primary);
   background: transparent;
   cursor: pointer;
   text-decoration: none;
   align-items: center;
+  border-radius: var(--radius-sm);
+  animation: postEntrance 400ms ease both;
 }
+.post-preview:nth-child(1) { animation-delay: 0ms; }
+.post-preview:nth-child(2) { animation-delay: 60ms; }
+.post-preview:nth-child(3) { animation-delay: 120ms; }
+.post-preview:nth-child(4) { animation-delay: 180ms; }
+.post-preview:nth-child(5) { animation-delay: 240ms; }
+.post-preview:nth-child(6) { animation-delay: 300ms; }
+.post-preview:nth-child(7) { animation-delay: 360ms; }
+.post-preview:nth-child(8) { animation-delay: 420ms; }
 .post-preview:last-child { border-bottom: none; }
-.post-preview:hover h2,
-.post-preview:hover h3 { text-decoration: underline; text-decoration-color: var(--text-primary); text-underline-offset: 4px; }
+.post-preview:hover {
+  background: var(--bg-tertiary);
+}
 
 .post-preview .post-meta {
   grid-column: 1;
@@ -720,7 +833,8 @@ table tr:hover td {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   padding: 1.25rem 0;
   margin: 2rem 0 2.5rem;
   border-top: 1px solid var(--border-primary);
@@ -976,7 +1090,7 @@ table tr:hover td {
 
 .blog-post blockquote {
   position: relative;
-  padding: 1.5rem 0 1.5rem 1.5rem;
+  padding: 1.5rem 0 1.5rem 2rem;
   margin: 2rem 0;
   border-left: 4px solid var(--text-primary);
   background: transparent;
@@ -984,6 +1098,18 @@ table tr:hover td {
   font-style: italic;
   font-size: 0.95rem;
   line-height: 1.75;
+}
+.blog-post blockquote::before {
+  content: '\201C';
+  position: absolute;
+  top: -0.15em;
+  left: -0.35rem;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--text-primary);
+  opacity: 0.15;
+  font-family: var(--font-serif);
+  pointer-events: none;
 }
 .blog-post blockquote p {
   margin: 0.75rem 0;
@@ -1055,15 +1181,19 @@ table tr:hover td {
    ==================================== */
 
 .lightbox {
-  display: none;
   position: fixed;
   inset: 0;
   background: rgba(255, 255, 255, 0.95);
   z-index: 10000;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  transition: opacity 250ms ease;
 }
-.lightbox.active { display: flex; }
+.lightbox.active { opacity: 1; pointer-events: auto; }
+.lightbox.active .lightbox-content img { animation: lightboxZoom 300ms ease; }
 .lightbox-content img { max-width: 90vw; max-height: 90vh; border-radius: 0; box-shadow: var(--shadow-xl); }
 .lightbox-close {
   position: absolute;
@@ -1076,10 +1206,12 @@ table tr:hover td {
   background: none; border: none; color: var(--text-secondary); cursor: pointer;
 }
 .search-modal {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000;
   align-items: flex-start; justify-content: center; padding-top: 10vh;
+  opacity: 0; pointer-events: none; display: flex;
+  transition: opacity 200ms ease;
 }
-.search-modal.active { display: flex; }
+.search-modal.active { opacity: 1; pointer-events: auto; }
 .search-modal-content {
   background: var(--bg-primary); width: 100%; max-width: 600px; border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg); position: relative;
@@ -1224,7 +1356,7 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
   gap: 1rem;
 }
 .cv-download-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -1243,7 +1375,7 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
   padding: 0.65rem 1.2rem;
   border-radius: var(--radius-md);
   text-decoration: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-sans);
   border: 1px solid transparent;
   cursor: pointer;
   line-height: 1;
@@ -1274,7 +1406,7 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
   border-bottom: 1px solid var(--border-primary);
 }
 .cv-viewer-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1285,7 +1417,7 @@ details > *:not(summary) { padding: 1rem 1rem 0; }
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.73rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1350,9 +1482,9 @@ html.dark-mode {
   --bg-secondary:        #000000 !important;
   --bg-tertiary:         #1A1A1A !important;
   --bg-elevated:         #2A2A2A !important;
-  --text-primary:        #FFFFFF;
-  --text-secondary:      #E5E5E5;
-  --text-tertiary:       #CCCCCC;
+  --text-primary:        #F0F0F0;
+  --text-secondary:      #D4D4D4;
+  --text-tertiary:       #A8A8A8;
   --text-muted:          #808080;
   --border-primary:      #404040;
   --border-secondary:    #2A2A2A;
@@ -1407,7 +1539,7 @@ html.dark-mode .share-btn:hover,
 html.dark-mode .copy-btn:hover { border-color: var(--text-primary); color: var(--text-primary); background: transparent; }
 html.dark-mode .copy-btn.copied { background: var(--text-primary); color: #000000; border-color: var(--text-primary); }
 
-html.dark-mode .blog-post blockquote { background: #1E293B; color: var(--text-secondary); }
+html.dark-mode .blog-post blockquote { background: transparent; color: var(--text-secondary); }
 html.dark-mode .blog-post blockquote em,
 html.dark-mode .blog-post blockquote i { color: var(--text-primary); }
 

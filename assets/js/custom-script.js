@@ -123,6 +123,7 @@ const ReadingProgress = {
     const docHeight = (info?.docHeight ?? document.documentElement.scrollHeight) - (info?.viewportHeight ?? window.innerHeight);
     const progress = docHeight > 0 ? scrollTop / docHeight : 0;
     this.bar.style.transform = `scaleX(${progress})`;
+    this.bar.classList.toggle('complete', progress >= 0.995);
   }
 };
 

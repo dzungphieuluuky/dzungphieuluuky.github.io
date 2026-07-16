@@ -165,3 +165,4 @@ Vì ở vòng thi này thì `Mượn bàn phím` sẽ là thành viên dự bị
 ## Đấu Trường AI & Đối Đầu Trực Tiếp
 
 # Vòng chung kết
+Queo ở vòng này thì chúng mình hoàn toàn bị đội FirstDance hành lên bờ xuống ruộng luôn. Đa phần các câu hỏi chứa nhiều kiến thức về hệ thống phân tán và mật mã, phần phân tán là điểm yếu của cả nhóm vì không ai trong nhóm chuyên về mảng này. Riêng đối với mật mã thì chỉ có `Sáu học phần` là gánh được nhưng tốc độ không đọ lại được đội FirstDance. Đã vậy chênh lệch điểm số với đội còn lại cũng không quá cao, trời độ sao mà cuối cùng đội mình vẫn cao hơn đội kia vài điểm lẻ tẻ và may mắn giành được giải nhì. Trong khi đó thì FirstDance úp sọt cả 2 đội với con điểm hơn cả tổng 2 đội cộng lại luôn T_T. End of the journey rầu...

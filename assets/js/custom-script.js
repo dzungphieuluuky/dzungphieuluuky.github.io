@@ -4,7 +4,6 @@
 const CONFIG = {
   WORDS_PER_MINUTE: 238,
   SCROLL_TO_TOP_THRESHOLD: 380,
-  NAVBAR_HEIGHT: 58,
   THEME_STORAGE_KEY: 'sjbz-theme-preference',
   PREFER_DARK_MEDIA: '(prefers-color-scheme: dark)',
   ANNOUNCE_TO_SCREEN_READERS: true,
@@ -258,7 +257,6 @@ const ImageLightbox = {
 // 6. Post Table of Contents (HedgeDoc/HackMD style)
 // ====================================
 const PostTableOfContents = {
-  allExpanded: false,
   init() {
     const article = document.querySelector('article');
     if (!article) return;

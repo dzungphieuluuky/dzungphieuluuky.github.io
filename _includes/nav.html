@@ -2,7 +2,7 @@
 
   {%- if site.title-img -%}
     <a class="navbar-brand navbar-brand-logo" href="{{ '/' | absolute_url }}">
-      <img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url }}"/>
+      <img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url }}" loading="lazy"/>
     </a>
   {%- elsif site.title -%}
     <a class="navbar-brand" href="{{ '/' | absolute_url }}">{{ site.title }}</a>
@@ -88,7 +88,7 @@
                   id="search-trigger"
                   aria-label="Open search"
                   title="Search (Ctrl+K)">
-            <span id="nav-search-icon" class="fa fa-search" aria-hidden="true"></span>
+            <span id="nav-search-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
           </button>
         </li>
       {%- endif -%}
@@ -108,7 +108,8 @@
         <a href="{{ '/' | absolute_url }}">
           <img alt="Navigation bar avatar"
                class="avatar-img"
-               src="{{ site.avatar | relative_url }}" />
+               src="{{ site.avatar | relative_url }}"
+               loading="lazy" />
         </a>
       </div>
     </div>

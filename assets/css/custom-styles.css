@@ -285,7 +285,7 @@ strong, b {
 *,
 *::before,
 *::after {
-  transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease, opacity 200ms ease, box-shadow 200ms ease;
+  transition: color 200ms ease, background-color 200ms ease;
 }
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -341,12 +341,12 @@ html { scrollbar-color: var(--border-primary) transparent; scrollbar-width: thin
 }
 
 .copy-btn {
-  transition: all 200ms ease;
+  transition: opacity 200ms ease, border-color 200ms ease;
 }
 
 .btn-primary,
 .navbar-nav .nav-link, .blog-tags a {
-  transition: all 200ms ease;
+  transition: border-color 200ms ease;
 }
 
 .lightbox-content img {

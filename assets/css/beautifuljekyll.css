@@ -461,6 +461,11 @@ footer .footer-custom-content {
     margin: 0;
 }
 
+.posts-list .post-preview:nth-child(n+4) {
+  content-visibility: auto;
+  contain-intrinsic-size: 400px;
+}
+
 .post-preview {
   padding: 0.682rem 0;
   border-bottom: 1px solid #eee;

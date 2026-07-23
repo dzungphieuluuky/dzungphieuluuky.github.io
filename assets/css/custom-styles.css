@@ -331,6 +331,7 @@ html { scrollbar-color: var(--border-primary) transparent; scrollbar-width: thin
 
 .search-modal {
   transition: opacity 200ms ease;
+  contain: layout style paint;
 }
 .search-modal.active {
   animation: fadeIn 200ms ease;
@@ -778,7 +779,7 @@ table tr:hover td {
   font-size: 0.9rem;
 }
 .inline-toc ul { list-style: none; padding: 0; margin: 0; }
-.inline-toc li { margin: 0; line-height: 1.5; }
+.inline-toc li { margin: 0; line-height: 1.5; contain: layout style; }
 .inline-toc a {
   display: block;
   color: var(--text-muted);
@@ -860,6 +861,7 @@ table tr:hover td {
   position: relative;
   width: 100%;
   max-width: var(--reading-width);
+  contain: layout style;
 }
 .blog-post .toc-wrapper { display: none; }
 @media (min-width: 1520px) {
@@ -993,6 +995,7 @@ table tr:hover td {
   pointer-events: none;
   display: flex;
   transition: opacity 250ms ease;
+  contain: layout style paint;
 }
 .lightbox.active { opacity: 1; pointer-events: auto; }
 .lightbox.active .lightbox-content img { animation: lightboxZoom 300ms ease; }

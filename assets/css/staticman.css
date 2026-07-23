@@ -114,7 +114,6 @@
   border-top: 1px solid #f2f3f3;
 }
 .staticman-comments .page__comments-form {
-  -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
 }
 .staticman-comments .page__comments-form.disabled input, .staticman-comments .page__comments-form.disabled button, .staticman-comments .page__comments-form.disabled textarea, .staticman-comments .page__comments-form.disabled label {

@@ -25,6 +25,7 @@ description: At the intersection of physics and intelligence.
 
 navbar-links:
   About Me: "index"
+  Research: "research"
   Blogs: "blog"
   Categories: "tags"
 
@@ -62,7 +63,7 @@ social-network-links:
   # whatsapp: 15551212
 #  medium: yourname
 #  reddit: yourname or r/yoursubreddit
- # linkedin: dung-pham-99014b29a
+  linkedin: dung-pham-99014b29a
 #  xing: yourname
 #  stackoverflow: "3943160/daattali"
 #  snapchat: deanat78
@@ -76,8 +77,8 @@ social-network-links:
 #  calendly: yourname
 #  mastodon: instance.url/@username
 #  bluesky: yourname
-#  ORCID: your ORCID ID
-#  google-scholar: your google scholar
+  ORCID: "0000-0000-0000-0000"
+  google-scholar: "YOUR_SCHOLAR_ID"
 #  discord: "invite_code" or "users/userid" or "invite/invite_code"
 #  kaggle: yourname
 #  hackerrank: yourname

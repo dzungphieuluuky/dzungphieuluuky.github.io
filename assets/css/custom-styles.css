@@ -609,23 +609,6 @@ table tr:hover td {
   margin: 0;
   line-height: 1.2;
 }
-.post-preview p,
-.post-preview .post-excerpt {
-  grid-column: 1;
-  grid-row: 3;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  color: var(--text-tertiary);
-  line-height: 1.4;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.post-preview .post-preview-tags,
-.post-preview .post-read-more { display: none; }
 
 /* ====================================
    Navigation & Buttons
@@ -869,7 +852,6 @@ table tr:hover td {
    Post Layout / Content Elements
    ==================================== */
 
-.post-layout,
 .blog-post {
   margin: 0 auto;
 }

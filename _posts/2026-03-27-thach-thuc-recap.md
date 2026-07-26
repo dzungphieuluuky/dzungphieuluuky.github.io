@@ -1,9 +1,9 @@
 ---
 layout: post
 title: Recap Thách Thức 2026
-cover-img:
-thumbnail-img:
-share-img:
+cover-img: # TODO: add cover image (e.g., /assets/img/posts/thach-thuc-recap/cover.png)
+thumbnail-img: # TODO: add thumbnail image
+share-img: # TODO: add social share image
 tags: [personal]
 author: dzungphieuluuky
 ---
@@ -68,7 +68,7 @@ Trong lúc thi đấu ở bài đầu tiên này thì tụi mình thành công �
 
 ## 2. Lập Trình Tiếp Sức
 
-Ở phần thi này thì chúng mình đã sắp xếp sao cho các bạ mạnh về lập trình thi đấu sẽ xen kẽ với các bạn khác để thuận tiện hỗ trợ nhóm suốt phần thi. Đầu tiên, `Mượn bàn phím` sẽ là lượt đầu tiên để mở file, setup sẵn các thao tác đặt tên file và gõ template cho các bạn sau code. Template sẽ bao gồm include thư viện, prototype của các hàm cần thiết và hàm main để sẵn sàng cho logic chính của bài toán. Tiếp theo sẽ lần lượt là mình, `Bồ học Y`, `Mì cay cấp 7` và cuối cùng là `Cao lầu ngon lắm`. Theo thứ tự này thì `Bồ học Y` sẽ đứng sau hỗ trợ mình và `Cao lầu ngon lắm` sẽ hỗ trợ `Mì cay cấp 7`. Như vậy, gần như các bạn mạnh về lập trình thi đấu đã bao phủ được gần hết quá trình giải bài. Tuy vậy, vì đợt thi này 2 bạn chủ yếu về CP trong nhóm mình lại không hiểu rõ ý tưởng của nhau cho lắm nên kết thúc phần thi tụi mình vẫn chưa code xong và do đó vẫn chưa giành được phần điểm nào cho phần thi này. May mắn là các đội còn lại cũng rơi vào tình trạng tương tự, nên khoảng cách điểm giữa các đội vẫn giữ nguyên sau vòng đầu này. Theo mình thấy thì phần đấu này là phần đấu khó và căng thẳng nhất trong toàn bộ trận đấu vì đòi hỏi teamwork mạnh (hiểu rõ ý tưởng của nhau), thao tác nhanh và cẩn thận, ghi nhớ rõ đề và định hướng giải bài đã vạch ra (vì không được phép xem giấy nháp hoặc đề trong quá trình code mà chỉ được xem trước đó). Thông thường ở phần thi này sẽ rất dễ tạo khoảng cách điểm lớn nếu có duy nhất 1 đội nộp được bài và giành được điểm, khi đó đội nộp bài sẽ bỏ khá xa 2 đội còn lại và gần như tạo bàn đạp cho các phần thi sau. Anyway, các phần thi sau mới là lãnh địa của mình nên mình sẽ cố gắng ngăn cản khoảng cách điểm giữa đội mình và đội đối thủ nếu trường hợp này xảy ra.
+Ở phần thi này thì chúng mình đã sắp xếp sao cho các bạn mạnh về lập trình thi đấu sẽ xen kẽ với các bạn khác để thuận tiện hỗ trợ nhóm suốt phần thi. Đầu tiên, `Mượn bàn phím` sẽ là lượt đầu tiên để mở file, setup sẵn các thao tác đặt tên file và gõ template cho các bạn sau code. Template sẽ bao gồm include thư viện, prototype của các hàm cần thiết và hàm main để sẵn sàng cho logic chính của bài toán. Tiếp theo sẽ lần lượt là mình, `Bồ học Y`, `Mì cay cấp 7` và cuối cùng là `Cao lầu ngon lắm`. Theo thứ tự này thì `Bồ học Y` sẽ đứng sau hỗ trợ mình và `Cao lầu ngon lắm` sẽ hỗ trợ `Mì cay cấp 7`. Như vậy, gần như các bạn mạnh về lập trình thi đấu đã bao phủ được gần hết quá trình giải bài. Tuy vậy, vì đợt thi này 2 bạn chủ yếu về CP trong nhóm mình lại không hiểu rõ ý tưởng của nhau cho lắm nên kết thúc phần thi tụi mình vẫn chưa code xong và do đó vẫn chưa giành được phần điểm nào cho phần thi này. May mắn là các đội còn lại cũng rơi vào tình trạng tương tự, nên khoảng cách điểm giữa các đội vẫn giữ nguyên sau vòng đầu này. Theo mình thấy thì phần đấu này là phần đấu khó và căng thẳng nhất trong toàn bộ trận đấu vì đòi hỏi teamwork mạnh (hiểu rõ ý tưởng của nhau), thao tác nhanh và cẩn thận, ghi nhớ rõ đề và định hướng giải bài đã vạch ra (vì không được phép xem giấy nháp hoặc đề trong quá trình code mà chỉ được xem trước đó). Thông thường ở phần thi này sẽ rất dễ tạo khoảng cách điểm lớn nếu có duy nhất 1 đội nộp được bài và giành được điểm, khi đó đội nộp bài sẽ bỏ khá xa 2 đội còn lại và gần như tạo bàn đạp cho các phần thi sau. Anyway, các phần thi sau mới là lãnh địa của mình nên mình sẽ cố gắng ngăn cản khoảng cách điểm giữa đội mình và đội đối thủ nếu trường hợp này xảy ra.
 
 ## 3. Truy Tìm Lỗi Ẩn
 
@@ -104,33 +104,15 @@ Sau khi toàn bộ từ gợi ý của phần thi này được lật mở, vì 
 
 - **Chain of Thought**: Đây là 1 trong những kĩ thuật prompting cơ bản hỗ trợ quá trình suy luận của các reasoning model diễn ra tốt hơn. Bằng cách thinking theo từng bước và nối chúng lại thành 1 chain liền mạch, câu trả lời được tin rằng sẽ có chất lượng cao hơn => liên quan khá mạnh đến **REASONING MODEL**. Điểm: 8/10.
 
-- **Thinking**: Từ này gần như đồng nghĩa với từ **reasoning** nên có thể dễ dàng gợi ra từ **reasoning** ngay lập tức khi thấy từ này. Ngoài ra ta cũng có thể check xem THINKINGMODEL và REASONINGMODEL, từ nào sẽ đúng số lượng ký tự. Điểm: 9/10.
-
-- **Step by step**: Từ này liên quan mật thiết với **Chain of Thought** đã nói ở trên, vì CoT thực chất là trình bày reasoning của model theo từng bước (step by step) mà. Điểm: 8/10.
-
-- **Deepseek R1**: Đây là mô hình suy luận mã nguồn mở đầu tiên được Deepseek public nên là 1 case study quý giá cho những ai muốn tìm hiểu cơ chế huấn luyện và đánh giá các reasoning model diễn ra như thế nào. Đa phần các mô hình trước đó của OpenAI là closed-source model nên không thể tiếp cận được. Khá liên quan đến từ chủ đề nhưng cần kiến thức về Deepseek. Điểm: 7/10.
-
-- **Logical inference**: Đây là thao tác tương đối phức tạp cho các model chỉ mới được pre-trained trên các tập dataset khổng lồ vì chúng chỉ mới có world knowledge và chưa có khả năng reasoning tốt. Việc từ này xuất hiện ngụ ý các class model đã được post-training với reasoning dataset hơn các pretrained model. Điểm: 6/10.
-
-- **Problem decomposition**: Phân rã 1 vấn đề phức tạp thành từng phần nhỏ để xử lý. Từ 1 góc độ nào đó thì từ này khá liên quan đến CoT nhưng vẫn không tương quan mạnh lắm với từ chủ đề. Điểm: 6/10.
-
-- **Self-reflection**: Đây là cơ chế tự đánh giá các suy luận đã qua của model. Thường trong các blog post và paper liên quan đến cơ chế này, có 1 cụm từ thường xuất hiện đi kèm: "Aha" moment. Cụm từ này ám chỉ việc model đã tự phát hiện ra sai sót (flaw) trong quá trình reasoning trước đó của chính nó sau khi đã suy luận đến các bước sau và tự sửa lại suy luận sai thành đúng. Theo mình thấy đây là cơ chế khá brittle và tương đối khó kiểm soát vì không thể xác định được số lần self-reflection tối ưu cho model. Nếu số lần này quá ít, mô hình gần như không cải thiện về chất lượng suy luận và câu trả lời không có gì đảm bảo sẽ tốt hơn các pretrained model chỉ với kiến thức thô. Nếu số lần này quá nhiều, mô hình rất có thể sẽ mắc kẹt trong bẫy suy luận và tốn rất nhiều thời gian (và thậm chí là token, nói cách khác, tốn tiền) để cho ra câu trả lời, hoặc thậm chí mắc kẹt hoàn toàn và không sinh ra được câu trả lời dù đã đợi 1 khoảng thời gian dài. Theo quan điểm của mình thì đây là 1 chủ đề khá thú vị trong lĩnh vực Reasoning Model. Điểm: 7/10.
-
 - **System 2**: Như đã nói ở trên về lí do từ này có liên quan đến suy luận theo lý thuyết Dual Process Theory của Daniel Kahneman. Điểm: 8/10.
 
-- **Structured output**: Đã mô tả ở phần trên. Điểm: 8/10.
-
-- **Verification loop**: Từ này có quan hệ mật thiết với từ Self-reflection đã nói ở trên. Mỗi lần model self-reflect những suy luận trước đó có thể được xem là 1 iteration của quá trình verification loop. Điểm: 7/10.
-
-- **Monte Carlo tree**: Đây là cụm từ mình (1 cách chủ quan nhất có thể) đánh giá là kém liên quan nhất đến từ chủ đề. Thông thường khi nhắc đến Monte Carlo Tree, ta sẽ nghĩ đến thuật toán Monte Carlo Tree Search mà AlphaGo đã dùng để huấn luyện khả năng chơi cờ, hoặc nói rộng ra là chơi các trò chơi trí não có không gian trạng thái (state space) và hành động (action space) rời rạc như cờ. Do đó, từ gợi ý này không làm mình liên tưởng nhiều đến từ chủ đề bị ẩn giấu. Có thể các phương pháp SOTA đang áp dụng cách tiếp cận này cho các mô hình ngôn ngữ nhưng vì sức liên tưởng không cao nên mình không thể nói rằng từ này là 1 từ đáng để làm từ gợi ý cho từ chủ đề bị ẩn giấu. Điểm: 2/10.
-
-- **OpenAI o1**: Đã nói ở trên. Do cần kiến thức về bối cảnh công nghệ ngoài thực tế liên quan đến các doanh nghiệp như Deepseek, OpenAI, etc. Mình sẽ đánh giá từ này bằng từ Deepseek R1. Điểm: 7/10.
+Các từ gợi ý còn lại, i.e., Thinking, Step by step, Self-reflection, Verification loop, Deepseek R1, Logical inference, Problem decomposition, Structured output, OpenAI o1, đều xoay quanh cùng một chủ đề về suy luận và cải tiến lặp. Chỉ riêng Monte Carlo tree là cảm thấy lạc lõng, mình chỉ cho 2/10 điểm vì nó gắn với game-tree search hơn là reasoning trong ngôn ngữ.
 
 Thoạt nhìn ta tưởng rằng **Monte Carlo tree** là cụm từ bị đánh giá điểm thấp nhất trong các từ này, nhưng thực ra thứ có điểm tương quan thấp nhất chính là bức tranh sau khi đã lật mở toàn bộ mảnh ghép. Bức tranh chỉ việc chuyển đổi từ System 1 sang System 2 trong quá trình suy luận của con người. Tuy nhiên hình minh hoạ cho mỗi System lại khá trừu tượng và không liên tưởng mạnh lắm. Ngoài ra với độ chi tiết đến cực đoan và gam màu quen thuộc, mình chắc chắn $96.69\%$ là tấm ảnh này được tạo bằng NotebookLM. Kết thúc phần recap và đánh giá về phần thi đấu này.
 
 ## 5. Đấu Trường AI
 
-Đây có lẽ là phần thi duy nhất trong suốt trận đấu mà chúng mình không cần phải động tay động chân. Vì phần thi này chưa xuất hiện ở vòng loại nên chúng mình đã mất 1 khoảng thời gian để nắm rõ luật chơi và quy định của nó. Ở phần này thay vì chiến đấu trực tiếp với nhau thì mỗi đội sẽ cử ra các agent mà đội mình đã chuẩn bị sẵn để thi đấu với nhau trên 1 bản đồ mô phỏng các con thuyền chiến đấu với nhau. Mỗi agent điều khiển 1 chiếc thuyền và mục tiêu của vòng đấu này là thu thập nhiều vàng nhất có thể. Đội thắng cuộc top 1 trong mỗi lần đấu ở vòng này sẽ là đội có nhiều vàng nhất khi lượt đấu kết thúc. Trong quá tình đấu thì các thuyền còn có thể lấy khiên để giúp bản thân có thể đi xuyên chướng ngại vật mà không bị đắm thuyền và thậm chí bắn pháo qua lại để cướp vàng và phá khiên của nhau nữa. Ở vòng đấu này thì tụi mình đã tung ra khoảng 2-3 agent chính để tham gia thi đấu, đa phần trong số đó là agent do `Bồ học Y` và `Mì cay cấp 7` đã chuẩn bị sẵn từ trước. Sau khoảng 5 lượt đấu thì khoảng cách điểm của tụi mình so với 2 đội trước thay đổi không đáng kể vì tụi mình đã đạt kết quả khá tốt ở vòng đấu này nên đội bạn đã không lấy lại được nhiều lợi thế. Thường thì đây là phần thi vui nhất và có nhiều yếu tố không ngờ tới nhất, chẳng hạn như: các agent không hành động như team mong đợi, 2 agent nào đó mắc kẹt trong 1 vòng lặp khiến chúng thực hiện đồng thời các hành động giống nhau mà không thoát ra được, 1 agent nào đó bị trap trong 1 vòng lặp các hành động đến hết trận mà không lấy thêm được vàng, hay thú vị nhất là có các agent có thể né liên tiếp nhiều quả đạn pháo mà không bị dính đòn dù chỉ 1 lần, và còn nhiều trò hay khác nữa. Mình thấy đây có thể là phần thi thú vị nhất trong suốt trận đấu, bất kể đó là vòng bán kết hay chung kết thì đây là phần khiến tụi mình có thể là bất lực và cũng có thể là vỡ oà trong mừng rỡ khi con agent ngày đêm xây dựng đã giành được chiến thắng. Khán giả ở phần này lại được mãn nhãn bởi màn so tài và những điều thú vị không lường trước được từ hành vi của các agent với nhau. Đồng thời tụi mình cũng có thể nhiều kinh nghiệm khi build thêm các agent khác để chuẩn bị cho trận đấu chung kết tiếp theo sắp ập tới. Kudos cho `Mì cay cấp 7` và `Bồ học Y`.
+Đây có lẽ là phần thi duy nhất trong suốt trận đấu mà chúng mình không cần phải động tay động chân. Vì phần thi này chưa xuất hiện ở vòng loại nên chúng mình đã mất 1 khoảng thời gian để nắm rõ luật chơi và quy định của nó. Ở phần này thay vì chiến đấu trực tiếp với nhau thì mỗi đội sẽ cử ra các agent mà đội mình đã chuẩn bị sẵn để thi đấu với nhau trên 1 bản đồ mô phỏng các con thuyền chiến đấu với nhau. Mỗi agent điều khiển 1 chiếc thuyền và mục tiêu của vòng đấu này là thu thập nhiều vàng nhất có thể. Đội thắng cuộc top 1 trong mỗi lần đấu ở vòng này sẽ là đội có nhiều vàng nhất khi lượt đấu kết thúc. Trong quá tình đấu thì các thuyền còn có thể lấy khiên để giúp bản thân có thể đi xuyên chướng ngại vật mà không bị đắm thuyền và thậm chí bắn pháo qua lại để cướp vàng và phá khiên của nhau nữa. Ở vòng đấu này thì tụi mình đã tung ra khoảng 2-3 agent chính để tham gia thi đấu, đa phần trong số đó là agent do `Bồ học Y` và `Mì cay cấp 7` đã chuẩn bị sẵn từ trước. Sau khoảng 5 lượt đấu thì khoảng cách điểm của tụi mình so với 2 đội trước thay đổi không đáng kể vì tụi mình đã đạt kết quả khá tốt ở vòng đấu này nên đội bạn đã không lấy lại được nhiều lợi thế. Thường thì đây là phần thi vui nhất và có nhiều yếu tố không ngờ tới nhất, chẳng hạn như: các agent không hành động như team mong đợi, 2 agent nào đó mắc kẹt trong 1 vòng lặp khiến chúng thực hiện đồng thời các hành động giống nhau mà không thoát ra được, 1 agent nào đó bị trap trong 1 vòng lặp các hành động đến hết trận mà không lấy thêm được vàng, hay thú vị nhất là có các agent có thể né liên tiếp nhiều quả đạn pháo mà không bị dính đòn dù chỉ 1 lần, và còn nhiều trò hay khác nữa. Mình thấy đây có thể là phần thi thú vị nhất trong suốt trận đấu, bất kể đó là vòng bán kết hay chung kết thì đây là phần khiến tụi mình có thể là bất lực và cũng có thể là vỡ oà trong mừng rỡ khi con agent ngày đêm xây dựng đã giành được chiến thắng. Khán giả ở phần này lại được mãn nhãn bởi màn so tài và những điều thú vị không lườngg trước được từ hành vi của các agent với nhau. Đồng thời tụi mình cũng có thể nhiều kinh nghiệm khi build thêm các agent khác để chuẩn bị cho trận đấu chung kết tiếp theo sắp ập tới. Kudos cho `Mì cay cấp 7` và `Bồ học Y`.
 
 ## 6. Đối Đầu Trực Tiếp
 
@@ -152,7 +134,7 @@ Phần này thì nhóm chỉ luyện tập sơ sơ như các vòng trước ch�
 
 ## Lập Trình Tiếp Sức
 
-Ở phần này thì tụi mình luyện tập tương tự như những vòng trước. Tuy nhiên vì lúc thi thật thì 
+Ở phần này thì tụi mình luyện tập tương tự như những vòng trước. Tuy nhiên vì lúc thi thật thì bọn mình không kịp hoàn thành bài nào do đề có độ khó cao hơn dự kiến và thời gian setup cũng lâu hơn. Dù không ghi được điểm ở phần này, tinh thần cả đội vẫn ổn định nhờ lợi thế điểm số từ các vòng trước. 
 
 ## Truy Tìm Lỗi Ẩn
 
@@ -165,4 +147,15 @@ Vì ở vòng thi này thì `Mượn bàn phím` sẽ là thành viên dự bị
 ## Đấu Trường AI & Đối Đầu Trực Tiếp
 
 # Vòng chung kết
-Queo ở vòng này thì chúng mình hoàn toàn bị đội FirstDance hành lên bờ xuống ruộng luôn. Đa phần các câu hỏi chứa nhiều kiến thức về hệ thống phân tán và mật mã, phần phân tán là điểm yếu của cả nhóm vì không ai trong nhóm chuyên về mảng này. Riêng đối với mật mã thì chỉ có `Sáu học phần` là gánh được nhưng tốc độ không đọ lại được đội FirstDance. Đã vậy chênh lệch điểm số với đội còn lại cũng không quá cao, trời độ sao mà cuối cùng đội mình vẫn cao hơn đội kia vài điểm lẻ tẻ và may mắn giành được giải nhì. Trong khi đó thì FirstDance úp sọt cả 2 đội với con điểm hơn cả tổng 2 đội cộng lại luôn T_T. End of the journey rầu...
+
+Không khí của vòng chung kết hoàn toàn khác hẳn so với những vòng trước. Sân khấu lớn hơn, khán giả đông hơn, ánh đèn sân khấu rọi thẳng vào mặt từng đội chơi, cảm giác áp lực nhưng cũng đầy phấn khích. Từng giây từng phút trôi qua trong sự căng thẳng tột độ, mỗi câu hỏi đều như một đòn quyết định. Nhịp tim đập nhanh, những ánh mắt trao đổi giữa các thành viên trong nhóm, những cái gật đầu và những tiếng thở dài, tất cả hoà vào một thứ năng lượng điên cuồng khó tả.
+
+[TODO: describe your key moments, i.e., which questions stumped you, which calls paid off]
+
+Queo ở vòng này thì chúng mình hoàn toàn bị đội FirstDance hành lên bờ xuống ruộng luôn. Đa phần các câu hỏi chứa nhiều kiến thức về hệ thống phân tán và mật mã, phần phân tán là điểm yếu của cả nhóm vì không ai trong nhóm chuyên về mảng này. Riêng đối với mật mã thì chỉ có `Sáu học phần` là gánh được nhưng tốc độ không đọ lại được đội FirstDance. Dù vậy, nhìn lại thì mình thấy đội đã chiến đấu hết sức mình. Không ai tỏ ra buông xuôi dù bị dẫn trước; mỗi người vẫn cố gắng giành từng điểm nhỏ, từng cơ hội để rút ngắn khoảng cách. Có những khoảnh khắc tưởng chừng như đã tìm ra lối thoát, nhưng rồi lại bị bỏ lại phía sau bởi tốc độ đáng kinh ngạc của FirstDance.
+
+Đã vậy chênh lệch điểm số với đội còn lại cũng không quá cao, trời độ sao mà cuối cùng đội mình vẫn cao hơn đội kia vài điểm lẻ tẻ và may mắn giành được giải nhì. Trong khi đó thì FirstDance úp sọt cả 2 đội với con điểm hơn cả tổng 2 đội cộng lại luôn T_T.
+
+Giải nhì, một cảm xúc khó tả. Vừa tự hào vì đã đi xa đến vậy, vừa tiếc nuối vì suýt chạm tay vào ngôi vị cao nhất. Nhưng biết sao được, đối thủ quá mạnh và bản thân mình cũng đã học được rất nhiều từ hành trình này. Kinh nghiệm, kiến thức và những người bạn mới, tất cả đều xứng đáng hơn cả một chiếc cúp.
+
+Dù sao thì hành trình vẫn chưa kết thúc ở đây. Còn nhiều cuộc thi khác, nhiều thử thách khác đang chờ phía trước. Hẹn gặp lại các bạn ở những mùa Thách Thức sau nha!

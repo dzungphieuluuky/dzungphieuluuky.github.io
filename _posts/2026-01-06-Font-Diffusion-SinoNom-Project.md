@@ -1,12 +1,18 @@
 ---
 layout: post
 title: Font Diffusion for Sino-Nom Character Synthesis
-cover-img:
-thumbnail-img:
-share-img:
+cover-img: # TODO: add cover image (e.g., /assets/img/posts/font-diffusion/cover.png)
+thumbnail-img: # TODO: add thumbnail image
+share-img: # TODO: add social share image
 tags: [sino-nom, diffusion-models, deep-learning]
 author: dzungphieuluuky
 ---
+
+Sino-Nom character recognition is a niche but important problem. Historical Vietnamese documents use this script extensively, but there isn't enough training data for modern OCR models to handle them well. That's where this project comes in.
+
+I built a font diffusion pipeline to generate synthetic Sino-Nom character images, i.e., taking a small set of reference characters and using a diffusion model to create diverse stylistic variations. The output feeds into downstream OCR training, data augmentation, and alignment tasks. It's one of those projects that started as a quick experiment and grew into something much bigger: batch generation scripts, quality metrics, multi-GPU support, and full Hugging Face Hub integration.
+
+This post covers the architecture, walks through each module, and shares the usage commands if you want to run it yourself. There are also some reflections at the end on what I'd do differently. Let's dive in.
 
 # 1. Overview
 
@@ -24,6 +30,8 @@ This project comprises four primary modules:
 
 ## 1.2. Technical Stack
 
+I chose these libraries mainly for their ecosystem compatibility. PyTorch + Diffusers + Accelerate is a well-tested stack that handles everything from model definition to distributed training, which saved me from reinventing infrastructure code.
+
 The Font Diffusion module leverages the following core libraries:
 
 - **PyTorch**: Meta's deep learning framework for constructing model architectures.
@@ -32,9 +40,11 @@ The Font Diffusion module leverages the following core libraries:
 
 - **Accelerate**: A distributed training and inference library enabling efficient multi-GPU execution and significantly accelerating computation while maximizing GPU utilization on platforms like Kaggle.
 
-The system encompasses batch image generation, quality assessment mechanisms, dataset management, and seamless integration with Hugging Face Hub for optimized cloud-based storage and model distribution.
+The system supports batch image generation with built-in quality assessment. It also manages datasets efficiently and integrates with Hugging Face Hub for cloud-based storage and model distribution.
 
 # 2. Key Achievements and Features
+
+Of these, I'm particularly proud of the dataset generation pipeline, which went from a manual proof-of-concept script to a production-ready system that runs on dual T4 GPUs without babysitting.
 
 ## Primary Capabilities
 
@@ -83,6 +93,8 @@ The following sections outline the primary scripts and their respective function
 ---
 
 # 4. Usage Guide
+
+I've organized the pipeline into four phases. Running them in order should get you from raw character data to a trained model without surprises.
 
 *Note: The Jupyter notebook `font_diffusion.ipynb` (link below) includes pre-configured environments. Execute cells sequentially.*
 
@@ -202,6 +214,8 @@ python FontDiffusion/export_hf_dataset_to_disk.py \
 
 # 6. Experimental Results and Training Metrics
 
+The charts below show Phase 1 training curves from my W&B logs. The perceptual and offset loss coefficients were tuned relative to the baseline FontDiffuser implementation; I found that adjusting these helped stabilize training significantly.
+
 Phase 1 training logs (via Weights & Biases), with adjusted perceptual loss and offset loss coefficients relative to baseline implementation:
 
 - **Training Loss:** ![train loss](../figures/train_loss.png)
@@ -226,3 +240,15 @@ Phase 1 training logs (via Weights & Biases), with adjusted perceptual loss and 
    - **Unseen Content, Unseen Style (UCUS)**: Evaluates full generalization (primary metric).
    
    This stratification enables targeted ablation studies and component-level performance diagnosis.
+
+---
+
+# 8. Lessons Learned
+
+This project taught me more than I expected, i.e., both about diffusion models and about building ML systems that don't fall apart when you walk away.
+
+**The hardest part:** Debugging the FST module was the biggest time sink. Getting tensor dimensions to align through the style transformation pipeline took more effort than the actual model training. [TODO: add your specific struggle here, i.e., what broke, how you debugged it, how long it took]
+
+**What I'd do differently next time:** I'd build the validation framework earlier. Right now, model performance is bottlenecked by the image comparison module; I can't properly measure SCUS/UCSS/UCUS scores without it. Setting up these benchmarks from day one would have caught regressions faster and made ablation studies straightforward. Also, I'd containerize the environment sooner. Kaggle's background vs. interactive session differences caught me off guard more than once.
+
+**What's next:** Integrating the FST module is the obvious next step once tensor compatibility is resolved. I'm also exploring multi-scale feature extraction and auxiliary loss functions to push past the current saturation point. If you're working on a similar problem, I'd love to hear about your approach. [TODO: add your contact info or specific next steps]

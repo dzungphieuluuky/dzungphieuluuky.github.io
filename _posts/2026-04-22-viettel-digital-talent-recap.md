@@ -1,38 +1,123 @@
+
 ---
 layout: post
 title: Viettel Digital Talent Recap
-cover-img:
-thumbnail-img:
-share-img:
+subtitle: From doom-scrolling to training LLMs with RL, my journey through Phase 1
+cover-img: # TODO: add cover image (e.g., /assets/img/posts/viettel-digital-talent/cover.png)
+thumbnail-img: # TODO: add thumbnail image
+share-img: # TODO: add social share image
 tags: [personal, viettel]
 author: dzungphieuluuky
 ---
 
 # Introduction
-Here is my recap after finishing the Phase 1 in my Viettel Digital Talent 2026. It's been several months since the first time I heard about this programme and decided to apply for it. Let's go from the application to the first, biggest, solo, fast-paced project I had ever done in my undergraduate.
+Here is my recap after finishing Phase 1 of Viettel Digital Talent 2026. Several months have passed since I first heard about this programme and decided to apply. This post covers everything from the application process to the biggest, fastest-paced solo project I have ever taken on as an undergraduate.
 
-# Prepare CV for application
-One day, when I was doom scrolling on my facebook reels, I saw a program called Project X Vietnam 2026. Feeling some kind of curiosity, and also getting bored from a few months of not doing anything truly meaningful for myself, I decided to go straight to their fanpage. Then I saw a guy, who has the same major as me at university, on their poster with the name "Viettel Digital Talent" on his shirt. At that moment, I thought of perhaps I have just discovered something interesting enough to pull me out of this ultimate boredom so I go to their webpage to look for more information. Fortunately, the application is opening to the end of March 15, so I have a few days before it closes. The first round I need to pass is the TOEIC entrance test, which was totally predictable since I haven't had any english certificates yet :D. The english test was easy for me though, if my memory serves me right, I got a 955 on the test, listening and reading only. On the same day taking the english test, I also had to participate in the IQ logic test, which included mysterious squares, rectangles and hidden patterns among them. The test is kind of easy, though I have a bad impression on these kinds of IQ test, since I strongly believe that they are totally useless to judge anything meaningfully about a human. Finally I got around 112 out of 160 points for the IQ test, average :v since some guys mysteriosuly got a full score of 160 or at least 140+, holy grails! After a few days, another entrance test appear, the aptitude test or "Bài kiểm tra chuyên môn". This test is also the final one that I had to take, it will be different depending on which track you are participating, for example, I applied for track Data Science and Artificial Intelligence (DSAI) so I had to take the test related to these topics. Other track such as 5G, networking, digital design and verification, software engineering, data engineering, etc. would get a specially tailored test for them. Completed the final test, I got a 35/45 scores, which I considered not too high. Since the test contains some domain of data science (which is not my taste, my taste is deep learning) so I got nerfed in those questions, asking about SARIMA, ARIMA and time series processing. Although the score was not satisfactory for me, I heard that I has been passed straight to the program without an interview. Some guys on the forum said that only those with score around 33-34 may get an interview for further processing, and all guys with score >=35 all passed directly, whoops so lucky this time. And then, my journey with this program begins here.
+# Discovery & Application
+
+One day, while doom-scrolling through Facebook Reels, I stumbled across a post about a programme called "Project X Vietnam 2026." Feeling curious, and bored after months of doing nothing meaningful, I clicked through to their fanpage. There, I spotted a poster featuring someone from my university major, wearing a shirt that read "Viettel Digital Talent."
+
+That was when I realised I might have found something interesting enough to pull me out of my rut. I went straight to their website. Fortunately, applications were open until March 15, so I still had a few days left.
+
+**Round 1: English & IQ tests.** The first hurdle was the TOEIC entrance test, which was predictable since I did not have any English certificates yet. It was fairly straightforward; I scored 955 on the listening and reading sections. On the same day, I also sat through an IQ logic test with mysterious squares, rectangles, and hidden patterns. I have always been sceptical of these tests, since I do not believe they judge anything meaningful about a person, but I scored around 112 out of 160. That felt average compared to the people who somehow scored 140+.
+
+**Round 2: Aptitude test.** A few days later came the aptitude test (*Bài kiểm tra chuyên môn*), the final screening round. The content depends on which track you apply for. I went with Data Science and Artificial Intelligence (DSAI), so my test covered those topics. Other tracks, i.e., 5G, networking, digital design and verification, software engineering, data engineering, and so on, each received a tailored exam.
+
+I scored 35 out of 45, which I did not consider very high. The test included data science concepts like SARIMA, ARIMA, and time-series processing, not my strong suit (my interest leans toward deep learning). Despite the mediocre score, I heard that I was passed straight into the programme without an interview. Word on the forum was that scores of 33–34 might trigger an interview, while 35 and above meant direct entry. Lucky break.
+
+And so, my journey with Viettel Digital Talent began.
 
 # First Lectures
-At the beginning of the program, we only need to attend a few lectures each week. There would be lectures covering a wide range of topics: recommender system, speech processing, satellite image processing with spectral or something weird, finetuning large language models, transformers, MoE, and agentic systems. This stage is absolutely boring since we only sit there, open Zoom, watch the lecture or even mute it to do something else :V don't be me. We were annouced that there wlll be a mini project for each of us but the details information was not fully available at this time. Therefore, I just skim over this stage and continue to the real challenge in Phase 1: the project. Although it were called mini, later I discovered that this project alone is on the same scale with some of my old projects in the past few semesters :D hooray such a surprise. 
 
-# Project announcement
-On the day the Mini Project was announced, there are around 122 projects in total. Okay, straightforwardly, it blew my mind. I didn't think there would be so many projects, there were around 180 participants in the program so yeah each project contains only 2 slots to maintain the diversity as high as possible. Surfing around the list, I found some interesting and potential choice I could choose from. Currently I'm quite interested in generative models with diffusion/flow matching formulation and deep reinforcement learning (either policy training for general agents or reasoning training for LLMs). Therefore, I found some interesting projects worth my mind:
+At the beginning of the programme, we only needed to attend a few lectures each week. They covered a wide range of topics: recommender systems, speech processing, satellite image processing with spectral analysis, fine-tuning large language models, transformers, mixture of experts, and agentic systems. To be honest, this stage was quite boring. We sat there, opened Zoom, watched the lecture, or muted it and did something else. (Do not recommend.)
 
-## Self Evolving AI Agent for Telecom Failures
-This project is indeed interesting from its name. The methods introduced by mentors of this project cover a wide range from touching the weights through finetuning with reinforcement learning to agentic-based methods such as memory management, skills and harnesses during agents lifecycle. Although sounds interesting, this project seems to me a software engineering projets rather than ML/AI project, since its tech stack is completely something. It covers a wide range of topics, including: AirFlow, Astronomer Cosmos, OpenLineage, Marquez, etc. Oh my god, so many mysterious terms! Because of this overwhelming tech stack, I decided not to go with this topic, despite its coolness ;D
+We were told that a mini project would be assigned to each of us, but the details were not yet available. So I skimmed through this phase and moved on to the real challenge: the project. Despite being called "mini," I later discovered this single project was on par with some of my past semester-long projects. What a surprise.
 
-## Applying AI/ML in penetration testing and Redteaming
-This project focuses on penetration testing and auto redteaming using agentic systems in network system management. Mainly the deliverables would be a CLI application that use an AI Agent to performing cryptographic attack for testing, and yeah cryptography is definitely the final thing I want to learn in this world. I have no knack for that field after a trial semester with it. Therefore, I didn't go with this project either. 
+# Project Announcement
 
-## Adaptive Learning System 
-This project targetted at building a software for accelerating learning speed for high schoolers. The department in charged of this project is Viettel Business Solutions, so we can expect this project is probably the one that near the production stage the most in all these four projects I am talking about. Some of its features contains personalized syllabus, reduce redundant lessons, accelerate mastery speed, etc. Although this project mentioned some techniques related to reinforcement learning, I didn't find it interesting enough to put my efforts into. Therefore, I didn't go with this either.
+On the day the mini projects were announced, there were around 122 in total. That blew my mind. With roughly 180 participants in the programme, each project had only two slots to maximise diversity.
 
-## Fucntion Calling using Reinforcement Learning with Verifiable Rewards
-And here we comes with the final project I want to discuss among the four. This is the project that I chose to go with to conclude the project topic selection phase of the program. This project targetted at using RLVR to train a small language model to perform function calling (i.e, tool calling) tasks with a comparable performance with large language models. I chose this project mainly due to several reasons:
-- It uses RL as core techniques for training, which is my favourite domain in deep learning these days, of course alongside with generative models. However there were no generative-related projects in the list, so I went with this.
-- Its main contribution resolves around training and inference techniques, rather than building agentic system with a frozen model and a massive vendor lock-in that continuously tortures us with rate limits. As subjective as possible, I deemed projects that involve training and inference details AI projects, otherwise it would just be another software engineering project.
-- There was another guy in the program that shares 2/3 of my name is also interested in this project, so I thought that would confuse the mentor a lot :D
+Scrolling through the list, I found several interesting options. At the time, I was quite interested in generative models (diffusion and flow matching) and deep reinforcement learning, i.e., either policy training for general agents or reasoning training for LLMs. Here are the four that stood out:
 
-Surprisingly enough, the mentor that guide me in this project was happened to be the champion of Viettel AI Race 2025, an AI competition hosted by Viettel themselves in 2025. As soon as I learned this, I feel kinds of lucky to pick just the right one to help me this project :D
+## Self-Evolving AI Agent for Telecom Failures
+
+This project sounded exciting. The methods ranged from fine-tuning with reinforcement learning to agentic techniques like memory management, skills, and harnesses over an agent's lifecycle. But the tech stack read like a sysadmin's wishlist: Airflow, Astronomer Cosmos, OpenLineage, Marquez, and more. It felt more like a software engineering project than an ML/AI one. Despite its coolness, the overwhelming stack pushed me away.
+
+## Applying AI/ML in Penetration Testing and Red Teaming
+
+This project focused on auto red-teaming with agentic systems for network security. The deliverable was a CLI tool that used an AI agent to perform cryptographic attacks. Cryptography is the last thing I want to dive into; one trial semester was enough. Easy pass.
+
+## Adaptive Learning System
+
+This project aimed to build software that accelerates learning for high school students. It was run by Viettel Business Solutions, so it was probably the closest to production among the four. Features included personalised syllabi, redundant lesson reduction, and accelerated mastery. It mentioned some reinforcement learning techniques, but not enough to pull me in.
+
+## Function Calling using Reinforcement Learning with Verifiable Rewards
+
+This was the one I chose. The project aimed to use RLVR (Reinforcement Learning with Verifiable Rewards) to train a small language model to perform function (tool) calling, targeting performance comparable to much larger models.
+
+I picked it for a few reasons:
+
+- **Core technique**: RL is my favourite domain in deep learning right now (alongside generative models, but there were no generative projects on the list).
+- **Focus on training, not plumbing**: The contribution centred on training and inference techniques rather than building agentic systems around a frozen model with vendor-imposed rate limits. Subjectively, I consider projects with training and inference details "AI projects"; everything else is software engineering.
+- **Name twin**: Another participant sharing two-thirds of my name was also interested in this project. I thought that would confuse the mentor beautifully.
+
+As a bonus, the mentor assigned to guide me happened to be the champion of Viettel AI Race 2025, an AI competition hosted by Viettel. I felt incredibly lucky to have picked the right project.
+
+# Dataset
+
+Before training, I needed to pick a reference algorithm. The project involved: synthetic dataset generation from available function schemas, a training pipeline with ablation studies, evaluation of tool-calling performance, and of course reports and slides for submission.
+
+I was given 26 function schemas in a raw format and had to transform them into OpenAI-compatible JSON schemas. I split the data into two sets: **seen functions** for training and **unseen functions** for testing. To prevent overfitting to the telecom domain, I also injected dummy functions, i.e., `get_weather`, `get_traffic`, and similar, to distract the model from the core telecom functions and encourage generalisation.
+
+The dataset covered several calling scenarios:
+- **Single call**: the query required exactly one function call.
+- **Parallel calls**: multiple independent functions needed to be invoked.
+- **No call**: the query was irrelevant or out of scope, so the model had to abstain, a crucial skill for saving compute and maintaining security in production.
+
+After standardising everything into a homogeneous format (I have little data engineering experience, so this stage was tedious and soul-draining), I turned to algorithm selection.
+
+I wanted a GRPO variant. GRPO (Group Relative Policy Optimization) appealed to me because it eliminates the need for a separate critic and reward model, keeping only the policy and reference models, substantially reducing the computational overhead compared to traditional PPO.
+
+# Trainer
+
+I chose **RC-GRPO** (Reward-conditioned Group Relative Policy Optimization), a variant of GRPO introduced in a February 2026 arXiv paper. Its key innovation is maintaining diversity within each group rollout during GRPO training.
+
+Here is the problem it solves: traditional GRPO requires a supervised fine-tuning (SFT) warm start. By the time GRPO begins, the model has already converged to a peak policy that generates high-quality responses with the correct format. This means all rollouts in a group look similar, rewards become nearly identical, and the advantage signal collapses, i.e., vanishingly small gradients. That is **advantage collapse**.
+
+To evaluate different approaches, I planned several training pipelines:
+- SFT only
+- GRPO only
+- SFT → GRPO
+- RCTP → GRPO
+- SFT → RC-GRPO
+- RCTP → RC-GRPO
+
+Each pipeline has two phases:
+
+**Phase 1: SFT or RCTP.** RCTP (Reward-conditioned Trajectory Policy Fine-tuning) is similar to SFT but injects a reward token, i.e., `<|high_reward|>` or `<|low_reward|>`, into the system prompt to steer the model toward generating responses of the desired quality. This makes the model steerable from the start.
+
+**Phase 2: GRPO or RC-GRPO.** In RC-GRPO, during each group rollout, high- and low-reward tokens are injected into the system prompt of each completion. The probability of seeing the high-reward token follows the proportion of high-reward samples in the RCTP dataset, preventing distribution shift.
+
+# Bugs
+
+Here are some of the most interesting bugs I encountered during three hellish weeks of building this project:
+
+**[PLACEHOLDER: Describe each bug, i.e., what happened, why it was tricky, how you fixed it, and what you learned. Consider formatting each as a mini case study.]**
+
+Bug 1: [title]
+
+Bug 2: [title]
+
+Bug 3: [title]
+
+**[PLACEHOLDER: Add any memorable debugging moments, tool output screenshots, or "aha" revelations. These stories make the post relatable!]**
+
+# Closing Thoughts
+
+**[PLACEHOLDER: Write a reflection on the overall experience. Consider touching on:]**
+- What was the hardest part of Phase 1 beyond the technical work?
+- What would you do differently if you started over?
+- What skills or knowledge did this phase develop that you did not expect?
+- What are you looking forward to in Phase 2?
+- Who would you recommend this programme to?
+

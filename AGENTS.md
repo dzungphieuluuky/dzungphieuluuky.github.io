@@ -1,90 +1,82 @@
 # dzungphieuluuky.github.io — AGENTS.md
 
 ## Stack
-- Ruby/Jekyll (Beautiful Jekyll theme v6.0.1) — static site blog
-- Hosted on GitHub Pages, built via GitHub Actions (Ruby 3.3)
-- Custom CSS: Geist design system (`DESIGN.md`, `DESIGN_BRIEF.md`), Substack-minimalist (Be Vietnam Pro/Lora/JetBrains Mono)
-- Custom JS: modular init pattern (`assets/js/custom-script.js`) — DarkMode, ReadingProgress, TocHighlight, CodeCopy, ImageLightbox, EnhancedSearch, ReadMode, SchemaMarkup
-- LaTeX CV in `assets/cv/` (build: `pdflatex resume.tex`)
-
-## Platform: Windows
-**All bash/terminal commands use PowerShell 7 syntax.** No Linux/Mac assumptions.
-- Build: `bundle exec jekyll build`
-- Dev: `bundle exec jekyll serve`
-- CI: `.github/workflows/ci.yml` (ubuntu-latest, Ruby 3.3)
-- `tail`, `grep` aliases don't exist — use `Select-Object -Last N`, `Select-String` instead
-
-## Skill Loading
-Before executing any task, load the relevant skill(s):
-- **tdd-workflow** — before writing features, fixing bugs, or refactoring code
-- **e2e-testing** — before writing Playwright/browser tests
-- **verification-loop** — after completing features or before PR
-- **strategic-compact** — during long sessions approaching context limits
-- **eval-harness** — when defining evaluation criteria for AI-assisted work
+- **Ruby/Jekyll** (Beautiful Jekyll theme v6) — static site blog on GitHub Pages
+- CI: `.github/workflows/ci.yml` — `ubuntu-latest`, Ruby 3.3, `bundle exec appraisal jekyll build --future --config _config_ci.yml,_config.yml`
+- CSS: `assets/css/custom-styles.css` (1500 lines, never edit `beautifuljekyll.css`)
+- JS: `assets/js/custom-script.js` (895 lines, modular pattern)
+- CV: `assets/cv/resume.tex` / `new_resume.tex` — build: `pdflatex resume.tex`
 
 ## Commands
-- `open /write <topic>` — Draft blog post in `_posts/` using `.opencode/commands/write.md` template
-- `open /review-content <path>` — Review blog post content for voice/style
+| What | Command |
+|------|---------|
+| Dev server | `bundle exec jekyll serve` |
+| Build | `bundle exec jekyll build` |
+| CI build (appraisal) | `bundle exec appraisal jekyll build --future --config _config_ci.yml,_config.yml` |
+| Draft post | `open /write <topic>` (uses `.opencode/commands/write.md`) |
+| Review post | `open /review-content <path>` |
+| Verify build | `bundle exec jekyll build --future` (catches front-matter errors) |
 
 ## Content Rules
-- Blog posts in `_posts/` with YAML front matter (`layout: post`, `title`, `tags`)
-- Filename format: `YYYY-MM-DD-slug.md`
-- Front matter is REQUIRED — missing = post won't render
-- Future-dated posts excluded by default (Jekyll quirk)
-- Never edit `beautifuljekyll.css` directly — use `custom-styles.css` or `_config.yml`
-- Use CSS variables (`--text-primary`, `--bg-tertiary`) — never hardcode colors
-- Test **both light and dark mode** — dark mode in `html.dark-mode { }` blocks
-- Search corpus generated at `assets/data/searchcorpus.json`
-- Timezone: `America/Toronto`
+- Posts in `_posts/` with **required** YAML front matter: `layout: post`, `title`, `tags`, `author: dzungphieuluuky`
+- Filename: `YYYY-MM-DD-slug.md`
+- Future-dated posts excluded by default (Jekyll) — use `--future` to preview
+- Tags used so far: `personal`, `sino-nom`, `diffusion-models`, `deep-learning`, `reinforcement-learning`, `viettel`, `learning`
+- All 6 posts have `cover-img`, `thumbnail-img`, `share-img` YAML placeholders (format: `# TODO: add cover image`)
+- Timezone in `_config.yml`: `America/Toronto`
+- MathJax enabled (`use-math: true` in `_config.yml`)
 
-## Design System
-- `DESIGN.md` — Geist design tokens (grayscale palette 100–1000, spacing 4px base)
-- `DESIGN_BRIEF.md` — reading-first, academic-elegant philosophy
-- Blue = links/focus, Red = error, Amber = warning
-- Breakpoints: sm 401px, md 601px, lg 961px, xl 1200px, 2xl 1400px
-- Headers: Be Vietnam Pro | Body: Lora | Code: JetBrains Mono
-- **Vietnamese font check** — any new font must support Vietnamese diacritics
-- Max reading width: 728px, line-height: 1.6, font-size root: 87.5%
+## Design & CSS
+- **Never edit `beautifuljekyll.css`** — override in `custom-styles.css` or `_config.yml`
+- Use CSS variables (`--text-primary`, `--bg-tertiary`, `--border-primary`, etc.) — never hardcode colors
+- Light mode: `:root { }` / Dark mode: `html.dark-mode { }` blocks — test **both**
+- Dark mode palette inverts from white→black backgrounds, black→white text
+- Fonts: Be Vietnam Pro (sans/display), Lora (serif/body), JetBrains Mono (code)
+- Max reading width: 728px; line-height: 1.8; font-size: 1.175rem (87.5% root rem)
+- **Any new font must support Vietnamese diacritics** — check before importing
+- Design tokens in `DESIGN.md` (Geist palette), philosophy in `DESIGN_BRIEF.md`
+- Search corpus auto-generated at `assets/data/searchcorpus.json`
 
-## JavaScript Conventions
-- Modules follow `const ModuleName = { init() { ... } }` pattern
-- Init in 3 `DOMContentLoaded` batches: 1) Critical, 2) DOM-mutating (RAF), 3) Idle
+## JavaScript Conventions (custom-script.js)
+All modules follow `const ModuleName = { init() { ... } }` pattern. Init runs in `DOMContentLoaded`:
+
+```
+ScrollManager → ReadingProgress → ScrollToTop → DarkMode → ReadMode →
+CodeCopy → ImageLightbox → AutoNumbering → PostTableOfContents →
+TocHighlight → ReadingTime → ExternalLinks → EnhancedSearch → SchemaMarkup
+```
+
 - `ScrollManager` consolidates all scroll handlers in one RAF loop
 - Passive listeners for scroll/touch (`{ passive: true }`)
 - Cache DOM queries, lazy-load search corpus, CSS transitions over classList toggles
+- Theme flash prevention: IIFE before `DOMContentLoaded` checks localStorage
 
-## Important Gotchas
-- `_config.yml` page-col/text-col/link-col vars set to **dark navy/blue** colors — override via custom-styles.css `:root` variables
-- Pre-existing `_site/index.html` conflict (both `index.html` and `index.md`) — warning only
-- `_post_dummies/` contains sample/test posts not published
-- `DELETION_LOG.md` records all past CSS/JS dead code removal — check before searching for removed selectors
-- `.claude/hookify.*.local.md` files enforce Vietnamese font support rules
-- Gemfile has Windows-specific deps (tzinfo, wdm)
-- Build command with Appraisal: `bundle exec appraisal jekyll build --future --config _config_ci.yml,_config.yml`
+## Writing Voice (for blog posts)
+Full rules in `.github/copilot-instructions.md` and `.opencode/commands/write.md`.
 
-## Workflow Rules
+**For young researchers writing technical blogs — checklist:**
+- [ ] Lead with a concrete example, number, or anecdote — never abstraction
+- [ ] Each section: one clear purpose, one argument thread
+- [ ] Banned: "In today's rapidly evolving landscape", "game-changer", "cutting-edge", "revolutionary", "Moreover", "Furthermore"
+- [ ] Prefer active voice, short sentences, specific numbers
+- [ ] For deep-dives: provide a map → historical context → question-driven momentum → opinion where earned → end with concrete takeaways
+- [ ] Mark opinions explicitly ("We are firmly in opinion territory here...")
+- [ ] YAML front matter valid before calling it done
+- [ ] `bundle exec jekyll build` passes
+- [ ] Check both light & dark mode rendering
+- [ ] Remove filler: every sentence earns its place
 
-Enforced by orchestrator on every task. Delegate to appropriate subagent when scope matches.
+## Gotchas
+- `_config.yml` sets navy/blue `page-col`/`text-col`/`link-col` — CSS variables in `custom-styles.css` override these for the Substack-minimalist look
+- `_post_dummies/` contains ~14 unpublished draft posts — not published to site
+- `DELETION_LOG.md` records dead CSS/JS removed — check before searching for deleted selectors
+- `.claude/hookify.*.local.md` enforces Vietnamese font support rules
+- `Gemfile` has Windows-specific deps (`tzinfo`, `wdm`) — ignored on Linux/CI
+- Pre-existing `_site/index.html` vs `index.md` conflict — build warning, harmless
+- Em dashes (—) should be replaced with `, `, `; `, or `, i.e., ` depending on context — avoids comma splices
 
-### 1. Token Optimizer for File Operations
-Use `smart_read`, `smart_grep`, `smart_edit`, `smart_write` from Token Optimizer MCP over native `read`/`grep`/`edit`/`write`. Returns cached diffs on re-read instead of full content. Saves tokens proportional to file size and access frequency. Delegate file-intensive tasks to `token-optimizer` agent.
-
-### 2. Parallel Search MCP for Web Research
-Use `parallel-search_web_search` / `parallel-search_web_fetch` for internet lookups. Supports multiple search queries in one call — faster and cheaper than chaining single-threaded websearches. Delegate research tasks to `researcher` agent.
-
-### 3. Sequential Thinking for Plans & Analysis
-Use `sequential-thinking_sequentialthinking` BEFORE planning architecture, debugging complex bugs, or making significant design decisions. Breaks reasoning into verifiable steps with revision support. Delegate planning tasks to `planner` agent.
-
-## Custom Subagents
-
-Three project-local agents available via `task(..., subagent_type="...")`:
-- `token-optimizer` — file reads/searches/edits using smart_* tools
-- `researcher` — web research via parallel-search MCP
-- `planner` — structured planning via sequential-thinking
-
-## AI Writing Guidance
-Full article writing, voice, and banned-pattern rules in `.github/copilot-instructions.md`.
-- Lead with concrete example, not filler
-- Never: "In today's rapidly evolving landscape", "game-changer", "cutting-edge"
-- Prefer active voice, short sentences, specific numbers
-- Apply "Sander approach" for deep-dive technical posts: map, history, question-driven momentum
+## Build Verification
+Before PR/commit:
+1. `bundle exec jekyll build --future` — must exit 0
+2. Check `lsp_diagnostics` on changed `.md` files (Markdown lint not configured, but build catches template errors)
+3. Test dark mode: toggle in browser — CSS variable overrides must cover all new elements

@@ -158,7 +158,7 @@ const TocHighlight = {
   init() {
     const headings = document.querySelectorAll('h1[id], h2[id], h3[id]');
     if (!headings.length) return;
-    document.querySelectorAll('.inline-toc a, .toc-container a, .post-toc-box a').forEach(link => {
+    document.querySelectorAll('.post-toc-box a').forEach(link => {
       const id = link.getAttribute('href')?.slice(1);
       if (!id) return;
       if (!this.tocLinkMap.has(id)) this.tocLinkMap.set(id, []);
@@ -260,67 +260,8 @@ const PostTableOfContents = {
   init() {
     const article = document.querySelector('article');
     if (!article) return;
-
-    // Use template structure when present; only create missing pieces.
-    const blogPost = article.closest('.blog-post') || article.parentElement;
-    if (!blogPost) return;
-
-    let tocWrapper = blogPost.querySelector('.toc-wrapper');
-    if (!tocWrapper) {
-      tocWrapper = document.createElement('div');
-      tocWrapper.className = 'toc-wrapper';
-      blogPost.appendChild(tocWrapper);
-    }
-
-    let inlineToc = tocWrapper.querySelector('.inline-toc');
-    if (!inlineToc) {
-      inlineToc = document.createElement('nav');
-      inlineToc.id = 'inline-toc';
-      inlineToc.className = 'inline-toc';
-      inlineToc.setAttribute('aria-label', 'Table of contents');
-      inlineToc.innerHTML = '<div class="inline-toc-title"><button class="toc-toggle-btn" aria-expanded="true">▼ Contents</button></div><ul></ul>';
-      tocWrapper.appendChild(inlineToc);
-    }
-
-    // Guarantee a root list container for TOC items.
-    let tocList = inlineToc.querySelector(':scope > ul');
-    if (!tocList) {
-      tocList = document.createElement('ul');
-      inlineToc.appendChild(tocList);
-    }
-
     const headers = article.querySelectorAll('h1[id], h2[id], h3[id]');
     if (headers.length < 1) return;
-    const levelOf = { H1: 1, H2: 2, H3: 3 };
-    const buildTocItemsHtml = () => {
-      let html = '';
-      let h2Open = false;
-      headers.forEach((header, idx) => {
-        const id = header.id;
-        const text = header.textContent.replace(/^\d+\.?\s*/, '').trim();
-        const level = levelOf[header.tagName];
-        if (level === 1) {
-          if (h2Open) { html += '</ul></li>'; h2Open = false; }
-          html += `<li class="toc-h1"><a href="#${id}">${text}</a></li>`;
-        } else if (level === 2) {
-          if (h2Open) html += '</ul></li>';
-          let hasH3 = false;
-          for (let i = idx+1; i < headers.length; i++) {
-            const next = levelOf[headers[i].tagName];
-            if (next === 2 || next === 1) break;
-            if (next === 3) { hasH3 = true; break; }
-          }
-          const toggle = hasH3 ? `<button class="toc-expand-toggle">▼</button>` : '';
-          html += `<li class="toc-h2">${toggle}<a href="#${id}">${text}</a>`;
-          if (hasH3) { html += '<ul>'; h2Open = true; }
-          else html += '</li>';
-        } else if (level === 3 && h2Open) {
-          html += `<li class="toc-h3"><a href="#${id}">${text}</a></li>`;
-        }
-      });
-      if (h2Open) html += '</ul></li>';
-      return html;
-    };
 
     const buildPostTocHtml = () => {
       const items = [];
@@ -332,8 +273,6 @@ const PostTableOfContents = {
       });
       return items.join('');
     };
-
-    tocList.innerHTML = buildTocItemsHtml();
 
     // Create an in-article TOC at the beginning of each post.
     let postTocBox = article.querySelector(':scope > .post-toc-box');
@@ -355,18 +294,6 @@ const PostTableOfContents = {
         ${buildPostTocHtml()}
       </ul>
     `;
-
-    inlineToc.addEventListener('click', (e) => {
-      const btn = e.target.closest('.toc-expand-toggle');
-      if (!btn) return;
-      const li = btn.closest('.toc-h2');
-      if (!li) return;
-      const ul = li.querySelector('ul');
-      if (!ul) return;
-      const isHidden = ul.style.display === 'none';
-      ul.style.display = isHidden ? '' : 'none';
-      btn.textContent = isHidden ? '▼' : '▶';
-    });
   }
 };
 

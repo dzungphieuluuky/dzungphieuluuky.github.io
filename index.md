@@ -1,13 +1,11 @@
 ---
 layout: page
-title: Representation
-subtitle: Everything is a representation
+title: Per aspera ad astra
+subtitle: Through hardships to the stars
 markdown: kramdown
 ---
 
-## Research Statement
-
-I'm an undergraduate researcher interested in deep learning and intelligent systems. My research focuses on sample-efficient reinforcement learning, representation learning, and diffusion-based generative modeling — particularly how they intersect with physics-inspired learning mechanics.
+I'm an undergraduate researcher interested in deep learning and intelligent systems. My research focuses on sample-efficient reinforcement learning, representation learning, and generative modeling using diffusion/flow frameworks.
 
 ## Projects
 
@@ -57,10 +55,6 @@ I'm an undergraduate researcher interested in deep learning and intelligent syst
 </div>
 
 </div>
-
-## Publications
-
-Publications forthcoming.
 
 ## Blog / Writing
 

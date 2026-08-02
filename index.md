@@ -5,7 +5,7 @@ subtitle: Through hardships to the stars
 markdown: kramdown
 ---
 
-I'm an undergraduate researcher interested in deep learning and intelligent systems. My research focuses on sample-efficient reinforcement learning, representation learning, and generative modeling using diffusion/flow frameworks.
+I'm an undergraduate researcher interested in deep learning and intelligent systems. My research focuses on sample-efficient reinforcement learning, representation learning, and generative modeling using diffusion/flow frameworks. I occasionally write about my projects and research thoughts on my [blog](/blog/).
 
 ## Projects
 
@@ -56,10 +56,6 @@ I'm an undergraduate researcher interested in deep learning and intelligent syst
 
 </div>
 
-## Blog / Writing
-
-I occasionally write about my projects and research thoughts on my <a href="/blog/">blog</a>.
-
 ## Favourite Channels
 
 Watching YouTube is one of my ways of burning time when I'm free, some of my favourite channels are:
@@ -71,16 +67,13 @@ Watching YouTube is one of my ways of burning time when I'm free, some of my fav
 ## Favourite blog posts
 
 - [**Sander Dieleman**](https://sander.ai/): a research scientist at Google Deepmind. I'm currently learning a lot from his blog posts, which range around 30 minutes to 60 minutes reading time. This is a treasure trove for those who seeks to understand generative modelling far beyond the textbooks as the insights from his research is totally fantastic.
-- [**Lilian Weng**](https://lilianweng.github.io/): I usually use her blog posts to graps the broad understanding of the state-of-the-art of any machine learning disciplines that I'm interested. Her blog posts are very long, containing a large amount of knowledge about many topics. If you want to grasp what is happening in a specific field, her blog posts are definitely where to go.
+- [**Lilian Weng**](https://lilianweng.github.io/): I usually use her blog posts to grasp the broad understanding of the state-of-the-art of any machine learning disciplines that I'm interested. Her blog posts are very long, containing a large amount of knowledge about many topics. If you want to grasp what is happening in a specific field, her blog posts are definitely where to go.
 - [**Cameron Wolfe**](https://cameronrwolfe.substack.com/): This LLM researcher has a nice substack portal with dozens of high quality blogs suitable for those interested in deep learning frontiers in general and LLM in particular. I find his posts contain a handful of knowledge without being too mathematically heavy to understand. Good starting point for those who are beginners in the field or not ready for more math-heavy blogs.
 
-## Mathematics taste
+## About me
 
 - Like: linear algebra, calculus, differential equations and high-dimensional unintuitive phenomenona.
 - Don't like: combinatorics, graph theory, number theory, discrete mathematics in general.
-
-## Fun facts
-
 - I'm most productive during night time.
 - I enjoy reading anime character wikipedias rather than actually watching that exactly anime series. Quite excited to do research about my favourite anime characters.
 - My learning fuel: curiosity and probably too much coffee everyday intake.

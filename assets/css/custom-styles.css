@@ -601,6 +601,10 @@ table tr:hover td {
   margin: 0;
   line-height: 1.2;
 }
+.post-preview .post-read-more,
+.post-preview .post-read-more:hover {
+  color: var(--text-primary);
+}
 
 /* ====================================
    Navigation & Buttons

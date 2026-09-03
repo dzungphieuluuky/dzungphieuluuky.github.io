@@ -98,7 +98,7 @@ Human insight remains highly critical in defining:
 
 * **Structural Inductive Biases:** The original Convolutional Neural Network didn't hard-code features, but it *did* hard-code the concept of spatial locality and translation equivariance. The Transformer hard-codes the capacity for dynamic, data-dependent routing via attention.
 * **Objective Function Formulations:** Designing loss functions, alignment criteria, and regularization paths that prevent representation collapse (such as over-smoothing in deep attention networks).
-* **Data Topography:** Curing, filtering, and structuring massive, high-quality datasets so that the optimization paths remain clean and informative.
+* **Data Topography:** Curating, filtering, and structuring massive, high-quality datasets so that the optimization paths remain clean and informative.
 
 The practical takeaway for researchers is a shift in perspective. The next time you feel tempted to engineer a clever local feature, design a rigid architectural trick, or hand-craft a domain-specific constraint, it is worth pausing to evaluate the scaling limit. Ask yourself: *Am I fixing a fundamental structural bottleneck, or am I just trying to do the optimization algorithm's job for it?*
 

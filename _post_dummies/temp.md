@@ -19,7 +19,7 @@ author: dzungphieuluuky
 
 ### Các tính năng chính
 
-* **Pipeline tạo dataset:** Tạo hình ảnh font chữ dựa trên ảnh content (Hán Nôm Tự Tạo do thầy Điền cung cấp) và 15 ảnh style sưu tầm (tiềm năng cần sưu tầm thêm ảnh style để dataset đa dạng hơn, vì training phase 2 lấy default là 16 ảnh negative style để setup cho kĩ thuật constrastive learning).
+* **Pipeline tạo dataset:** Tạo hình ảnh font chữ dựa trên ảnh content (Hán Nôm Tự Tạo do thầy Điền cung cấp) và 15 ảnh style sưu tầm (tiềm năng cần sưu tầm thêm ảnh style để dataset đa dạng hơn, vì training phase 2 lấy default là 16 ảnh negative style để setup cho kĩ thuật contrastive learning).
 * **Hỗ trợ đa GPU:** Tích hợp thư viện Accelerate cho phép inference và training phân tán, tận dụng tối đa tài nguyên (ví dụ: 2 GPU Kaggle).
 * **Quản lý Dataset:** Sử dụng định dạng **parquet** (Apache Arrow) giúp tốc độ upload/download từ Hugging Face nhanh vượt trội so với file thô.
 * **Module Đánh giá:** Tích hợp sẵn các chỉ số LPIPS, SSIM, FID.
@@ -207,4 +207,4 @@ Một số hình ảnh log từ quá trình train Phase 1 (Perceptual loss và O
 - Seen content unseen style (SCUS)
 - Unseen content seen style (UCSS)
 - Unseen content unseen style  (UCUS)  
-  Do đó hủ yếu đánh giá trên tập UCUS, khi cần debug performance cụ thể cho 1 yếu tố nào thì có thể dùng 2 tập SCUS và UCSS để xét riêng content hoặc style.
+  Do đó chủ yếu đánh giá trên tập UCUS, khi cần debug performance cụ thể cho 1 yếu tố nào thì có thể dùng 2 tập SCUS và UCSS để xét riêng content hoặc style.

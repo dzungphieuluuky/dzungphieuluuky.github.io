@@ -15,7 +15,7 @@ Generative AI these days are becoming increasingly complex and capable than ever
 
 # Natural Language Processing project
 
-Everything start from the project topic seleciton on Introduction to Natural Language Processing course. In this course, we will need to choose one topic out of list containing around 20 topics and spend the next 10 weeks on that topic alone. Out of these topics, we decided to choose the Sino-Nom transliteration topics. My friend in the team has been a member in a lab of one of the professor in my univeristy so he told me to choose that topic because it seems easier and highly relevant with some work he had already done for the lab. 
+Everything start from the project topic selection on Introduction to Natural Language Processing course. In this course, we will need to choose one topic out of list containing around 20 topics and spend the next 10 weeks on that topic alone. Out of these topics, we decided to choose the Sino-Nom transliteration topics. My friend in the team has been a member in a lab of one of the professor in my university so he told me to choose that topic because it seems easier and highly relevant with some work he had already done for the lab. 
 
 - kể về đồ án sino nom transliteration gốc
 
@@ -25,7 +25,7 @@ Everything start from the project topic seleciton on Introduction to Natural Lan
 
 - đọc blog của lilian weng và sander để nắm sơ ý tưởng
 
-- đám nhau với repo của fontdiffuser và cài đặt version thưu viện
+- đánh nhau với repo của fontdiffuser và cài đặt version thư viện
 
 # Mid Journey not midjourney
 

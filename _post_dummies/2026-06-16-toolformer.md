@@ -76,7 +76,7 @@ Six RL algorithms were implemented and benchmarked:
 
 1. **RC-GRPO** (Reward-Conditional GRPO) — the primary method
 2. **DAPO** (Dynamic Allocation Policy Optimization)
-3. **CISPO** (Clipped Import Sampling Policy Optimization)
+3. **CISPO** (Clipped Importance Sampling Policy Optimization)
 4. **GRPO** (standard Group Relative Policy Optimization)
 5. **GRPO + KL=0 ablation**
 6. **Loss-type ablation** (comparing token-level vs. sequence-level rewards)

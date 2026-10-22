@@ -1,0 +1,281 @@
+- generic [ref=f12e1]:
+  - link "Skip to main content" [ref=f12e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation [ref=f12e3]:
+    - link "dzungphieuluuky's Blog" [ref=f12e4] [cursor=pointer]:
+      - /url: http://localhost:4002/
+    - list [ref=f12e6]:
+      - listitem [ref=f12e7]:
+        - link "About Me" [ref=f12e8] [cursor=pointer]:
+          - /url: /index
+      - listitem [ref=f12e9]:
+        - link "Research" [ref=f12e10] [cursor=pointer]:
+          - /url: /research
+      - listitem [ref=f12e11]:
+        - link "Blogs" [ref=f12e12] [cursor=pointer]:
+          - /url: /blog
+      - listitem [ref=f12e13]:
+        - link "Categories" [ref=f12e14] [cursor=pointer]:
+          - /url: /tags
+      - listitem [ref=f12e15]:
+        - link "CV" [ref=f12e16] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f12e17]:
+        - link "CV" [ref=f12e18] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f12e19]:
+        - button "Switch to light mode" [ref=f12e20] [cursor=pointer]
+      - listitem [ref=f12e27]:
+        - button "Open search" [ref=f12e28] [cursor=pointer]
+    - link [ref=f12e35] [cursor=pointer]:
+      - /url: http://localhost:4002/
+      - img "Navigation bar avatar" [ref=f12e36]
+  - dialog "Search modal":
+    - generic:
+      - button "Close search": ×
+      - generic:
+        - textbox "Search posts and articles" [active]:
+          - /placeholder: Search articles and posts... (Cmd+K)
+        - generic: ↑↓ to navigate ⏎ to select Esc to close
+  - main [ref=f12e37]:
+    - generic [ref=f12e43]:
+      - heading "Experience along the way" [level=1] [ref=f12e44]
+      - text: By
+      - strong [ref=f12e45]: dzungphieuluuky
+      - generic [ref=f12e46]: Posted on April 29, 2026
+    - main [ref=f12e47]:
+      - generic [ref=f12e49]:
+        - article [ref=f12e51]:
+          - generic [ref=f12e52]:
+            - generic [ref=f12e57]:
+              - strong [ref=f12e58]: "8"
+              - text: min read
+            - generic [ref=f12e59]:
+              - generic [ref=f12e60]: April 29, 2026
+              - generic [ref=f12e61]: · 8 minute read
+            - button "Toggle read mode" [ref=f12e62] [cursor=pointer]
+            - generic [ref=f12e70]:
+              - strong [ref=f12e71]: 1,797
+              - text: words
+          - navigation "Table of contents" [ref=f12e72]:
+            - generic [ref=f12e73]: Contents
+            - list [ref=f12e74]:
+              - listitem [ref=f12e75]:
+                - link "What is this blog talking about?" [ref=f12e76] [cursor=pointer]:
+                  - /url: "#what-is-this-blog-talking-about"
+              - listitem [ref=f12e77]:
+                - link "Using wrapper model" [ref=f12e78] [cursor=pointer]:
+                  - /url: "#using-wrapper-model"
+              - listitem [ref=f12e79]:
+                - link "Not unwrapping model enough" [ref=f12e80] [cursor=pointer]:
+                  - /url: "#not-unwrapping-model-enough"
+              - listitem [ref=f12e81]:
+                - link "Saving model with tokenizer" [ref=f12e82] [cursor=pointer]:
+                  - /url: "#saving-model-with-tokenizer"
+              - listitem [ref=f12e83]:
+                - link "Always have degeneration detection in your NLP projects" [ref=f12e84] [cursor=pointer]:
+                  - /url: "#always-have-degeneration-detection-in-your-nlp-projects"
+              - listitem [ref=f12e85]:
+                - link "Aware with different backends between interactive and background Kaggle" [ref=f12e86] [cursor=pointer]:
+                  - /url: "#aware-with-different-backends-between-interactive-and-background-kaggle"
+              - listitem [ref=f12e87]:
+                - link "Create test mode for functional testing before long run" [ref=f12e88] [cursor=pointer]:
+                  - /url: "#create-test-mode-for-functional-testing-before-long-run"
+          - heading "What is this blog talking about?" [level=1] [ref=f12e89]
+          - paragraph [ref=f12e90]:
+            - text: Doing projects is perhaps the most effective way to build up our knowledge and experience in any fields, especially disciplines that require a large amount of practical experience to get better. Since all of my projects are entirely about machine learning, deep learning and AI in general so today I would like to share some of my experience along the way. Some of them I have learnt the hard way (wasting tons of time waiting, tons of GPU quota, frustrated through many days,
+            - generic [ref=f12e91]:
+              - generic [ref=f12e93]: …
+              - math [ref=f12e96]:
+                - generic [ref=f12e97]: …
+            - text: ), so I think documenting them at somewhere should help me in the future review easier to not make the same mistake again and to also demonstrate my own learning journey. Just applying Feynman’s technique by the way, let’s go.
+          - heading "Using wrapper model" [level=3] [ref=f12e98]
+          - paragraph [ref=f12e99]:
+            - text: While I was doing my project on detecting AI or human generated code, I used a technique called Stochastic Weights Averaging. This technique allows us to intervene the update parameters process of the optimizer and gradually change the weights of the model more stably and with stronger momentum on old model weights. This helps us to boost generalization of the model, prevent overfitting and control the training stability. More details about this technique can be found online. Thing I want to say is that the torch library already provide us with very nice
+            - code [ref=f12e100]: torch.optim.swa_utils
+            - text: and its corresponding
+            - code [ref=f12e101]: AveragedModel
+            - text: to help us cut out the boilerplate code of setting this technique. But after calling
+            - code [ref=f12e102]: AveragedModel
+            - text: to wrap the model, we should notice that the model (especially if you are using
+            - code [ref=f12e103]: transformers
+            - text: library) no longer contains
+            - code [ref=f12e104]: save_pretrained
+            - text: method that HuggingFace provides us. This is due to it wraps the model inside thus only the model inside has this method. Therefore, we should check whether we have unwrap the model inside to get the real method, since the outer wrapper does not contain this method and would potentially fail to save the checkpoints. This is a small experience but could eat a lot of your training time meaninglessly especially if we are not careful enough to do functional testing before constructing large training process.
+          - heading "Not unwrapping model enough" [level=3] [ref=f12e105]
+          - paragraph [ref=f12e106]:
+            - text: Following the aforementioned note on unwrapping model to get the real model, sometimes there is an interesting phenomenon happening. The model we are using to train may be wrapped inside a model which is also wrapping another model inside it. This wrapping loop may lead to several models wrapping the other creating a stack of wrapper on some base model. Therefore, to robustly unwrap fully the real model and call the methods we expect (
+            - code [ref=f12e107]: save_pretrained
+            - text: ","
+            - code [ref=f12e108]: from_pretrained
+            - text: ","
+            - generic [ref=f12e109]:
+              - generic [ref=f12e111]: …
+              - math [ref=f12e114]:
+                - generic [ref=f12e115]: …
+            - text: ), we might want to use
+            - code [ref=f12e116]: while
+            - text: loop to continuously unwrap them until we find no such
+            - code [ref=f12e117]: module
+            - text: "inside the current model since the outer wrapper retrieve the inner model through this attribute. Here is some code snippet we might want to take a look:"
+          - generic [ref=f12e120]:
+            - code [ref=f12e121]: "def _unwrap_model(self, model): try: return self.accelerator.unwrap_model(model) except (AttributeError, TypeError): # Recursively remove .module wrappers (DataParallel, DDP, etc.) while hasattr(model, 'module'): model = model.module return model"
+            - button "Copy" [ref=f12e122] [cursor=pointer]
+          - paragraph [ref=f12e123]: "Let’s read the snippet line by line to get what it was doing:"
+          - list [ref=f12e124]:
+            - listitem [ref=f12e125]:
+              - paragraph [ref=f12e126]:
+                - text: First, we will try to unwrap the inner model using high-level API provided by
+                - code [ref=f12e127]: accelerate
+                - text: library, which is a fantastic library for distributed training and inference especially if we are doing with large models and datasets. This method allows us to natively get the inner model without worrying anything about the inside mechanisms.
+            - listitem [ref=f12e128]:
+              - paragraph [ref=f12e129]:
+                - text: But if the
+                - code [ref=f12e130]: accelerator
+                - text: failed to unwrap it, we might want another more manual solution. Conventionally, we use the keyword
+                - code [ref=f12e131]: module
+                - text: to access the inner model (as said before). Therefore, we would use a
+                - code [ref=f12e132]: while
+                - text: loop to iterate until there is no attribute named
+                - code [ref=f12e133]: module
+                - text: inside the current model, then we stop, otherwise continue unwrapping until the stop condition is met.
+            - listitem [ref=f12e134]:
+              - paragraph [ref=f12e135]: Finally, return the actual model inside those layers of wrappers.
+          - heading "Saving model with tokenizer" [level=3] [ref=f12e136]
+          - paragraph [ref=f12e137]:
+            - text: If we are doing NLP projects, especially those model we shamelessly load from HuggingFace, we might discover that the folder we got from the notorious
+            - code [ref=f12e138]: from_pretrained
+            - text: method actually consist more files than we expect. Beside the
+            - code [ref=f12e139]: model.safetensors
+            - text: "which contains the real weights of the main model, there are several other files that are indispensable for our workload to load and run training/inference properly with the loaded model. Here is a capture of a typical folder we found on HuggingFace for language model:"
+          - paragraph [ref=f12e140]
+          - paragraph [ref=f12e141]: "Wow, there are a lot of files here. Among them, I actually added some more to manage the experiments easier with more information on things like hyperparameters, training configurations, etc. Now we should look at some of those:"
+          - list [ref=f12e142]:
+            - listitem [ref=f12e143]:
+              - paragraph [ref=f12e144]:
+                - text: "Model checkpoint:"
+                - code [ref=f12e145]: model.safetensors
+                - text: contains all parameters in dictionary format. This file is named
+                - strong [ref=f12e146]: safe
+                - text: because it only stores weights as dictionaries, rather than as execution flow. Therefore, this file does not know anything about the model architecture, it only knows that there is something called
+                - code [ref=f12e147]: self.attention.query.1.weights = torch.Tensor([1, 2, 3, 4, 5, 6])
+                - text: ", there is no way for this file to be executed unwantedly on your machine"
+                - generic [ref=f12e148]:
+                  - generic [ref=f12e150]: →
+                  - math [ref=f12e153]:
+                    - generic [ref=f12e154]: →
+                - text: safety is obtained.
+            - listitem [ref=f12e155]:
+              - paragraph [ref=f12e156]:
+                - text: "Configurations:"
+                - code [ref=f12e157]: config.json, config_hyperparams.json, training_args.bin
+                - text: . These files are accounted to contains configurations information about the training process. They contains information on how the model architecture is like to initialize the model so that weights can be loaded into it properly. Also there are hyperparameters as noticed and some other training arguments if you wish to save more information for tracking.
+            - listitem [ref=f12e158]:
+              - paragraph [ref=f12e159]:
+                - text: "Tokenizer:"
+                - code [ref=f12e160]: tokenizer.json, merges.txt, special_tokens_map.json, tokenizer_config.json, vocab.json
+                - text: ". These files contains important configurations and information about the tokenizer that do the justice of tokenization before actually passing tensors to the model. These files are especially easy to miss in highly manually training process since you might forgot to save the pretrained tokenizers along with the model, which makes the inference phase impossible due to insufficient necessary information. My advice:"
+                - strong [ref=f12e161]: always ensure these guys appear in your checkpoint folders
+                - text: ", otherwise our time of waiting would be mercilessly wasted."
+            - listitem [ref=f12e162]:
+              - paragraph [ref=f12e163]:
+                - text: "Training State:"
+                - code [ref=f12e164]: optimizer.pt, rng_state.pth, scaler.pt, scheduler.pt
+                - text: . These files contain the training state, especially if your training is not finished. They store the current state of the optimizers (since some optimizers such as Adam store data about the historical gradients and its squares), random number generator (to ensure reproducibility for other researchers), scaling state (in case we are doing dirty with gradients scaling under the hood is mixed precision training is activated) and scheduler state (if our learning rate get scheduled over time using cosine decay or linear decay algorithms). Without these files, every time you resume training is entirely different scenarios because all states would be reset to its original state at initialization. Reproducibility in this context would be impossible since the training process is becoming messy than ever.
+          - heading "Always have degeneration detection in your NLP projects" [level=3] [ref=f12e165]
+          - paragraph [ref=f12e166]: "Last semester I worked with a small looped language model named Ouro-1.4B Thinking model by ByteDance. During the work, I encountered one of the most annoying issue is that the model unexpectedly and continually generate degeneration output that looks like total garbage tokens. At the time, I have proposed several ideas that may be the culprit behind the scene:"
+          - list [ref=f12e167]:
+            - listitem [ref=f12e168]:
+              - strong [ref=f12e169]: Data type
+              - text: ": Since the Kaggle environment use GPU T4 (which is a very old version of GPUs compared to modern ones), it doesn’t support the data type"
+              - strong [ref=f12e170]: bfloat16
+              - text: which has been the industry standard of nearly all LLMs these days. Therefore, when trying to use
+              - strong [ref=f12e171]: bfloat16
+              - text: in my coding, I actually had no idea how the environment handles that mismatch data type, since all the runs have been conducted successfully without errors but the documentation said it supposed to be error. Maybe there were silent errors that I just didn’t grasp at the time.
+            - listitem [ref=f12e172]:
+              - strong [ref=f12e173]: The novel generation mechanism
+              - text: ": Since all basic language model people in NLP encounter in their first projects are all linear transformers model, which means they only process the input text one-way from the start to the end. They have no loops like this one. Therefore, I suspected that the degeneration output might results from this novelty in its text processing mechanism."
+            - listitem [ref=f12e174]:
+              - strong [ref=f12e175]: Small number of parameters
+              - text: ": Since the model I chose to use at that time only has 1.4 billion parameters, this limited capacity might affect the model’s performance, since we all know that more parameters lead to broader capabilities. Therefore, this could also be a prominent factor that leads to such horrible results in the model output. I also found that the model struggles with following exactly the answer format denoted in the system prompt, its instruction following abilities are kind of weak, perhaps due to the insufficient of training on the SFT phase."
+          - paragraph [ref=f12e176]: Therefore, since our financial power is not unlimited, waiting the model to generate its answers for several hours only to get garbage generation contains only garbage tokens is catastrophically expensive. This gold experience has lead me to believe that having a mechanism to detect whether the current generation is bad or not is an indispensable responsibility of anyone doing NLP projects. There are several strong and classical algorithms for string comparison are perfectly match for this task and we can vibe them out using our friendly agents like ChatGPT or Claude.
+          - heading "Aware with different backends between interactive and background Kaggle" [level=3] [ref=f12e177]
+          - paragraph [ref=f12e178]:
+            - text: "Kaggle is our friendly companion when it comes to free GPUs quota with generous 30 hours of free tier per week. Since there are two modes for a Kaggle notebook to run on: the interactive session and the background session. I was painfully aware that these backend computing environments are quite different from each other. It seems to me that the interactive session has a slightly more benevolent reaction on runtime errors, while background session is prohibitively strict on these errors. There was a time I have to use the library protobuf alongside with some library in the code for the language models mentioned before, things happened when installing new version of protobuf, there are some modules or classes which are deprecated and no longer in the library code. The interactive session kindly tells me about this error in the console log but continue to run normally without any more errors. But when I run the notebook in background session, the errors are not allowed to pass in and immediately get caught and the whole notebook session has been terminated painfully due to its strict backends. Following the Google search, I learn that the backend they use for the background session is named"
+            - strong [ref=f12e179]: Papermills
+            - text: ". Below is the message error I got:"
+          - generic [ref=f12e182]:
+            - code [ref=f12e183]: "AttributeError: 'MessageFactory' object has no attribute 'GetPrototype'"
+            - button "Copy" [ref=f12e184] [cursor=pointer]
+          - heading "Create test mode for functional testing before long run" [level=3] [ref=f12e185]
+        - generic [ref=f12e186]:
+          - generic [ref=f12e187]: "Tags:"
+          - link "personal" [ref=f12e188] [cursor=pointer]:
+            - /url: /tags#personal
+          - link "learning" [ref=f12e189] [cursor=pointer]:
+            - /url: /tags#learning
+        - generic [ref=f12e190]:
+          - generic [ref=f12e191]: "Share:"
+          - link "X (Twitter)" [ref=f12e192] [cursor=pointer]:
+            - /url: https://twitter.com/intent/tweet?text=Experience+along+the+way&url=http%3A%2F%2Flocalhost%3A4002%2F2026-04-29-some-experience-on-deep-learning-projects%2F
+            - generic [aria-hidden] [ref=f12e193]: 
+          - link "Facebook" [ref=f12e195] [cursor=pointer]:
+            - /url: https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4002%2F2026-04-29-some-experience-on-deep-learning-projects%2F
+            - generic [aria-hidden] [ref=f12e196]: 
+          - link "LinkedIn" [ref=f12e198] [cursor=pointer]:
+            - /url: https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4002%2F2026-04-29-some-experience-on-deep-learning-projects%2F
+            - generic [aria-hidden] [ref=f12e199]: 
+        - list [ref=f12e201]:
+          - listitem [ref=f12e202]:
+            - link " Previous Post" [ref=f12e203] [cursor=pointer]:
+              - /url: /2026-04-22-viettel-digital-talent-recap/
+              - generic [ref=f12e204]: 
+              - generic [ref=f12e205]: Previous Post
+          - listitem [ref=f12e206]:
+            - link "Next Post " [ref=f12e207] [cursor=pointer]:
+              - /url: /2026-08-06-introducing-series-latent-life/
+              - generic [ref=f12e208]: Next Post
+              - generic [ref=f12e209]: 
+  - contentinfo [ref=f12e210]:
+    - generic [ref=f12e213]:
+      - list [ref=f12e214]:
+        - listitem [ref=f12e215]:
+          - link "Email me" [ref=f12e216] [cursor=pointer]:
+            - /url: mailto:dungngocpham171@gmail.com
+            - generic [aria-hidden] [ref=f12e217]:
+              - generic [ref=f12e218]: 
+              - generic [ref=f12e219]: 
+        - listitem [ref=f12e221]:
+          - link "Facebook" [ref=f12e222] [cursor=pointer]:
+            - /url: https://www.facebook.com/phamngoc.dung.7545
+            - generic [aria-hidden] [ref=f12e223]:
+              - generic [ref=f12e224]: 
+              - generic [ref=f12e225]: 
+        - listitem [ref=f12e227]:
+          - link "GitHub" [ref=f12e228] [cursor=pointer]:
+            - /url: https://github.com/dzungphieuluuky
+            - generic [aria-hidden] [ref=f12e229]:
+              - generic [ref=f12e230]: 
+              - generic [ref=f12e231]: 
+        - listitem [ref=f12e233]:
+          - link "X (Twitter)" [ref=f12e234] [cursor=pointer]:
+            - /url: https://twitter.com/DzPham_capy
+            - generic [aria-hidden] [ref=f12e235]:
+              - generic [ref=f12e236]: 
+              - generic [ref=f12e237]: 
+        - listitem [ref=f12e239]:
+          - link "LinkedIn" [ref=f12e240] [cursor=pointer]:
+            - /url: https://linkedin.com/in/dung-pham-99014b29a
+            - generic [aria-hidden] [ref=f12e241]:
+              - generic [ref=f12e242]: 
+              - generic [ref=f12e243]: 
+      - paragraph [ref=f12e245]:
+        - text: © 2026 dzungphieuluuky ·
+        - link "RSS" [ref=f12e246] [cursor=pointer]:
+          - /url: /feed.xml
+      - paragraph [ref=f12e247]:
+        - text: Set in Lora, Be Vietnam Pro & JetBrains Mono · Powered by
+        - link "Beautiful Jekyll" [ref=f12e248] [cursor=pointer]:
+          - /url: https://beautifuljekyll.com
+  - button "Scroll to top"
+  - generic: ×

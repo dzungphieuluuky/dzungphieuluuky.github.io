@@ -2,9 +2,6 @@
 layout: post
 title: Viettel Digital Talent Recap
 subtitle:
-cover-img:
-thumbnail-img:
-share-img:
 tags: [personal, viettel]
 author: dzungphieuluuky
 ---

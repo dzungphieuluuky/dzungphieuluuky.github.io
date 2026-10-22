@@ -1,9 +1,6 @@
 ---
 layout: post
 title: Recap Thách Thức 2026
-cover-img: # TODO: add cover image (e.g., /assets/img/posts/thach-thuc-recap/cover.png)
-thumbnail-img: # TODO: add thumbnail image
-share-img: # TODO: add social share image
 tags: [personal]
 author: dzungphieuluuky
 ---

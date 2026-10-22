@@ -1,9 +1,6 @@
 ---
 layout: post
 title: The beginning of a blog
-cover-img: # TODO: add cover image (e.g., /assets/img/posts/beginning-of-blog/cover.png)
-thumbnail-img: # TODO: add thumbnail image
-share-img: # TODO: add social share image
 tags: [personal]
 author: dzungphieuluuky
 ---

@@ -1,192 +1,84 @@
 // ====================================
-// 0. CENTRALIZED CONFIGURATION
+// 0. Configuration
 // ====================================
 const CONFIG = {
   WORDS_PER_MINUTE: 238,
-  SCROLL_TO_TOP_THRESHOLD: 380,
   THEME_STORAGE_KEY: 'sjbz-theme-preference',
-  PREFER_DARK_MEDIA: '(prefers-color-scheme: dark)',
   ANNOUNCE_TO_SCREEN_READERS: true,
 };
 
-// ====================================
-// 0.05 Scroll Event Batching
-// ====================================
-const ScrollManager = {
-  handlers: new Set(),
-  ticking: false,
-  lastScrollY: 0,
-  init() {
-    const onScroll = () => this._queue();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    this._queue();
-  },
-  subscribe(handler) {
-    this.handlers.add(handler);
-  },
-  _queue() {
-    this.lastScrollY = window.scrollY;
-    if (this.ticking) return;
-    this.ticking = true;
-    requestAnimationFrame(() => {
-      this.ticking = false;
-      const info = {
-        scrollY: this.lastScrollY,
-        docHeight: document.documentElement.scrollHeight,
-        viewportHeight: window.innerHeight
-      };
-      this.handlers.forEach((handler) => handler(info));
-    });
-  }
-};
+const escapeHtml = (value) => (value || '').toString()
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
+
+// Strip diacritics so "thach" finds "thách".
+const normalize = (value) => (value || '').toString()
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/đ/g, 'd')
+  .replace(/\s+/g, ' ')
+  .trim();
 
 // ====================================
-// 0.1 Dark Mode Toggle
+// 1. Dark Mode
 // ====================================
 const DarkMode = {
-  isDark: false,
-  toggleBtn: null,
   init() {
+    this.btn = document.querySelector('#theme-toggle');
+    this.apply(this.preferred());
+    if (!this.btn) return;
+    this.btn.addEventListener('click', () => {
+      const isDark = !document.documentElement.classList.contains('dark-mode');
+      this.apply(isDark);
+      localStorage.setItem(CONFIG.THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+      this.announce(isDark);
+    });
+  },
+
+  preferred() {
     const stored = localStorage.getItem(CONFIG.THEME_STORAGE_KEY);
-    if (stored) {
-      this.isDark = stored === 'dark';
-    } else {
-      this.isDark = window.matchMedia(CONFIG.PREFER_DARK_MEDIA).matches;
-    }
-    this.applyTheme();
-    this.toggleBtn = document.querySelector('#theme-toggle');
-    if (this.toggleBtn) {
-      this.toggleBtn.addEventListener('click', () => this.toggle());
-      this._updateToggleState();
-    }
+    return stored
+      ? stored === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
   },
-  applyTheme() {
+
+  apply(isDark) {
     const root = document.documentElement;
-    if (this.isDark) {
-      root.classList.add('dark-mode');
-      root.classList.remove('light-mode');
-    } else {
-      root.classList.add('light-mode');
-      root.classList.remove('dark-mode');
-    }
+    root.classList.toggle('dark-mode', isDark);
+    root.classList.toggle('light-mode', !isDark);
+    this.btn?.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
   },
-  toggle() {
-    this.isDark = !this.isDark;
-    localStorage.setItem(CONFIG.THEME_STORAGE_KEY, this.isDark ? 'dark' : 'light');
-    this.applyTheme();
-    if (this.toggleBtn) {
-      this.toggleBtn.setAttribute('aria-label', this.isDark ? 'Switch to light mode' : 'Switch to dark mode');
-    }
-    if (CONFIG.ANNOUNCE_TO_SCREEN_READERS) {
-      const msg = this.isDark ? 'Switched to dark mode' : 'Switched to light mode';
-      const live = document.createElement('div');
-      live.className = 'sr-only';
-      live.setAttribute('aria-live', 'polite');
-      live.textContent = msg;
-      document.body.appendChild(live);
-      setTimeout(() => live.remove(), 1000);
-    }
+
+  announce(isDark) {
+    if (!CONFIG.ANNOUNCE_TO_SCREEN_READERS) return;
+    const live = document.createElement('div');
+    live.className = 'sr-only';
+    live.setAttribute('aria-live', 'polite');
+    live.textContent = isDark ? 'Switched to dark mode' : 'Switched to light mode';
+    document.body.appendChild(live);
+    setTimeout(() => live.remove(), 1000);
   },
-  _updateToggleState() {
-    if (!this.toggleBtn) return;
-    this.toggleBtn.setAttribute('aria-label', this.isDark ? 'Switch to light mode' : 'Switch to dark mode');
-  }
 };
 
-// Apply theme immediately to avoid flash
+// Apply the stored theme before paint to avoid a flash.
 (() => {
   const stored = localStorage.getItem(CONFIG.THEME_STORAGE_KEY);
-  const isDark = stored ? stored === 'dark' : window.matchMedia(CONFIG.PREFER_DARK_MEDIA).matches;
-  if (isDark) document.documentElement.classList.add('dark-mode');
-  else document.documentElement.classList.add('light-mode');
+  const isDark = stored
+    ? stored === 'dark'
+    : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.classList.add(isDark ? 'dark-mode' : 'light-mode');
 })();
 
 // ====================================
-// 1. Reading Progress Bar
-// ====================================
-const ReadingProgress = {
-  bar: null,
-  init() {
-    this.bar = document.getElementById('reading-progress');
-    if (!this.bar) {
-      this.bar = document.createElement('div');
-      this.bar.id = 'reading-progress';
-      document.body.appendChild(this.bar);
-    }
-    ScrollManager.subscribe((info) => this.update(info));
-    this.update();
-  },
-  update(info) {
-    const scrollTop = info?.scrollY ?? window.scrollY;
-    const docHeight = (info?.docHeight ?? document.documentElement.scrollHeight) - (info?.viewportHeight ?? window.innerHeight);
-    const progress = docHeight > 0 ? scrollTop / docHeight : 0;
-    this.bar.style.transform = `scaleX(${progress})`;
-    this.bar.classList.toggle('complete', progress >= 0.995);
-  }
-};
-
-// ====================================
-// 2. Scroll To Top Button
-// ====================================
-const ScrollToTop = {
-  btn: null,
-  init() {
-    this.btn = document.createElement('button');
-    this.btn.id = 'scroll-to-top';
-    this.btn.setAttribute('aria-label', 'Scroll to top');
-    this.btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>';
-    document.body.appendChild(this.btn);
-    this.btn.addEventListener('click', () => window.scrollTo(0, 0));
-    ScrollManager.subscribe((info) => this.toggle(info));
-    this.toggle();
-  },
-  toggle(info) {
-    if (!this.btn) return;
-    const scrollTop = info?.scrollY ?? window.scrollY;
-    const visible = scrollTop > CONFIG.SCROLL_TO_TOP_THRESHOLD;
-    this.btn.classList.toggle('visible', visible);
-  }
-};
-
-// ====================================
-// 3. TOC Active Highlight & Auto-scroll
-// ====================================
-const TocHighlight = {
-  observer: null,
-  tocLinkMap: new Map(),
-  init() {
-    const headings = document.querySelectorAll('h1[id], h2[id], h3[id]');
-    if (!headings.length) return;
-    document.querySelectorAll('.post-toc-box a').forEach(link => {
-      const id = link.getAttribute('href')?.slice(1);
-      if (!id) return;
-      if (!this.tocLinkMap.has(id)) this.tocLinkMap.set(id, []);
-      this.tocLinkMap.get(id).push(link);
-    });
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const id = entry.target.getAttribute('id');
-          if (!id) continue;
-          this.tocLinkMap.forEach(links => links.forEach(l => l.classList.remove('active')));
-          const activeLinks = this.tocLinkMap.get(id);
-          if (activeLinks) activeLinks.forEach(l => l.classList.add('active'));
-        }
-      },
-      { rootMargin: '0px 0px -60% 0px', threshold: 0 }
-    );
-    headings.forEach(h => this.observer.observe(h));
-  }
-};
-
-// ====================================
-// 4. Code Copy Button
+// 2. Code Copy Button
 // ====================================
 const CodeCopy = {
   init() {
-    document.querySelectorAll('pre code').forEach(block => {
+    document.querySelectorAll('pre code').forEach((block) => {
       const pre = block.parentElement;
       if (!pre || pre.querySelector('.copy-btn')) return;
       const btn = document.createElement('button');
@@ -202,284 +94,148 @@ const CodeCopy = {
       try {
         await navigator.clipboard.writeText(code.textContent);
         btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = 'Copy', 1600);
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
       } catch {
         btn.textContent = 'Error';
       }
     });
-  }
+  },
 };
 
 // ====================================
-// 5. Image Lightbox
+// 3. Image Lightbox
 // ====================================
 const ImageLightbox = {
-  lightbox: null,
   init() {
     const images = document.querySelectorAll('article img, .post-content img');
     if (!images.length) return;
-    this._create();
-    images.forEach(img => {
-      img.classList.add('lightbox-img');
-      img.style.cursor = 'zoom-in';
-    });
+    this.create();
+    images.forEach((img) => { img.style.cursor = 'zoom-in'; });
     document.addEventListener('click', (e) => {
       const img = e.target.closest('article img, .post-content img');
       if (img && !img.closest('.lightbox')) this.open(img);
     });
   },
-  _create() {
-    this.lightbox = document.createElement('div');
-    this.lightbox.className = 'lightbox';
-    this.lightbox.innerHTML = `
+
+  create() {
+    this.el = document.createElement('div');
+    this.el.className = 'lightbox';
+    this.el.innerHTML = `
       <div class="lightbox-close">×</div>
       <div class="lightbox-content"><img src="" alt=""><div class="lightbox-caption"></div></div>
     `;
-    document.body.appendChild(this.lightbox);
-    this.lightbox.querySelector('.lightbox-close').addEventListener('click', () => this.close());
-    this.lightbox.addEventListener('click', (e) => { if (e.target === this.lightbox) this.close(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.lightbox.classList.contains('active')) this.close(); });
+    document.body.appendChild(this.el);
+    this.el.querySelector('.lightbox-close').addEventListener('click', () => this.close());
+    this.el.addEventListener('click', (e) => { if (e.target === this.el) this.close(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.el.classList.contains('active')) this.close();
+    });
   },
+
   open(img) {
-    this.lightbox.querySelector('img').src = img.src;
-    this.lightbox.querySelector('img').alt = img.alt || '';
-    this.lightbox.querySelector('.lightbox-caption').textContent = img.alt || '';
-    this.lightbox.classList.add('active');
+    const target = this.el.querySelector('img');
+    target.src = img.src;
+    target.alt = img.alt || '';
+    this.el.querySelector('.lightbox-caption').textContent = img.alt || '';
+    this.el.classList.add('active');
     document.body.classList.add('overflow-hidden');
   },
+
   close() {
-    this.lightbox.classList.remove('active');
+    this.el.classList.remove('active');
     document.body.classList.remove('overflow-hidden');
-  }
+  },
 };
 
 // ====================================
-// 6. Post Table of Contents (HedgeDoc/HackMD style)
+// 4. Post Table of Contents
 // ====================================
 const PostTableOfContents = {
   init() {
     const article = document.querySelector('article');
-    if (!article) return;
-    const headers = article.querySelectorAll('h1[id], h2[id], h3[id]');
-    if (headers.length < 1) return;
+    const headings = article?.querySelectorAll('h1[id], h2[id], h3[id]') || [];
+    if (!headings.length) return;
 
-    const buildPostTocHtml = () => {
-      const items = [];
-      headers.forEach((header) => {
-        const id = header.id;
-        const text = header.textContent.replace(/^\d+\.?\s*/, '').trim();
-        const tag = header.tagName.toLowerCase();
-        items.push(`<li class="toc-${tag}"><a href="#${id}">${text}</a></li>`);
-      });
-      return items.join('');
-    };
-
-    // Create an in-article TOC at the beginning of each post.
-    let postTocBox = article.querySelector(':scope > .post-toc-box');
-    if (!postTocBox) {
-      postTocBox = document.createElement('nav');
-      postTocBox.className = 'post-toc-box';
-      postTocBox.setAttribute('aria-label', 'Table of contents');
-      const metadataBar = article.querySelector(':scope > .metadata-bar');
-      if (metadataBar) {
-        metadataBar.insertAdjacentElement('afterend', postTocBox);
-      } else {
-        article.insertAdjacentElement('afterbegin', postTocBox);
-      }
-    }
-
-    postTocBox.innerHTML = `
-      <div class="post-toc-title">Contents</div>
+    const box = document.createElement('details');
+    box.className = 'post-toc-box';
+    box.open = true;
+    box.innerHTML = `
+      <summary class="post-toc-title">Contents</summary>
       <ul class="post-toc-list">
-        ${buildPostTocHtml()}
+        ${Array.from(headings).map((h) => `
+          <li class="toc-${h.tagName.toLowerCase()}">
+            <a href="#${h.id}">${h.textContent.replace(/^\d+\.?\s*/, '').trim()}</a>
+          </li>`).join('')}
       </ul>
     `;
-  }
+
+    const anchor = article.querySelector(':scope > .metadata-bar');
+    if (anchor) anchor.insertAdjacentElement('afterend', box);
+    else article.prepend(box);
+  },
 };
 
 // ====================================
-// 7. Reading Time & Word Count
-// ====================================
-const ReadingTime = {
-  init() {
-    const article = document.querySelector('article');
-    if (!article) return;
-    const words = article.textContent.trim().split(/\s+/).length;
-    const minutes = Math.max(1, Math.ceil(words / CONFIG.WORDS_PER_MINUTE));
-    let metaBar = document.querySelector('.metadata-bar');
-    if (!metaBar) {
-      metaBar = document.createElement('div');
-      metaBar.className = 'metadata-bar';
-      const h1 = document.querySelector('h1');
-      if (h1?.parentElement) h1.parentElement.insertBefore(metaBar, h1.nextSibling);
-      else article.insertBefore(metaBar, article.firstChild);
-    }
-    if (!metaBar.querySelector('[data-reading-time]')) {
-      metaBar.insertAdjacentHTML('afterbegin', `<div class="metadata-item" data-reading-time>
-        <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span><strong>${minutes}</strong> min read</span>
-      </div>`);
-    }
-    if (!metaBar.querySelector('[data-word-count]')) {
-      metaBar.insertAdjacentHTML('beforeend', `<div class="metadata-item" data-word-count>
-        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        <span><strong>${words.toLocaleString()}</strong> words</span>
-      </div>`);
-    }
-  }
-};
-
-// ====================================
-// 8. Auto‑Numbering Headers
-// ====================================
-const AutoNumbering = {
-  init() {
-    const article = document.querySelector('article');
-    if (!article) return;
-    let h1=0, h2=0, h3=0;
-    article.querySelectorAll('h1, h2, h3').forEach(h => {
-      if (h.classList.contains('subtitle')) return;
-      const tag = h.tagName;
-      if (tag === 'H1') { h1++; h2=0; h3=0; if (!h.id) h.id = `section-${h1}`; }
-      else if (tag === 'H2') { h2++; h3=0; if (!h.id) h.id = `section-${h1}-${h2}`; }
-      else if (tag === 'H3') { h3++; if (!h.id) h.id = `section-${h1}-${h2}-${h3}`; }
-    });
-  }
-};
-
-// ====================================
-// 9. External Links Security
+// 5. External Links
 // ====================================
 const ExternalLinks = {
   init() {
-    document.querySelectorAll('a[href]').forEach(link => {
+    document.querySelectorAll('a[href]').forEach((link) => {
       try {
         const url = new URL(link.href, document.baseURI);
-        if (url.origin !== window.location.origin && link.target !== '_self') {
-          link.setAttribute('target', '_blank');
-          const rel = new Set((link.getAttribute('rel') || '').split(/\s+/));
-          rel.add('noopener'); rel.add('noreferrer');
-          link.setAttribute('rel', Array.from(rel).join(' '));
-        }
-      } catch (e) {}
+        if (url.origin === window.location.origin || link.target === '_self') return;
+        link.setAttribute('target', '_blank');
+        const rel = new Set((link.getAttribute('rel') || '').split(/\s+/));
+        rel.add('noopener');
+        rel.add('noreferrer');
+        link.setAttribute('rel', Array.from(rel).join(' '));
+      } catch {}
     });
-  }
+  },
 };
 
 // ====================================
-// 10. Enhanced Search Modal
+// 6. Search (modal and /search/ page share this)
 // ====================================
 const EnhancedSearch = {
-  modal: null,
-  input: null,
-  results: null,
-  closeBtn: null,
-  triggerBtns: [],
+  index: -1,
   corpus: [],
-  visibleResults: [],
-  selectedIndex: -1,
   loaded: false,
-  loading: false,
 
   init() {
     this.modal = document.getElementById('search-modal');
-    this.input = this.modal?.querySelector('.search-input') || null;
+    this.input = this.modal?.querySelector('.search-input');
     this.results = document.getElementById('search-results');
-    this.closeBtn = this.modal?.querySelector('.search-modal-close') || null;
-    this.triggerBtns = Array.from(document.querySelectorAll('.search-trigger'));
+    if (!this.modal || !this.input || !this.results) return;
 
-    if (!this.modal || !this.input || !this.results || this.triggerBtns.length === 0) return;
-
-    this.triggerBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.open();
-      });
+    document.querySelectorAll('.search-trigger').forEach((btn) => {
+      btn.addEventListener('click', (e) => { e.preventDefault(); this.open(); });
     });
-
-    if (this.closeBtn) {
-      this.closeBtn.addEventListener('click', () => this.close());
-    }
-
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) this.close();
-    });
-
-    this.input.addEventListener('input', () => {
-      this.selectedIndex = -1;
-      this.runSearch();
-    });
-
-    this.input.addEventListener('keydown', (e) => this.onKeydown(e));
-    this.results.addEventListener('keydown', (e) => this.onKeydown(e));
-
+    this.modal.querySelector('.search-modal-close')?.addEventListener('click', () => this.close());
+    this.modal.addEventListener('click', (e) => { if (e.target === this.modal) this.close(); });
+    this.input.addEventListener('input', () => { this.index = -1; this.render(); });
+    this.input.addEventListener('keydown', (e) => this.onKey(e));
     document.addEventListener('keydown', (e) => {
-      const isCmdOrCtrlK = (e.key.toLowerCase() === 'k') && (e.metaKey || e.ctrlKey);
-      if (isCmdOrCtrlK) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         this.open();
+      } else if (e.key === 'Escape' && this.isOpen()) {
+        this.close();
       }
     });
+
+    window.SiteSearch = this;
+    document.dispatchEvent(new Event('sitesearch:ready'));
   },
 
-  onKeydown(e) {
-    if (!this.isOpen()) return;
-
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      this.close();
-      return;
-    }
-
-    if (e.key === 'ArrowDown') {
-      if (!this.visibleResults.length) return;
-      e.preventDefault();
-      this.moveSelection(1);
-    } else if (e.key === 'ArrowUp') {
-      if (!this.visibleResults.length) return;
-      e.preventDefault();
-      this.moveSelection(-1);
-    } else if (e.key === 'Enter') {
-      if (!this.visibleResults.length) return;
-      e.preventDefault();
-      this.activateSelected();
-    }
-  },
-
-  moveSelection(delta) {
-    if (!this.visibleResults.length) return;
-
-    if (this.selectedIndex < 0) {
-      this.selectedIndex = delta > 0 ? 0 : this.visibleResults.length - 1;
-    } else {
-      this.selectedIndex = (this.selectedIndex + delta + this.visibleResults.length) % this.visibleResults.length;
-    }
-
-    this.syncSelection();
-  },
-
-  activateSelected() {
-    const index = this.selectedIndex >= 0 ? this.selectedIndex : 0;
-    const selected = this.visibleResults[index];
-    if (selected?.url) {
-      window.location.href = selected.url;
-    }
-  },
-
-  isOpen() {
-    return this.modal?.classList.contains('active') || false;
-  },
+  isOpen() { return this.modal.classList.contains('active'); },
 
   async open() {
     this.modal.classList.add('active');
     document.body.classList.add('overflow-hidden');
     this.input.focus();
-
-    if (!this.loaded && !this.loading) {
-      await this.loadCorpus();
-    }
-
-    this.runSearch();
+    await this.load();
+    this.render();
   },
 
   close() {
@@ -487,335 +243,113 @@ const EnhancedSearch = {
     if (!document.querySelector('.lightbox.active')) {
       document.body.classList.remove('overflow-hidden');
     }
-    this.selectedIndex = -1;
+    this.index = -1;
   },
 
-  getCorpusUrl() {
-    const baseMeta = document.querySelector('meta[name="baseurl"]')?.content || '';
-    const normalizedBase = (baseMeta === '/' ? '' : baseMeta).replace(/\/$/, '');
-    return `${normalizedBase}/assets/data/searchcorpus.json`;
-  },
-
-  async loadCorpus() {
-    this.loading = true;
-    this.renderStatus('Loading search index...');
-
+  async load() {
+    if (this.loaded) return;
+    this.loaded = true;
+    const base = (document.querySelector('meta[name="baseurl"]')?.content || '').replace(/\/$/, '');
     try {
-      const response = await fetch(this.getCorpusUrl(), { cache: 'no-store' });
-      if (!response.ok) throw new Error(`Search index HTTP ${response.status}`);
-
-      const raw = await response.json();
-      this.corpus = Array.isArray(raw) ? raw.map(item => this.normalizeItem(item)) : [];
-      this.loaded = true;
-      this.renderStatus('Start typing to search posts...');
-    } catch (error) {
-      this.renderStatus('Search is temporarily unavailable. Please refresh the page.');
+      const res = await fetch(`${base}/assets/data/searchcorpus.json`);
+      this.corpus = res.ok ? await res.json() : [];
+    } catch {
       this.corpus = [];
-    } finally {
-      this.loading = false;
     }
   },
 
-  normalizeItem(item) {
-    const title = (item?.title || '').toString().trim();
-    const content = (item?.content || '').toString().replace(/\s+/g, ' ').trim();
-    const excerptRaw = (item?.excerpt || '').toString().trim() || content;
-    const excerpt = excerptRaw.length > 220 ? `${excerptRaw.slice(0, 220).trim()}...` : excerptRaw;
-    const url = (item?.url || '#').toString();
-    const date = (item?.date || '').toString();
-    const words = content ? content.split(/\s+/).length : 0;
-    const minutes = Math.max(1, Math.ceil(words / CONFIG.WORDS_PER_MINUTE));
-
-    const tags = (item?.category || '')
-      .toString()
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(Boolean)
-      .filter(tag => tag.toLowerCase() !== 'page');
-
-    const contentType = this.inferContentType(title, tags, url, date);
-    const titleNormalized = this.normalizeText(title);
-    const tagsNormalized = this.normalizeText(tags.join(' '));
-    const excerptNormalized = this.normalizeText(excerpt);
-    const contentNormalized = this.normalizeText(content);
-    const searchBlobNormalized = this.normalizeText(`${title} ${content} ${excerpt} ${tags.join(' ')} ${contentType}`);
-
-    return {
-      title,
-      content,
-      excerpt,
-      url,
-      date,
-      tags,
-      words,
-      minutes,
-      contentType,
-      titleNormalized,
-      tagsNormalized,
-      excerptNormalized,
-      contentNormalized,
-      searchBlobNormalized
-    };
+  search(query) {
+    const q = normalize(query);
+    if (!q) return [];
+    return this.corpus
+      .map((item) => ({
+        item,
+        rank: normalize(item.title).includes(q) ? 2
+          : normalize(`${item.excerpt} ${item.category}`).includes(q) ? 1 : 0,
+      }))
+      .filter((r) => r.rank)
+      .sort((a, b) => b.rank - a.rank)
+      .map((r) => r.item);
   },
 
-  inferContentType(title, tags, url, date) {
-    const haystack = `${title} ${tags.join(' ')}`.toLowerCase();
-    if (haystack.includes('tutorial')) return 'Tutorial';
-    if (haystack.includes('guide')) return 'Guide';
-    if (haystack.includes('case study') || haystack.includes('case-study')) return 'Case Study';
-    if (date || /\/\d{4}\//.test(url)) return 'Article';
-    return 'Page';
-  },
-
-  runSearch() {
-    if (!this.loaded) return;
-
+  render() {
+    this.results.classList.add('active');
     const query = this.input.value.trim();
-    const queryNormalized = this.normalizeText(query);
-    const queryTokens = this.tokenizeQuery(queryNormalized);
-    const filtered = this.filterPosts(this.corpus);
-
-    if (!queryNormalized) {
-      this.visibleResults = [];
-      this.selectedIndex = -1;
-      this.renderStatus('Start typing to search posts...');
+    if (!query) {
+      this.results.innerHTML = '<div class="search-empty-state">Type to search posts.</div>';
       return;
     }
-
-    const ranked = queryNormalized
-      ? this.rankResults(filtered, queryNormalized, queryTokens)
-      : filtered.map(item => ({ item, score: 0 }));
-    this.visibleResults = ranked.slice(0, 24).map(result => result.item);
-    if (this.selectedIndex < 0 || this.selectedIndex >= this.visibleResults.length) {
-      this.selectedIndex = this.visibleResults.length ? 0 : -1;
-    }
-    this.renderResults();
-  },
-
-  rankResults(items, queryNormalized, queryTokens) {
-    const ranked = [];
-
-    items.forEach(item => {
-      const title = item.titleNormalized;
-      const tags = item.tagsNormalized;
-      const excerpt = item.excerptNormalized;
-      const content = item.contentNormalized;
-      const blob = item.searchBlobNormalized;
-
-      let score = 0;
-      let matchedTokenCount = 0;
-
-      if (title.includes(queryNormalized)) score += 80;
-      if (tags.includes(queryNormalized)) score += 45;
-      if (excerpt.includes(queryNormalized)) score += 25;
-      if (content.includes(queryNormalized)) score += 12;
-      if (title.startsWith(queryNormalized)) score += 20;
-
-      queryTokens.forEach(token => {
-        const inTitle = title.includes(token);
-        const inTags = tags.includes(token);
-        const inExcerpt = excerpt.includes(token);
-        const inContent = content.includes(token);
-
-        if (inTitle || inTags || inExcerpt || inContent) {
-          matchedTokenCount += 1;
-        }
-
-        if (inTitle) score += 18;
-        if (inTags) score += 10;
-        if (inExcerpt) score += 6;
-        if (inContent) score += 3;
-
-        if (title.includes(` ${token} `) || title.startsWith(`${token} `) || title.endsWith(` ${token}`)) {
-          score += 6;
-        }
-      });
-
-      if (queryTokens.length) {
-        const requiredMatches = Math.max(1, Math.ceil(queryTokens.length * 0.6));
-        if (matchedTokenCount < requiredMatches && !blob.includes(queryNormalized)) return;
-
-        const coverage = matchedTokenCount / queryTokens.length;
-        score += Math.round(coverage * 30);
-        if (matchedTokenCount === queryTokens.length) score += 12;
-      }
-
-      if (score <= 0) return;
-      ranked.push({ item, score });
-    });
-
-    return ranked.sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
-  },
-
-  filterPosts(items) {
-    return items.filter(item => Boolean(item.date));
-  },
-
-  normalizeText(value) {
-    return (value || '')
-      .toString()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/[^a-z0-9\s-]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-  },
-
-  tokenizeQuery(queryNormalized) {
-    const unique = new Set(
-      queryNormalized
-        .split(/\s+/)
-        .map(token => token.trim())
-        .filter(Boolean)
-        .filter(token => token.length > 1)
-    );
-    return Array.from(unique);
-  },
-
-  renderStatus(message) {
-    this.results.classList.add('active');
-    this.results.innerHTML = `<div class="search-empty-state">${this.escapeHtml(message)}</div>`;
-  },
-
-  renderResults() {
-    this.results.classList.add('active');
-
-    if (!this.visibleResults.length) {
-      this.results.innerHTML = '<div class="search-empty-state">No matching posts found.</div>';
+    const items = this.search(query);
+    if (!items.length) {
+      this.results.innerHTML = '<div class="search-empty-state">No matching posts.</div>';
       return;
     }
-
-    this.results.innerHTML = this.visibleResults.map((item, index) => {
-      const tagsHtml = item.tags.length
-        ? `<div class="search-result-tags">${item.tags.map(tag => `<span class="search-result-tag">${this.escapeHtml(tag)}</span>`).join('')}</div>`
-        : '';
-
-      const dateHtml = item.date ? `<span class="search-result-date">${this.escapeHtml(item.date)}</span>` : '';
-
-      return `
-        <a class="search-result-item ${index === this.selectedIndex ? 'is-active' : ''}" data-index="${index}" href="${this.escapeAttr(item.url)}">
-          <div class="search-result-title">${this.escapeHtml(item.title || 'Untitled')}</div>
-          <div class="search-result-excerpt">${this.escapeHtml(item.excerpt || '')}</div>
-          <div class="search-result-meta">
-            <span class="search-result-category">${this.escapeHtml(item.contentType)}</span>
-            <span>${item.words.toLocaleString()} words</span>
-            <span>${item.minutes} min read</span>
-            ${dateHtml}
-          </div>
-          ${tagsHtml}
-        </a>
-      `;
-    }).join('');
-
-    this.syncSelection();
-
-    this.results.querySelectorAll('.search-result-item').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        const idx = Number(el.getAttribute('data-index'));
-        if (Number.isNaN(idx)) return;
-        this.selectedIndex = idx;
-        this.syncSelection();
-      });
-
-      el.addEventListener('focus', () => {
-        const idx = Number(el.getAttribute('data-index'));
-        if (Number.isNaN(idx)) return;
-        this.selectedIndex = idx;
-        this.syncSelection();
-      });
+    this.results.innerHTML = items.slice(0, 20).map((item, i) => `
+      <a class="search-result-item${i === this.index ? ' is-active' : ''}" href="${escapeHtml(item.url)}">
+        <div class="search-result-title">${escapeHtml(item.title || 'Untitled')}</div>
+        <div class="search-result-excerpt">${escapeHtml(item.excerpt || '')}</div>
+        <div class="search-result-meta">
+          ${item.date ? `<span>${escapeHtml(item.date)}</span>` : ''}
+          ${item.category ? `<span>${escapeHtml(item.category)}</span>` : ''}
+        </div>
+      </a>`).join('');
+    this.results.querySelectorAll('.search-result-item').forEach((el, i) => {
+      el.addEventListener('mouseenter', () => { this.index = i; this.sync(); });
     });
   },
 
-  syncSelection() {
-    const nodes = Array.from(this.results.querySelectorAll('.search-result-item'));
-    nodes.forEach((node, idx) => {
-      node.classList.toggle('is-active', idx === this.selectedIndex);
-      node.setAttribute('aria-selected', idx === this.selectedIndex ? 'true' : 'false');
-    });
-    const activeNode = nodes[this.selectedIndex];
-    if (activeNode) activeNode.scrollIntoView({ block: 'nearest' });
+  escape(value) { return escapeHtml(value); },
+
+  sync() {
+    this.results.querySelectorAll('.search-result-item')
+      .forEach((el, i) => el.classList.toggle('is-active', i === this.index));
   },
 
-  escapeHtml(value) {
-    if (!value) return '';
-    return value
-      .toString()
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+  onKey(e) {
+    if (e.key === 'Escape') return this.close();
+    const items = this.results.querySelectorAll('.search-result-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.index = e.key === 'ArrowDown'
+        ? (this.index + 1) % items.length
+        : (this.index - 1 + items.length) % items.length;
+      this.sync();
+      items[this.index].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && this.index >= 0) {
+      e.preventDefault();
+      items[this.index].click();
+    }
   },
-
-  escapeAttr(value) {
-    return this.escapeHtml(value);
-  }
 };
 
 // ====================================
-// 11. Schema Markup (JSON‑LD)
+// 7. Schema Markup (JSON-LD)
 // ====================================
 const SchemaMarkup = {
   init() {
     if (!document.querySelector('article')) return;
-    const title = document.querySelector('h1')?.textContent || document.title;
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "headline": title,
-      "url": window.location.href,
-      "author": { "@type": "Person", "name": "dzungphieuluuky" }
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: document.querySelector('h1')?.textContent || document.title,
+      url: window.location.href,
+      author: { '@type': 'Person', name: 'dzungphieuluuky' },
     });
     document.head.appendChild(script);
-  }
-};
-
-// ====================================
-// 11. Read Mode (Distraction-Free)
-// ====================================
-const ReadMode = {
-  isActive: false,
-  toggleBtn: null,
-  init() {
-    this.toggleBtn = document.querySelector('.read-mode-toggle');
-    if (!this.toggleBtn) return;
-    this.toggleBtn.addEventListener('click', () => this.toggle());
   },
-  toggle() {
-    this.isActive = !this.isActive;
-    const root = document.documentElement;
-    if (this.isActive) {
-      root.classList.add('read-mode');
-      this.toggleBtn.setAttribute('aria-label', 'Exit read mode');
-      this.toggleBtn.classList.add('active');
-    } else {
-      root.classList.remove('read-mode');
-      this.toggleBtn.setAttribute('aria-label', 'Toggle read mode');
-      this.toggleBtn.classList.remove('active');
-    }
-  }
 };
 
 // ====================================
 // Main Initialization
 // ====================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Core reading experience
-  ScrollManager.init();
-  ReadingProgress.init();
-  ScrollToTop.init();
   DarkMode.init();
-  ReadMode.init();
   CodeCopy.init();
   ImageLightbox.init();
-  AutoNumbering.init();
   PostTableOfContents.init();
-  TocHighlight.init();
-  ReadingTime.init();
   ExternalLinks.init();
   EnhancedSearch.init();
   SchemaMarkup.init();

@@ -1,9 +1,6 @@
 ---
 layout: post
 title: Font Diffusion for Sino-Nom Character Synthesis
-cover-img: # TODO: add cover image (e.g., /assets/img/posts/font-diffusion/cover.png)
-thumbnail-img: # TODO: add thumbnail image
-share-img: # TODO: add social share image
 tags: [sino-nom, diffusion-models, deep-learning]
 author: dzungphieuluuky
 ---

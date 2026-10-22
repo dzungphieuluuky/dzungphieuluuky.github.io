@@ -1,0 +1,106 @@
+- generic [ref=f14e1]:
+  - link "Skip to main content" [ref=f14e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation [ref=f14e3]:
+    - link "dzungphieuluuky's Blog" [ref=f14e4] [cursor=pointer]:
+      - /url: http://localhost:4002/
+    - list [ref=f14e6]:
+      - listitem [ref=f14e7]:
+        - link "About Me" [ref=f14e8] [cursor=pointer]:
+          - /url: /index
+      - listitem [ref=f14e9]:
+        - link "Research" [ref=f14e10] [cursor=pointer]:
+          - /url: /research
+      - listitem [ref=f14e11]:
+        - link "Blogs" [ref=f14e12] [cursor=pointer]:
+          - /url: /blog
+      - listitem [ref=f14e13]:
+        - link "Categories" [ref=f14e14] [cursor=pointer]:
+          - /url: /tags
+      - listitem [ref=f14e15]:
+        - link "CV" [ref=f14e16] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f14e17]:
+        - link "CV" [ref=f14e18] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f14e19]:
+        - button "Switch to light mode" [ref=f14e20] [cursor=pointer]
+      - listitem [ref=f14e27]:
+        - button "Open search" [ref=f14e28] [cursor=pointer]
+    - link [ref=f14e35] [cursor=pointer]:
+      - /url: http://localhost:4002/
+      - img "Navigation bar avatar" [ref=f14e36]
+  - dialog "Search modal":
+    - generic:
+      - button "Close search": ×
+      - generic:
+        - textbox "Search posts and articles" [active]:
+          - /placeholder: Search articles and posts... (Cmd+K)
+        - generic: ↑↓ to navigate ⏎ to select Esc to close
+  - main [ref=f14e37]:
+    - generic [ref=f14e43]:
+      - heading "Curriculum Vitae" [level=1] [ref=f14e44]
+      - text: My Resumé
+    - main [ref=f14e45]:
+      - generic [ref=f14e48]:
+        - generic [ref=f14e49]:
+          - paragraph [ref=f14e50]: Available formats
+          - generic [ref=f14e51]:
+            - link "Download CV as PDF" [ref=f14e52] [cursor=pointer]:
+              - /url: /assets/cv/resume.pdf
+              - generic [ref=f14e56]:
+                - strong [ref=f14e57]: PDF
+                - generic [ref=f14e58]: Recommended
+            - link "Download CV LaTeX source" [ref=f14e59] [cursor=pointer]:
+              - /url: /assets/cv/resume.tex
+              - generic [ref=f14e63]:
+                - strong [ref=f14e64]: LaTeX
+                - generic [ref=f14e65]: Source file
+        - generic [ref=f14e66]:
+          - generic [ref=f14e67]:
+            - generic [ref=f14e68]: Preview
+            - link "Open in new tab" [ref=f14e69] [cursor=pointer]:
+              - /url: /assets/cv/resume.pdf
+          - iframe [ref=f14e75]: <p class="cv-iframe-fallback"> Your browser cannot display PDFs inline. <a href="/assets/cv/resume.pdf" download=""> Download the PDF directly. </a> </p>
+  - contentinfo [ref=f14e76]:
+    - generic [ref=f14e79]:
+      - list [ref=f14e80]:
+        - listitem [ref=f14e81]:
+          - link "Email me" [ref=f14e82] [cursor=pointer]:
+            - /url: mailto:dungngocpham171@gmail.com
+            - generic [aria-hidden] [ref=f14e83]:
+              - generic [ref=f14e84]: 
+              - generic [ref=f14e85]: 
+        - listitem [ref=f14e87]:
+          - link "Facebook" [ref=f14e88] [cursor=pointer]:
+            - /url: https://www.facebook.com/phamngoc.dung.7545
+            - generic [aria-hidden] [ref=f14e89]:
+              - generic [ref=f14e90]: 
+              - generic [ref=f14e91]: 
+        - listitem [ref=f14e93]:
+          - link "GitHub" [ref=f14e94] [cursor=pointer]:
+            - /url: https://github.com/dzungphieuluuky
+            - generic [aria-hidden] [ref=f14e95]:
+              - generic [ref=f14e96]: 
+              - generic [ref=f14e97]: 
+        - listitem [ref=f14e99]:
+          - link "X (Twitter)" [ref=f14e100] [cursor=pointer]:
+            - /url: https://twitter.com/DzPham_capy
+            - generic [aria-hidden] [ref=f14e101]:
+              - generic [ref=f14e102]: 
+              - generic [ref=f14e103]: 
+        - listitem [ref=f14e105]:
+          - link "LinkedIn" [ref=f14e106] [cursor=pointer]:
+            - /url: https://linkedin.com/in/dung-pham-99014b29a
+            - generic [aria-hidden] [ref=f14e107]:
+              - generic [ref=f14e108]: 
+              - generic [ref=f14e109]: 
+      - paragraph [ref=f14e111]:
+        - text: © 2026 dzungphieuluuky ·
+        - link "RSS" [ref=f14e112] [cursor=pointer]:
+          - /url: /feed.xml
+      - paragraph [ref=f14e113]:
+        - text: Set in Lora, Be Vietnam Pro & JetBrains Mono · Powered by
+        - link "Beautiful Jekyll" [ref=f14e114] [cursor=pointer]:
+          - /url: https://beautifuljekyll.com
+  - button "Scroll to top"

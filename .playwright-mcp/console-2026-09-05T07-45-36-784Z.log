@@ -1,0 +1,10 @@
+[      86ms] Uncaught TypeError: Cannot set property Package of #<Object> which has only a getter
+    at s (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:13800)
+    at s (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:13807)
+    at s (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:13807)
+    at s (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:13807)
+    at e.combineWithMathJax (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:14316)
+    at <anonymous> (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:1156314)
+    at <anonymous> (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:1173000)
+    at <anonymous> (https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js:0:1173004)
+[     218ms] [ERROR] Failed to find a valid digest in the 'integrity' attribute for resource 'https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js' with computed SHA-384 integrity 'fXdIufVbE9aU7STmdk/DWK0imNOozId9fTwzM/gi0NfPjphEIC3gq0M760UnsKVy'. The resource has been blocked. @ http://localhost:4002/:0

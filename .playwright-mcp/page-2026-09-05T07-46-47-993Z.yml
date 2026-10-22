@@ -1,0 +1,191 @@
+- generic [ref=f11e1]:
+  - link "Skip to main content" [ref=f11e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation [ref=f11e3]:
+    - link "dzungphieuluuky's Blog" [ref=f11e4] [cursor=pointer]:
+      - /url: http://localhost:4002/
+    - list [ref=f11e6]:
+      - listitem [ref=f11e7]:
+        - link "About Me" [ref=f11e8] [cursor=pointer]:
+          - /url: /index
+      - listitem [ref=f11e9]:
+        - link "Research" [ref=f11e10] [cursor=pointer]:
+          - /url: /research
+      - listitem [ref=f11e11]:
+        - link "Blogs" [ref=f11e12] [cursor=pointer]:
+          - /url: /blog
+      - listitem [ref=f11e13]:
+        - link "Categories" [ref=f11e14] [cursor=pointer]:
+          - /url: /tags
+      - listitem [ref=f11e15]:
+        - link "CV" [ref=f11e16] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f11e17]:
+        - link "CV" [ref=f11e18] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f11e19]:
+        - button "Switch to light mode" [ref=f11e20] [cursor=pointer]
+      - listitem [ref=f11e27]:
+        - button "Open search" [ref=f11e28] [cursor=pointer]
+    - link [ref=f11e35] [cursor=pointer]:
+      - /url: http://localhost:4002/
+      - img "Navigation bar avatar" [ref=f11e36]
+  - dialog "Search modal":
+    - generic:
+      - button "Close search": ×
+      - generic:
+        - textbox "Search posts and articles" [active]:
+          - /placeholder: Search articles and posts... (Cmd+K)
+        - generic: ↑↓ to navigate ⏎ to select Esc to close
+  - main [ref=f11e37]:
+    - generic [ref=f11e43]:
+      - heading "Blog" [level=1] [ref=f11e44]
+      - text: Research notes on RL, diffusion, and robot learning.
+    - main [ref=f11e45]:
+      - list [ref=f11e48]:
+        - listitem [ref=f11e49]:
+          - generic [ref=f11e50]:
+            - link [ref=f11e51] [cursor=pointer]:
+              - /url: http://localhost:4002/2026-08-06-introducing-series-latent-life/
+              - heading "Introducing series Latent Life" [level=2] [ref=f11e52]
+            - generic [ref=f11e53]:
+              - text: By
+              - strong [ref=f11e54]: dzungphieuluuky
+            - paragraph [ref=f11e55]: Posted on August 6, 2026
+            - generic [ref=f11e56]:
+              - text: A few weeks ago I caught myself doing something strange. I was annoyed at a friend for being late, and before I’d even finished being annoyed, some other part of my head had already produced an explanation — traffic, probably, or he lost track of time, he always does —...
+              - link "[Read More]" [ref=f11e57] [cursor=pointer]:
+                - /url: http://localhost:4002/2026-08-06-introducing-series-latent-life/
+        - listitem [ref=f11e58]:
+          - generic [ref=f11e59]:
+            - link [ref=f11e60] [cursor=pointer]:
+              - /url: http://localhost:4002/2026-04-29-some-experience-on-deep-learning-projects/
+              - heading "Experience along the way" [level=2] [ref=f11e61]
+            - generic [ref=f11e62]:
+              - text: By
+              - strong [ref=f11e63]: dzungphieuluuky
+            - paragraph [ref=f11e64]: Posted on April 29, 2026
+            - generic [ref=f11e65]:
+              - text: What is this blog talking about?
+              - link "[Read More]" [ref=f11e66] [cursor=pointer]:
+                - /url: http://localhost:4002/2026-04-29-some-experience-on-deep-learning-projects/
+        - listitem [ref=f11e67]:
+          - generic [ref=f11e68]:
+            - link [ref=f11e69] [cursor=pointer]:
+              - /url: http://localhost:4002/2026-04-22-viettel-digital-talent-recap/
+              - heading "Viettel Digital Talent Recap" [level=2] [ref=f11e70]
+            - generic [ref=f11e71]:
+              - text: By
+              - strong [ref=f11e72]: dzungphieuluuky
+            - paragraph [ref=f11e73]: Posted on April 22, 2026
+            - generic [ref=f11e74]:
+              - text: Introduction
+              - link "[Read More]" [ref=f11e75] [cursor=pointer]:
+                - /url: http://localhost:4002/2026-04-22-viettel-digital-talent-recap/
+        - listitem [ref=f11e76]:
+          - generic [ref=f11e77]:
+            - link [ref=f11e78] [cursor=pointer]:
+              - /url: http://localhost:4002/2026-03-27-thach-thuc-recap/
+              - heading "Recap Thách Thức 2026" [level=2] [ref=f11e79]
+            - generic [ref=f11e80]:
+              - text: By
+              - strong [ref=f11e81]: dzungphieuluuky
+            - paragraph [ref=f11e82]: Posted on March 27, 2026
+            - generic [ref=f11e83]:
+              - text: Introduction
+              - link "[Read More]" [ref=f11e84] [cursor=pointer]:
+                - /url: http://localhost:4002/2026-03-27-thach-thuc-recap/
+        - listitem [ref=f11e85]:
+          - generic [ref=f11e86]:
+            - link [ref=f11e87] [cursor=pointer]:
+              - /url: http://localhost:4002/2026-01-12-reinforcement-learning/
+              - heading "On Reinforcement Learning" [level=2] [ref=f11e88]
+            - generic [ref=f11e89]:
+              - text: By
+              - strong [ref=f11e90]: dzungphieuluuky
+            - paragraph [ref=f11e91]: Posted on January 12, 2026
+            - generic [ref=f11e92]:
+              - text: Introduction
+              - link "[Read More]" [ref=f11e93] [cursor=pointer]:
+                - /url: http://localhost:4002/2026-01-12-reinforcement-learning/
+        - listitem [ref=f11e94]:
+          - generic [ref=f11e95]:
+            - link [ref=f11e96] [cursor=pointer]:
+              - /url: http://localhost:4002/2026-01-06-Font-Diffusion-SinoNom-Project/
+              - heading "Font Diffusion for Sino-Nom Character Synthesis" [level=2] [ref=f11e97]
+            - generic [ref=f11e98]:
+              - text: By
+              - strong [ref=f11e99]: dzungphieuluuky
+            - paragraph [ref=f11e100]: Posted on January 6, 2026
+            - generic [ref=f11e101]:
+              - text: Sino-Nom character recognition is a niche but important problem. Historical Vietnamese documents use this script extensively, but there isn’t enough training data for modern OCR models to handle them well. That’s where this project comes in.
+              - link "[Read More]" [ref=f11e102] [cursor=pointer]:
+                - /url: http://localhost:4002/2026-01-06-Font-Diffusion-SinoNom-Project/
+        - listitem [ref=f11e103]:
+          - generic [ref=f11e104]:
+            - link [ref=f11e105] [cursor=pointer]:
+              - /url: http://localhost:4002/2025-12-27-Model-storage-formats/
+              - heading "Model storage formats" [level=2] [ref=f11e106]
+            - generic [ref=f11e107]:
+              - text: By
+              - strong [ref=f11e108]: dzungphieuluuky
+            - paragraph [ref=f11e109]: Posted on December 27, 2025
+            - generic [ref=f11e110]:
+              - text: "A few months back, while downloading a new model from Hugging Face to experiment with, I noticed something interesting: the repository offered both the classic model.pth (the traditional PyTorch weight storage format) and a newer model.safetensors. At first glance, they seemed identical, just having different extensions. However, when I loaded..."
+              - link "[Read More]" [ref=f11e111] [cursor=pointer]:
+                - /url: http://localhost:4002/2025-12-27-Model-storage-formats/
+        - listitem [ref=f11e112]:
+          - generic [ref=f11e113]:
+            - link [ref=f11e114] [cursor=pointer]:
+              - /url: http://localhost:4002/2025-05-14-the-beginning-of-a-blog/
+              - heading "The beginning of a blog" [level=2] [ref=f11e115]
+            - generic [ref=f11e116]:
+              - text: By
+              - strong [ref=f11e117]: dzungphieuluuky
+            - paragraph [ref=f11e118]: Posted on May 14, 2025
+            - generic [ref=f11e119]:
+              - text: First day at Uni
+              - link "[Read More]" [ref=f11e120] [cursor=pointer]:
+                - /url: http://localhost:4002/2025-05-14-the-beginning-of-a-blog/
+  - contentinfo [ref=f11e121]:
+    - generic [ref=f11e124]:
+      - list [ref=f11e125]:
+        - listitem [ref=f11e126]:
+          - link "Email me" [ref=f11e127] [cursor=pointer]:
+            - /url: mailto:dungngocpham171@gmail.com
+            - generic [aria-hidden] [ref=f11e128]:
+              - generic [ref=f11e129]: 
+              - generic [ref=f11e130]: 
+        - listitem [ref=f11e132]:
+          - link "Facebook" [ref=f11e133] [cursor=pointer]:
+            - /url: https://www.facebook.com/phamngoc.dung.7545
+            - generic [aria-hidden] [ref=f11e134]:
+              - generic [ref=f11e135]: 
+              - generic [ref=f11e136]: 
+        - listitem [ref=f11e138]:
+          - link "GitHub" [ref=f11e139] [cursor=pointer]:
+            - /url: https://github.com/dzungphieuluuky
+            - generic [aria-hidden] [ref=f11e140]:
+              - generic [ref=f11e141]: 
+              - generic [ref=f11e142]: 
+        - listitem [ref=f11e144]:
+          - link "X (Twitter)" [ref=f11e145] [cursor=pointer]:
+            - /url: https://twitter.com/DzPham_capy
+            - generic [aria-hidden] [ref=f11e146]:
+              - generic [ref=f11e147]: 
+              - generic [ref=f11e148]: 
+        - listitem [ref=f11e150]:
+          - link "LinkedIn" [ref=f11e151] [cursor=pointer]:
+            - /url: https://linkedin.com/in/dung-pham-99014b29a
+            - generic [aria-hidden] [ref=f11e152]:
+              - generic [ref=f11e153]: 
+              - generic [ref=f11e154]: 
+      - paragraph [ref=f11e156]:
+        - text: © 2026 dzungphieuluuky ·
+        - link "RSS" [ref=f11e157] [cursor=pointer]:
+          - /url: /feed.xml
+      - paragraph [ref=f11e158]:
+        - text: Set in Lora, Be Vietnam Pro & JetBrains Mono · Powered by
+        - link "Beautiful Jekyll" [ref=f11e159] [cursor=pointer]:
+          - /url: https://beautifuljekyll.com
+  - button "Scroll to top"

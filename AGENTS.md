@@ -3,8 +3,8 @@
 ## Stack
 - **Ruby/Jekyll** (Beautiful Jekyll theme v6) — static site blog on GitHub Pages
 - CI: `.github/workflows/ci.yml` — `ubuntu-latest`, Ruby 3.3, `bundle exec appraisal jekyll build --future --config _config_ci.yml,_config.yml`
-- CSS: `assets/css/custom-styles.css` (1500 lines, never edit `beautifuljekyll.css`)
-- JS: `assets/js/custom-script.js` (895 lines, modular pattern)
+- CSS: `assets/css/custom-styles.css` (1,121 lines, never edit `beautifuljekyll.css`)
+- JS: `assets/js/custom-script.js` (356 lines, modular pattern)
 - CV: `assets/cv/resume.tex` / `new_resume.tex` — build: `pdflatex resume.tex`
 
 ## Commands
@@ -31,8 +31,8 @@
 - Use CSS variables (`--text-primary`, `--bg-tertiary`, `--border-primary`, etc.) — never hardcode colors
 - Light mode: `:root { }` / Dark mode: `html.dark-mode { }` blocks — test **both**
 - Dark mode palette inverts from white→black backgrounds, black→white text
-- Fonts: Be Vietnam Pro (sans/display), Lora (serif/body), JetBrains Mono (code)
-- Max reading width: 728px; line-height: 1.8; font-size: 1.175rem (87.5% root rem)
+- Fonts: Be Vietnam Pro (sans/display), Source Serif 4 (serif/body), JetBrains Mono (code)
+- Max reading width: 884px; line-height: 1.7; font-size: 1.06rem (87.5% root rem)
 - **Any new font must support Vietnamese diacritics** — check before importing
 - Design tokens in `DESIGN.md` (Geist palette), philosophy in `DESIGN_BRIEF.md`
 - Search corpus auto-generated at `assets/data/searchcorpus.json`
@@ -41,14 +41,12 @@
 All modules follow `const ModuleName = { init() { ... } }` pattern. Init runs in `DOMContentLoaded`:
 
 ```
-ScrollManager → ReadingProgress → ScrollToTop → DarkMode → ReadMode →
-CodeCopy → ImageLightbox → AutoNumbering → PostTableOfContents →
-TocHighlight → ReadingTime → ExternalLinks → EnhancedSearch → SchemaMarkup
+DarkMode → CodeCopy → ImageLightbox → PostTableOfContents →
+ExternalLinks → EnhancedSearch → SchemaMarkup
 ```
 
-- `ScrollManager` consolidates all scroll handlers in one RAF loop
-- Passive listeners for scroll/touch (`{ passive: true }`)
-- Cache DOM queries, lazy-load search corpus, CSS transitions over classList toggles
+- Cache DOM queries, lazy-load search corpus
+- No transitions or CSS effects: state changes are instant (minimalist design)
 - Theme flash prevention: IIFE before `DOMContentLoaded` checks localStorage
 
 ## Writing Voice (for blog posts)

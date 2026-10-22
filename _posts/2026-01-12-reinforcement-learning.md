@@ -1,9 +1,6 @@
 ---
 layout: post
 title: On Reinforcement Learning
-cover-img: # TODO: add cover image (e.g., /assets/img/posts/reinforcement-learning/cover.png)
-thumbnail-img: # TODO: add thumbnail image
-share-img: # TODO: add social share image
 tags: [reinforcement-learning]
 author: dzungphieuluuky
 ---

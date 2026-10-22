@@ -1,0 +1,5 @@
+- generic [active] [ref=f13e1]:
+  - heading "Not Found" [level=1] [ref=f13e2]
+  - text: "'/404.html' not found."
+  - separator [ref=f13e3]
+  - generic [ref=f13e4]: WEBrick/1.9.2 (Ruby/3.3.8/2025-04-09) at localhost:4002

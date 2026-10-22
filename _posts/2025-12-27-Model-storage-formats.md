@@ -2,9 +2,6 @@
 layout: post
 title: Model storage formats
 subtitle: Safetensors and friends
-cover-img:
-thumbnail-img:
-share-img: 
 tags: [machine-learning]
 author: dzungphieuluuky
 ---

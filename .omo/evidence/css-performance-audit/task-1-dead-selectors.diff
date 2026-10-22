@@ -1,0 +1,80 @@
+diff --git a/assets/css/beautifuljekyll.css b/assets/css/beautifuljekyll.css
+index dd4058a..15fa1e1 100644
+--- a/assets/css/beautifuljekyll.css
++++ b/assets/css/beautifuljekyll.css
+@@ -86,9 +86,7 @@ blockquote {
+ blockquote p:first-child {
+   margin-top: 0;
+ }
+-.jumbotron {
+-  background: #EEE;
+-}
++
+ hr.small {
+   max-width: 5.682rem;
+   margin: 0.909rem auto;
+@@ -105,9 +103,7 @@ hr.small {
+   margin: -2.841rem 0 0;
+ }
+ 
+-.hideme {
+-  display: none;
+-}
++
+ 
+ ::-moz-selection {
+   color: var(--page-col);
+@@ -132,10 +128,7 @@ img {
+   max-width: 100%;
+ }
+ 
+-.linked-section {
+-  padding-top: 3.409rem;
+-  margin-top: -1.42rem;
+-}
++
+ 
+ /* Comments */
+ 
+@@ -717,15 +710,7 @@ nav.top-nav-short-permanent ~ header > .intro-header.big-img {
+   margin-top: 0;
+   font-size: 1.989rem;
+ }
+-.intro-header .page-heading .page-subheading,
+-.intro-header .post-heading .post-subheading {
+-  font-size: 1.534rem;
+-  line-height: 1.1;
+-  display: block;
+-  font-family: var(--header-font);
+-  font-weight: 300;
+-  margin: 0.568rem 0 0;
+-}
++
+ .intro-header .post-heading .post-subheading {
+   margin-bottom: 1.136rem;
+ }
+@@ -733,11 +718,7 @@ nav.top-nav-short-permanent ~ header > .intro-header.big-img {
+ .intro-header.big-img .post-heading .post-subheading {
+   font-weight: 400;
+ }
+-.intro-header.big-img .page-heading hr {
+-  box-shadow: 1px 1px 3px #000;
+-  -webkit-box-shadow: 1px 1px 3px #000;
+-  -moz-box-shadow: 1px 1px 3px #000;
+-}
++
+ .intro-header.big-img .post-heading .post-meta {
+   color: #EEE;
+ }
+@@ -1015,10 +996,7 @@ pre {
+   margin-bottom: 0;
+ }
+ 
+-.center {
+-  display: block;
+-  margin: 0 auto;
+-}
++
+ 
+ /* Search bar */
+ #beautifuljekyll-search-overlay {

@@ -1,0 +1,194 @@
+- generic [ref=f10e1]:
+  - link "Skip to main content" [ref=f10e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation [ref=f10e3]:
+    - link "dzungphieuluuky's Blog" [ref=f10e4] [cursor=pointer]:
+      - /url: http://localhost:4002/
+    - list [ref=f10e6]:
+      - listitem [ref=f10e7]:
+        - link "About Me" [ref=f10e8] [cursor=pointer]:
+          - /url: /index
+      - listitem [ref=f10e9]:
+        - link "Research" [ref=f10e10] [cursor=pointer]:
+          - /url: /research
+      - listitem [ref=f10e11]:
+        - link "Blogs" [ref=f10e12] [cursor=pointer]:
+          - /url: /blog
+      - listitem [ref=f10e13]:
+        - link "Categories" [ref=f10e14] [cursor=pointer]:
+          - /url: /tags
+      - listitem [ref=f10e15]:
+        - link "CV" [ref=f10e16] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f10e17]:
+        - link "CV" [ref=f10e18] [cursor=pointer]:
+          - /url: /cv
+      - listitem [ref=f10e19]:
+        - button "Switch to light mode" [ref=f10e20] [cursor=pointer]
+      - listitem [ref=f10e27]:
+        - button "Open search" [ref=f10e28] [cursor=pointer]
+    - link [ref=f10e35] [cursor=pointer]:
+      - /url: http://localhost:4002/
+      - img "Navigation bar avatar" [ref=f10e36]
+  - dialog "Search modal":
+    - generic:
+      - button "Close search": ×
+      - generic:
+        - textbox "Search posts and articles" [active]:
+          - /placeholder: Search articles and posts... (Cmd+K)
+        - generic: ↑↓ to navigate ⏎ to select Esc to close
+  - main [ref=f10e37]:
+    - generic [ref=f10e43]:
+      - heading "Per aspera ad astra" [level=1] [ref=f10e44]
+      - text: Through hardships to the stars
+    - main [ref=f10e45]:
+      - generic [ref=f10e47]:
+        - generic [ref=f10e48]:
+          - heading "dzungphieuluuky" [level=1] [ref=f10e49]
+          - paragraph [ref=f10e50]: Undergraduate researcher working on reinforcement learning, diffusion models, and robot learning.
+          - navigation "Quick links" [ref=f10e51]:
+            - link "About" [ref=f10e52] [cursor=pointer]:
+              - /url: /
+            - link "Research" [ref=f10e53] [cursor=pointer]:
+              - /url: /research
+            - link "GitHub" [ref=f10e54] [cursor=pointer]:
+              - /url: https://github.com/dzungphieuluuky
+        - paragraph [ref=f10e55]:
+          - text: I’m an undergraduate researcher interested in deep learning and intelligent systems that can learn effectively from their own experience. My research interest focuses on RL which are representation learning, reinforcement learning and robot learning. As for representation learning, I am especially gravitated towards generative modeling with diffusion and flow matching models. I occasionally write about my projects and research thoughts on my
+          - link "blog" [ref=f10e56] [cursor=pointer]:
+            - /url: /blog/
+          - text: .
+        - heading "Projects" [level=2] [ref=f10e57]
+        - generic [ref=f10e58]:
+          - generic [ref=f10e59]:
+            - heading "Font Architect — Diffusion Models" [level=3] [ref=f10e60]
+            - paragraph [ref=f10e61]: A research project exploring diffusion-based methods for generating high-quality images of Sino-Nôm script by blending content from one image with the style of another. This project presented major challenges in style-content disentanglement and sparked my deep interest in diffusion-based generative modeling.
+            - generic [ref=f10e62]:
+              - generic [ref=f10e63]: diffusion
+              - generic [ref=f10e64]: research
+              - generic [ref=f10e65]: generative
+          - generic [ref=f10e66]:
+            - heading "Ouro Trace — Looped Language Models" [level=3] [ref=f10e67]
+            - paragraph [ref=f10e68]: A capstone project experimenting with ByteDance's looped language model (Ouro-1.4B) to explore its reasoning capabilities beyond traditional transformer architectures. This project pushed my understanding of NLP and revealed the unique mechanics of looped transformer dynamics.
+            - generic [ref=f10e69]:
+              - generic [ref=f10e70]: NLP
+              - generic [ref=f10e71]: transformer
+              - generic [ref=f10e72]: capstone
+            - link "View on Hugging Face →" [ref=f10e74] [cursor=pointer]:
+              - /url: https://huggingface.co/ByteDance/Ouro-1.4B-Thinking
+          - generic [ref=f10e75]:
+            - heading "Energy Management — Deep Reinforcement Learning" [level=3] [ref=f10e76]
+            - paragraph [ref=f10e77]: An RL-based agent developed for the Viettel AI Race competition that autonomously controls energy cell output bursts based on real-time grid demand. This project gave me firsthand experience with PPO and SAC training dynamics and the notorious instability of deep RL optimization.
+            - generic [ref=f10e78]:
+              - generic [ref=f10e79]: RL
+              - generic [ref=f10e80]: energy
+              - generic [ref=f10e81]: competition
+          - generic [ref=f10e82]:
+            - heading "This Website" [level=3] [ref=f10e83]
+            - paragraph [ref=f10e84]: A personal portfolio built on the Beautiful Jekyll theme to share project experiences, research progress, and technical thoughts. Serves as both a blog and a showcase for my journey in deep learning and intelligent systems.
+            - generic [ref=f10e85]:
+              - generic [ref=f10e86]: web
+              - generic [ref=f10e87]: jekyll
+              - generic [ref=f10e88]: portfolio
+        - heading "Favourite Channels" [level=2] [ref=f10e89]
+        - paragraph [ref=f10e90]: "Watching YouTube is one of my ways of burning time when I’m free, some of my favourite channels are:"
+        - list [ref=f10e91]:
+          - listitem [ref=f10e92]:
+            - link [ref=f10e93] [cursor=pointer]:
+              - /url: https://www.youtube.com/@3blue1brown
+              - strong [ref=f10e94]: 3Blue1Brown
+            - text: ": a must-watch channel for those who love mathematics with strong intuition. I’m especially fascinated by his series on Essence of Calculus and Linear Algebra. Mathematics in the hand of Sanderson is truly something godlike and out-of-this-world."
+          - listitem [ref=f10e95]:
+            - link [ref=f10e96] [cursor=pointer]:
+              - /url: https://www.youtube.com/@veritasium
+              - strong [ref=f10e97]: Veritasium
+            - text: ": a channel for anyone burned continuously with curiosity and desire to expand knowledge."
+          - listitem [ref=f10e98]:
+            - link [ref=f10e99] [cursor=pointer]:
+              - /url: https://www.youtube.com/@Fireship
+              - strong [ref=f10e100]: Fireship
+            - text: ": coding channel with lightspeed way of explaining things, suitable for those who needs some speed to focus."
+        - heading "Favourite blog posts" [level=2] [ref=f10e101]
+        - list [ref=f10e102]:
+          - listitem [ref=f10e103]:
+            - link [ref=f10e104] [cursor=pointer]:
+              - /url: https://sander.ai/
+              - strong [ref=f10e105]: Sander Dieleman
+            - text: ": a research scientist at Google Deepmind. I’m currently learning a lot from his blog posts, which range around 30 minutes to 60 minutes reading time. This is a treasure trove for those who seeks to understand generative modelling far beyond the textbooks as the insights from his research is totally fantastic."
+          - listitem [ref=f10e106]:
+            - link [ref=f10e107] [cursor=pointer]:
+              - /url: https://lilianweng.github.io/
+              - strong [ref=f10e108]: Lilian Weng
+            - text: ": I usually use her blog posts to grasp the broad understanding of the state-of-the-art of any machine learning disciplines that I’m interested. Her blog posts are very long, containing a large amount of knowledge about many topics. If you want to grasp what is happening in a specific field, her blog posts are definitely where to go."
+          - listitem [ref=f10e109]:
+            - link [ref=f10e110] [cursor=pointer]:
+              - /url: https://cameronrwolfe.substack.com/
+              - strong [ref=f10e111]: Cameron Wolfe
+            - text: ": This LLM researcher has a nice substack portal with dozens of high quality blogs suitable for those interested in deep learning frontiers in general and LLM in particular. I find his posts contain a handful of knowledge without being too mathematically heavy to understand. Good starting point for those who are beginners in the field or not ready for more math-heavy blogs with an interest in language modeling."
+        - heading "About me" [level=2] [ref=f10e112]
+        - list [ref=f10e113]:
+          - listitem [ref=f10e114]: "Like: linear algebra, calculus, differential equations and high-dimensional unintuitive phenomenona."
+          - listitem [ref=f10e115]: "Don’t like: combinatorics, graph theory, number theory, discrete mathematics in general."
+          - listitem [ref=f10e116]: I’m most productive during night time.
+          - listitem [ref=f10e117]: I enjoy reading anime character wikipedias rather than actually watching that exactly anime series. Quite excited to do research about my favourite anime characters.
+          - listitem [ref=f10e118]: "My learning fuel: curiosity and probably too much coffee everyday intake."
+          - listitem [ref=f10e119]: I’m apparently a generalist rather than a specialist (maybe).
+        - heading "How To Reach Me" [level=2] [ref=f10e120]
+        - list [ref=f10e121]:
+          - listitem [ref=f10e122]:
+            - link [ref=f10e123] [cursor=pointer]:
+              - /url: https://github.com/dzungphieuluuky
+              - strong [ref=f10e124]: GitHub
+            - text: ": Trying to build up some experience and store it here."
+          - listitem [ref=f10e125]:
+            - link [ref=f10e126] [cursor=pointer]:
+              - /url: https://dzungphieuluuky.github.io/blog/
+              - strong [ref=f10e127]: Blog
+            - text: ": Read my thoughts and ideas on random topics."
+          - listitem [ref=f10e128]:
+            - link [ref=f10e129] [cursor=pointer]:
+              - /url: mailto:dungngocpham171@gmail.com
+              - strong [ref=f10e130]: Email
+            - text: ": Email, just in case someone wants to discuss something related to deep learning especially diffusion and deep RL."
+  - contentinfo [ref=f10e131]:
+    - generic [ref=f10e134]:
+      - list [ref=f10e135]:
+        - listitem [ref=f10e136]:
+          - link "Email me" [ref=f10e137] [cursor=pointer]:
+            - /url: mailto:dungngocpham171@gmail.com
+            - generic [aria-hidden] [ref=f10e138]:
+              - generic [ref=f10e139]: 
+              - generic [ref=f10e140]: 
+        - listitem [ref=f10e142]:
+          - link "Facebook" [ref=f10e143] [cursor=pointer]:
+            - /url: https://www.facebook.com/phamngoc.dung.7545
+            - generic [aria-hidden] [ref=f10e144]:
+              - generic [ref=f10e145]: 
+              - generic [ref=f10e146]: 
+        - listitem [ref=f10e148]:
+          - link "GitHub" [ref=f10e149] [cursor=pointer]:
+            - /url: https://github.com/dzungphieuluuky
+            - generic [aria-hidden] [ref=f10e150]:
+              - generic [ref=f10e151]: 
+              - generic [ref=f10e152]: 
+        - listitem [ref=f10e154]:
+          - link "X (Twitter)" [ref=f10e155] [cursor=pointer]:
+            - /url: https://twitter.com/DzPham_capy
+            - generic [aria-hidden] [ref=f10e156]:
+              - generic [ref=f10e157]: 
+              - generic [ref=f10e158]: 
+        - listitem [ref=f10e160]:
+          - link "LinkedIn" [ref=f10e161] [cursor=pointer]:
+            - /url: https://linkedin.com/in/dung-pham-99014b29a
+            - generic [aria-hidden] [ref=f10e162]:
+              - generic [ref=f10e163]: 
+              - generic [ref=f10e164]: 
+      - paragraph [ref=f10e166]:
+        - text: © 2026 dzungphieuluuky ·
+        - link "RSS" [ref=f10e167] [cursor=pointer]:
+          - /url: /feed.xml
+      - paragraph [ref=f10e168]:
+        - text: Set in Lora, Be Vietnam Pro & JetBrains Mono · Powered by
+        - link "Beautiful Jekyll" [ref=f10e169] [cursor=pointer]:
+          - /url: https://beautifuljekyll.com
+  - button "Scroll to top"

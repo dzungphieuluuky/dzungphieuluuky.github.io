@@ -600,7 +600,8 @@ code:not(pre code) {
   border-bottom: 1px solid var(--table-border);
 }
 .post-toc-box > summary::-webkit-details-marker {
-  display: none;
+  display: list-item;
+  color: var(--text-tertiary);
 }
 .post-toc-box ul {
   list-style: none;
@@ -659,6 +660,13 @@ code:not(pre code) {
   font-size: 0.875rem;
 }
 .post-toc-box a:hover { color: var(--text-primary); text-decoration: underline; }
+.post-toc-box li.toc-h2 { padding-left: 1rem; }
+.post-toc-box li.toc-h2 > a {
+  font-weight: 600;
+}
+.post-toc-box li.toc-h3 > a {
+  font-weight: 400;
+}
 .post-toc-box li.toc-h2 { padding-left: 1rem; }
 .post-toc-box li.toc-h3 { padding-left: 2rem; }
 

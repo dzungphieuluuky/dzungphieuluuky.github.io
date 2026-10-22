@@ -287,7 +287,7 @@ const EnhancedSearch = {
     this.results.innerHTML = items.slice(0, 20).map((item, i) => `
       <a class="search-result-item${i === this.index ? ' is-active' : ''}" href="${escapeHtml(item.url)}">
         <div class="search-result-title">${escapeHtml(item.title || 'Untitled')}</div>
-        <div class="search-result-excerpt">${escapeHtml(item.excerpt || '')}</div>
+        <div class="search-result-excerpt">${escapeHtml(EnhancedSearch.truncate(item.excerpt || ''))}</div>
         <div class="search-result-meta">
           ${item.date ? `<span>${escapeHtml(item.date)}</span>` : ''}
           ${item.category ? `<span>${escapeHtml(item.category)}</span>` : ''}
@@ -299,6 +299,11 @@ const EnhancedSearch = {
   },
 
   escape(value) { return escapeHtml(value); },
+
+  truncate(value) {
+    const words = (value || '').toString().trim().split(/\s+/);
+    return words.length > 20 ? words.slice(0, 20).join(' ') + '\u2026' : (value || '');
+  },
 
   sync() {
     this.results.querySelectorAll('.search-result-item')

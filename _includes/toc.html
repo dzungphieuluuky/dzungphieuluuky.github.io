@@ -1,0 +1,28 @@
+{% if page.toc == true %}
+<aside class="toc-sidebar" aria-label="Table of contents">
+  <nav class="toc-nav">
+    <h2 class="toc-title">Contents</h2>
+    <ul class="toc-list">
+      {% assign headings = content | split: '<h2' %}
+      {% for h in headings offset: 1 %}
+        {% assign rest = h | split: '</h2>' | first %}
+        {% assign id_part = rest | split: 'id="' | last | split: '"' | first %}
+        {% if id_part == '' %}{% assign id_part = rest | split: '>' | last | split: '<' | first %}{% endif %}
+        {% assign text = rest | split: '>' | last | split: '<' | first %}
+        {% if id_part != '' %}
+        <li><a href="#{{ id_part }}" class="toc-link">{{ text | strip_html | truncatewords: 8 }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% assign headings3 = content | split: '<h3' %}
+      {% for h in headings3 offset: 1 %}
+        {% assign rest = h | split: '</h3>' | first %}
+        {% assign id_part = rest | split: 'id="' | last | split: '"' | first %}
+        {% if id_part != '' %}
+        {% assign text = rest | split: '>' | last | split: '<' | first %}
+        <li class="toc-sub"><a href="#{{ id_part }}" class="toc-link">{{ text | strip_html | truncatewords: 8 }}</a></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+</aside>
+{% endif %}

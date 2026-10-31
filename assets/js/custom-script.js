@@ -359,3 +359,34 @@ document.addEventListener('DOMContentLoaded', () => {
   EnhancedSearch.init();
   SchemaMarkup.init();
 });
+// TOC IntersectionObserver active highlight
+{
+  const tocLinks = document.querySelectorAll(".toc-link");
+  const headings = document.querySelectorAll(".blog-post h2[id], .blog-post h3[id]");
+  if (tocLinks.length && headings.length) {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove("active"));
+          const link = document.querySelector(".toc-link[href=\"#" + entry.target.id + "\"]");
+          if (link) link.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-15% 0px -70% 0px", threshold: 0 });
+    headings.forEach(h => obs.observe(h));
+  }
+}
+
+// Reading progress bar (page-level)
+(function () {
+  var bar = document.getElementById("reading-progress");
+  if (!bar) return;
+  function update() {
+    var scroll = window.scrollY || document.documentElement.scrollTop;
+    var docH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    bar.style.width = (docH > 0 ? (scroll / docH) * 100 : 0) + "%";
+  }
+  window.addEventListener("scroll", update, { passive: true });
+  update();
+})();
+

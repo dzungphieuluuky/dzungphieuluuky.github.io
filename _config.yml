@@ -141,20 +141,20 @@ keywords: "blog,programming,tutorials,tech,personal"
 
 # Enhanced search settings
 post_search: true
-search_placeholder: "Something is coming..."
+search_placeholder: "Search articles and posts..."
 search_results_limit: 15
 
-page-col: "#0f1419"                    # Dark navy background
-text-col: "#e6f1ff"                    # Light blue-white text
-link-col: "#64b5f6"                    # Bright blue links
-hover-col: "#42a5f5"                   # Lighter blue hover
-navbar-col: "#1a237e"                  # Deep blue navbar
-navbar-text-col: "#e3f2fd"             # Very light blue navbar text
-navbar-border-col: "#283593"           # Medium blue border
-footer-col: "#263238"                  # Dark blue-gray footer
-footer-text-col: "#90caf9"             # Light blue footer text
-footer-link-col: "#64b5f6"             # Bright blue footer links
-footer-hover-col: "#42a5f5"            # Footer hover color
+page-col: "#FFFFFF"                    # White background
+text-col: "#1A1A1A"                    # Near-black text
+link-col: "#333333"                    # Black links
+hover-col: "#555555"                   # Dark gray hover
+navbar-col: "#FFFFFF"                  # White navbar
+navbar-text-col: "#1A1A1A"             # Black navbar text
+navbar-border-col: "#333333"           # Light border
+footer-col: "#F5F5F5"                  # Light footer
+footer-text-col: "#404040"             # Dark footer text
+footer-link-col: "#333333"             # Dark footer links
+footer-hover-col: "#777777"            # Gray footer hover
 
 
 # Alternatively, the navbar, footer, and page background can be set to an image
@@ -166,7 +166,7 @@ footer-hover-col: "#42a5f5"            # Footer hover color
 
 # Suggest a colour for mobile browsers to use as the browser's theme. This is only supported by a few mobile browsers.
 # mobile-theme-col: "#3498db"
-mobile-theme-col: "#1a237e"
+mobile-theme-col: "#FFFFFF"
 
 # For any extra visual customization, you can include additional CSS files in every page on your site. List any custom CSS files here
 site-css:

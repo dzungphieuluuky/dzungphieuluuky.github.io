@@ -59,9 +59,9 @@
   /* Reading measure */
   --page-width:          900px;
   --page-gutter:         2rem;
-  --reading-width:       884px;
+  --reading-width:       720px;
   --reading-line-height: 1.65;
-  --reading-font-size:   1.25rem;
+  --reading-font-size:   1.15rem;
   --navbar-height:       60px;
   --paragraph-margin:    1.5rem;
   --heading-margin-top:  2rem;
@@ -465,7 +465,7 @@ code:not(pre code) {
   gap: 0.125rem 0.75rem;
   padding: 1.25rem 0.75rem;
   margin: 0 -0.75rem;
-  border-bottom: 1px solid var(--border-primary);
+  border-bottom: 0.5px solid var(--border-primary);
   background: transparent;
   cursor: pointer;
   text-decoration: none;
@@ -1270,7 +1270,7 @@ html.dark-mode .search-result-meta span { border-color: var(--border-primary); c
 .post-toc-box li.toc-h2 a { font-weight: 600; color: var(--text-primary); font-size: .9rem; }
 .post-toc-box li.toc-h3 a { color: var(--text-secondary); font-size: .85rem; }
 .post-toc-box a:hover { color: var(--accent-primary); text-decoration: none; border-bottom: 1px solid var(--accent-primary); }
-.project-card { border-left: 3px solid var(--accent-primary); padding-left: 1rem; margin: 1.25rem 0; }
+.project-card { border-left: 2px solid var(--accent-primary); padding-left: 1rem; margin: 1.25rem 0; background: transparent; box-shadow: none; }
 .project-card h3 { font-family: var(--font-serif); font-weight: 600; font-size: 1.15rem; line-height: 1.35; margin: .25rem 0 .15rem; color: var(--text-primary); }
 .project-card .card-date { font-family: var(--font-sans); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
 .project-card p { font-size: .95rem; line-height: 1.55; color: var(--text-secondary); }
@@ -1308,7 +1308,8 @@ html.dark-mode .search-result-meta span { border-color: var(--border-primary); c
 .tag-section-icon + .tag-section-title, .tag-section-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.2; }
 .tag-section-count { font-family: var(--font-sans); font-size: .75rem; color: var(--text-muted); margin-left: .5rem; }
 .tag-post-item { display: flex; align-items: center; justify-content: space-between; padding: .65rem 0; border-bottom: 1px solid var(--border-primary); text-decoration: none; color: inherit; transition: opacity .15s; }
-.tag-post-item:hover { opacity: .7; }
+.tag-post-item:hover { opacity: .85; }
+.tag-post-item:hover .tag-post-title { transform: translateX(4px); transition: transform .15s ease, color .15s ease; display: inline-block; }
 .tag-post-item-content { flex: 1; min-width: 0; }
 .tag-post-title { font-family: var(--font-serif); font-size: 1rem; color: var(--text-primary); line-height: 1.35; }
 .tag-post-date { font-family: var(--font-sans); font-size: .75rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: .25rem; margin-top: .25rem; }
@@ -1348,3 +1349,35 @@ html.dark-mode .search-result-meta span { border-color: var(--border-primary); c
 .scroll-top-btn { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; width: 44px; height: 44px; border-radius: 50%; background: #111111; color: #FFFFFF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: transform .15s ease, background .15s ease; font-family: var(--font-sans); font-size: 1.1rem; }
 .scroll-top-btn:hover { background: #333333; transform: translateY(-2px); }
 .scroll-top-btn:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+
+/* LW-style category sidebar */
+.category-sidebar { font-family: var(--font-sans); font-size: 0.85rem; padding-right: 1rem; min-width: 180px; }
+.category-title { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.01em; border-bottom: 1px solid var(--border-primary); padding-bottom: 0.35rem; }
+.category-list { list-style: none; padding: 0; margin: 0; }
+.category-list li { margin: 0.35rem 0; }
+.category-list a { color: var(--text-secondary); text-decoration: none; border-bottom: 0.5px solid var(--border-primary); padding-bottom: 0.05rem; transition: color .12s ease, padding-left .12s ease; display: inline-block; }
+.category-list a:hover { color: var(--text-primary); padding-left: 4px; }
+
+/* Mobile: hide category sidebar, stack article full width */
+@media (max-width: 768px) {
+  .category-sidebar { display: none; }
+  .toc-inline { margin: 0.75rem 0; padding-left: 0.5rem; }
+  .post-toc-list { padding-left: 1rem; }
+}
+
+.post-layout .blog-tags, .post-layout .tag-section { display: none !important; }
+
+/* Tags page — LessWrong-style clean taxonomy */
+.tags-cloud-wrapper { max-width: var(--reading-width); margin: 0 auto 3rem; padding: 0 2rem; }
+.tags-cloud-subtitle { font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 500; margin-bottom: 0.75rem; }
+.tags-cloud { display: flex; flex-wrap: wrap; gap: .6rem; }
+.tags-cloud a { font-family: var(--font-sans); font-size: 0.85rem; background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: 4px; padding: .35rem .75rem; color: var(--text-secondary); text-decoration: none; transition: all .15s; }
+.tags-cloud a:hover { background: var(--bg-primary); color: var(--text-primary); border-color: var(--text-muted); transform: translateX(2px); }
+.tag-section { border-top: 1px solid var(--border-primary); padding-top: 1.25rem; margin-top: 2rem; }
+.tag-section-header { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.75rem; }
+.tag-section-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; }
+.tag-section-count { font-family: var(--font-sans); font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem; }
+.tag-post-item { display: flex; align-items: center; justify-content: space-between; padding: .6rem 0; border-bottom: 0.5px solid var(--border-primary); text-decoration: none; color: inherit; transition: opacity .15s, transform .15s ease; }
+.tag-post-item:hover { opacity: 0.85; transform: translateX(4px); }
+.tag-post-title { font-family: var(--font-serif); font-size: 1rem; color: var(--text-primary); line-height: 1.35; }
+.tag-post-date { font-family: var(--font-sans); font-size: 0.75rem; color: var(--text-muted); }

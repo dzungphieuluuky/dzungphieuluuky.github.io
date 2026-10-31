@@ -5,7 +5,7 @@ layout: base
 
 <main class="{% if page.full-width %} container-fluid {% else %} container-md {% endif %}">
   <div class="row {% if page.toc == true %}post-with-toc{% endif %}">
-    <div class="{% if page.toc == true %}col-xl-7 col-lg-7 offset-xl-1 offset-lg-1{% else %}col-xl-8 offset-xl-2 col-lg-10 offset-lg-1{% endif %} post-layout">
+    <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 post-layout">
 
       {% if page.gh-repo %}
         {% assign gh_split =  page.gh-repo | split:'/'  %}
@@ -44,6 +44,7 @@ layout: base
           {% assign word_count = content | strip_html | number_of_words %}
           {% assign read_minutes = word_count | divided_by: 238.0 | ceil %}
           <div class="metadata-bar">
+          {% if page.series or page.tags contains "sequence" %}<span style="font-family:var(--font-sans);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-right:0.5rem;">Part of a series →</span>{% endif %}
             <div class="metadata-item">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>

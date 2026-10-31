@@ -1335,3 +1335,16 @@ html.dark-mode .search-result-meta span { border-color: var(--border-primary); c
 
 /* Reading progress bar — black on gray */
 .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: var(--text-primary); z-index: 9999; transition: width .05s linear; }
+.toc-inline { margin: 1.25rem 0 1.5rem 0; padding: 0; border: none; }
+.toc-inline details > summary { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; color: var(--text-primary); cursor: pointer; list-style: none; padding: 0.35rem 0; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+.toc-inline .post-toc-list { padding-left: 1rem; list-style: none; margin: 0; }
+.toc-inline .post-toc-list li { margin: 0.35rem 0; font-size: 0.95rem; line-height: 1.55; }
+.toc-inline .post-toc-list a { color: var(--text-secondary); text-decoration: none; border-bottom: 0.5px solid var(--border-primary); padding-bottom: 0.05rem; padding-left: 0.25rem; margin-left: -0.25rem; transition: color .12s ease, transform .15s ease, padding-left .15s ease; display: inline-block; }
+.toc-inline .post-toc-list a:hover { color: var(--text-primary); border-bottom-color: var(--accent-primary); transform: translateX(4px); padding-left: 0.45rem; }
+.toc-inline .toc-h2 { font-weight: 700; font-size: 1rem; }
+.toc-inline .toc-h3 { padding-left: 1.25rem; font-size: 0.9em; }
+.post-toc-box { display: none !important; }
+
+.scroll-top-btn { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; width: 44px; height: 44px; border-radius: 50%; background: #111111; color: #FFFFFF; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: transform .15s ease, background .15s ease; font-family: var(--font-sans); font-size: 1.1rem; }
+.scroll-top-btn:hover { background: #333333; transform: translateY(-2px); }
+.scroll-top-btn:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }

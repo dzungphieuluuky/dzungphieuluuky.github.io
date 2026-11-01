@@ -107,10 +107,10 @@ const CodeCopy = {
 // ====================================
 const ImageLightbox = {
   init() {
-    const images = document.querySelectorAll('article img, .post-content img');
-    if (!images.length) return;
+    this.images = document.querySelectorAll('article img, .post-content img');
+    if (!this.images.length) return;
     this.create();
-    images.forEach((img) => { img.style.cursor = 'zoom-in'; });
+    this.images.forEach((img) => { img.style.cursor = 'zoom-in'; });
     document.addEventListener('click', (e) => {
       const img = e.target.closest('article img, .post-content img');
       if (img && !img.closest('.lightbox')) this.open(img);
@@ -213,7 +213,12 @@ const EnhancedSearch = {
     });
     this.modal.querySelector('.search-modal-close')?.addEventListener('click', () => this.close());
     this.modal.addEventListener('click', (e) => { if (e.target === this.modal) this.close(); });
-    this.input.addEventListener('input', () => { this.index = -1; this.render(); });
+    var searchTimer = null;
+    this.input.addEventListener('input', () => {
+      this.index = -1;
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => this.render(), 150);
+    });
     this.input.addEventListener('keydown', (e) => this.onKey(e));
     document.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -381,12 +386,28 @@ document.addEventListener('DOMContentLoaded', () => {
 (function () {
   var bar = document.getElementById("reading-progress");
   if (!bar) return;
+  var ticking = false;
   function update() {
-    var scroll = window.scrollY || document.documentElement.scrollTop;
-    var docH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    bar.style.width = (docH > 0 ? (scroll / docH) * 100 : 0) + "%";
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(function () {
+        var scroll = window.scrollY || document.documentElement.scrollTop;
+        var docH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        bar.style.width = (docH > 0 ? (scroll / docH) * 100 : 0) + "%";
+        ticking = false;
+      });
+    }
   }
   window.addEventListener("scroll", update, { passive: true });
   update();
 })();
 
+
+const LazyLoad = {
+  init() {
+    document.querySelectorAll('article img, .post-content img, .post-preview img').forEach(function(img) {
+      if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+    });
+  }
+};
+document.addEventListener('DOMContentLoaded', function() { LazyLoad.init(); });

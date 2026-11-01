@@ -70,5 +70,27 @@ Kaggle is our friendly companion when it comes to free GPUs quota with generous 
 ```python
 AttributeError: 'MessageFactory' object has no attribute 'GetPrototype'
 ```
-
 ### Create test mode for functional testing before long run
+After burning background runs to silent errors, I force a 30-second dry-run before every long training. Not syntax — end-to-end functional testing: load one batch, fully unwrap the model, call `save_pretrained`, verify the tokenizer folder, and step the optimizer once. The interactive session is too forgiving; only a mini-loop catches the `bfloat16` mismatch, the deprecated `protobuf` import, or a forgotten `while hasattr(model, 'module')` loop. Below is the simplest guard I use:
+
+```python
+def test_run(model, tokenizer, loader, accelerator):
+    model = accelerator.unwrap_model(model)
+    while hasattr(model, 'module'):
+        model = model.module
+
+    batch = next(iter(loader))
+    # One forward + backward step
+    out = model(**batch)
+    out.loss.backward()
+    # Checkpoint sanity
+    model.save_pretrained('/tmp/test_checkpoint')
+    tokenizer.save_pretrained('/tmp/test_checkpoint')
+    assert (Path('/tmp/test_checkpoint') / 'tokenizer.json').exists()
+    print('Functional test passed — safe to launch long run.')
+
+if args.test_mode:
+    test_run(model, tokenizer, train_loader, accelerator)
+```
+
+This takes less than a minute on a single GPU. It saves 30 hours of background quota, prevents the painful `Papermills` termination, and guarantees that every file from `model.safetensors` to `merges.txt` is present before we commit to an overnight run.

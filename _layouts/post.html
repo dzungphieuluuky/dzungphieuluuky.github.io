@@ -68,6 +68,27 @@ layout: base
           {% for tag in page.tags %}
             <a href="{{ '/tags' | relative_url }}#{{- tag -}}">{{- tag -}}</a>
           {% endfor %}
+      {% endif %}
+      {% assign related = '' | split: ',' %}
+      {% for post in site.posts %}
+        {% if post.url != page.url %}
+          {% assign shared = 0 %}
+          {% for tag in page.tags %}
+            {% if post.tags contains tag %}{% assign shared = shared | plus: 1 %}{% endif %}
+          {% endfor %}
+          {% if shared > 0 %}
+            {% assign related = related | push: post %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if related.size > 0 %}
+        <div class="related-posts" style="margin-top:2rem; padding-top:1rem; border-top:1px solid var(--border-primary);">
+          <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:.75rem;">Related</h3>
+          <ul style="list-style:none;padding-left:0;margin:0;">
+          {% for post in related limit:3 %}
+            <li style="margin:.35rem 0;"><a href="{{ post.url | relative_url }}" style="color:var(--text-secondary);text-decoration:none;border-bottom:0.5px solid var(--border-primary);padding-bottom:.05rem;transition:color .12s ease;">{{ post.title }}</a> <span style="color:var(--text-muted);font-size:.75em;">— {{ post.date | date: '%b %d, %Y' }}</span></li>
+          {% endfor %}
+          </ul>
         </div>
       {% endif %}
 
@@ -84,22 +105,26 @@ layout: base
       {% endif %}
 
       <ul class="pagination blog-pager">
-        {% if page.previous.url %}
-        <li class="page-item previous">
+        <li class="page-item previous{% if page.previous.url == nil %} disabled{% endif %}">
+          {% if page.previous.url %}
           <a class="page-link" href="{{ page.previous.url | relative_url }}" data-toggle="tooltip" data-placement="top" title="{{page.previous.title | strip_html | xml_escape}}">
             <i class="fas fa-arrow-left" alt="Previous Post"></i>
             <span class="d-none d-sm-inline-block">Previous Post</span>
           </a>
+          {% else %}
+          <span class="page-link" style="cursor:default;opacity:.5;"><i class="fas fa-arrow-left" alt="Previous Post"></i> <span class="d-none d-sm-inline-block">Previous Post</span></span>
+          {% endif %}
         </li>
-        {% endif %}
-        {% if page.next.url %}
-        <li class="page-item next">
+        <li class="page-item next{% if page.next.url == nil %} disabled{% endif %}">
+          {% if page.next.url %}
           <a class="page-link" href="{{ page.next.url | relative_url }}" data-toggle="tooltip" data-placement="top" title="{{page.next.title | strip_html | xml_escape}}">
             <span class="d-none d-sm-inline-block">Next Post</span>
             <i class="fas fa-arrow-right" alt="Next Post"></i>
           </a>
+          {% else %}
+          <span class="page-link" style="cursor:default;opacity:.5;"><span class="d-none d-sm-inline-block">Next Post</span> <i class="fas fa-arrow-right" alt="Next Post"></i></span>
+          {% endif %}
         </li>
-        {% endif %}
       </ul>
       {% include comments.html %}
     </div>
